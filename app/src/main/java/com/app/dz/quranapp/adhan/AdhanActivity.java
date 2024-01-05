@@ -12,11 +12,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.app.dz.quranapp.Entities.DayPrayerTimes;
 import com.app.dz.quranapp.databinding.QuranActivityBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 public class AdhanActivity extends AppCompatActivity {
     public static final int JOB_ID = 1001; // Unique ID for the job
@@ -57,13 +59,6 @@ public class AdhanActivity extends AppCompatActivity {
         }
     }
     private long getNextPrayerTimeDelay() {
-        // Implement logic to calculate the delay until the next prayer time
-        // Return the delay in milliseconds
-        // This will depend on your app's requirements and how you determine prayer times
-        // Example: return System.currentTimeMillis() + 60 * 60 * 1000; // 1 hour from now
-
-        Toast.makeText(this, "next time is "+convertMillisToTime(System.currentTimeMillis() + 5 * 60 * 1000), Toast.LENGTH_LONG).show();
-        ;
         return System.currentTimeMillis() + 5 * 60 * 1000;
     }
     public static String convertMillisToTime(long millis) {

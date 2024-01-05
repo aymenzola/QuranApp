@@ -1,6 +1,5 @@
 package com.app.dz.quranapp.adhan;
 
-import static com.app.dz.quranapp.adhan.PrayerJobIntentService.getNextPrayerTimeDelay;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

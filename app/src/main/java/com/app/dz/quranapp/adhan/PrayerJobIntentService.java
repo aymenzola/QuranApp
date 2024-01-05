@@ -14,44 +14,66 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
 
+import com.app.dz.quranapp.Entities.DayPrayerTimes;
+import com.app.dz.quranapp.MainFragmentsParte.TimeParte.PrayerTimes;
 import com.app.dz.quranapp.R;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 public class PrayerJobIntentService extends JobService {
 
 
-    public static long getNextPrayerTimeDelay() {
-        // Implement logic to calculate the delay until the next prayer time
-        // Return the delay in milliseconds
-        // This will depend on your app's requirements and how you determine prayer times
-        // Example: return System.currentTimeMillis() + 60 * 60 * 1000; // 1 hour from now
 
-        return System.currentTimeMillis() + 5 * 60 * 1000;
+    public void prepareAndScheduleNextPrayerTime(Context context) {
+        PrayerTimesHelper prayerTimesHelper = new PrayerTimesHelper(new PrayerTimesHelper.TimesListener() {
+            @Override
+            public void onPrayerTimesResult(Map<String, DayPrayerTimes> TimesMap) {
+                DayPrayerTimes todayPrayerTimes= TimesMap.get("today");
+                DayPrayerTimes tomorrowPrayerTimes= TimesMap.get("nextDay");
+                DayPrayerTimes yesterdayPrayerTimes= TimesMap.get("prevDay");
+
+                PrayerTimes prayerTimesToday = getConvertTimeMilliSeconds(todayPrayerTimes);
+
+                long tomorrowFajr = getTomorrowFajr(tomorrowPrayerTimes,todayPrayerTimes);
+                Pair<String,Long> pair = getTheNextPrayer(prayerTimesToday,tomorrowFajr);
+
+                //todo real one long nextPrayerTimeDelayMillis = pair.second;
+                long nextPrayerTimeDelayMillis = System.currentTimeMillis() + 5 * 60 * 1000;
+
+                updateForegroundServiceNotification(pair.first,nextPrayerTimeDelayMillis);
+                schedulePrayerJob(nextPrayerTimeDelayMillis,context);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        }, context);
+        prayerTimesHelper.getDayPrayerTimes();
     }
 
 
-
-    private void updateForegroundServiceNotification(long nextPrayerTime) {
+    private void updateForegroundServiceNotification(String timeName,long nextPrayerTime) {
         // Create an intent to start the PrayerForegroundService
         Intent serviceIntent = new Intent(this, PrayerForegroundService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, serviceIntent, PendingIntent.FLAG_IMMUTABLE);
 
         // Create a notification for the foreground service with updated content
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_location_icon)
                 .setContentTitle("Prayer App")
-                .setContentText("Next Prayer Time: " + convertMillisToTime(nextPrayerTime))
+                .setContentText(timeName+" " + convertMillisToTime(nextPrayerTime))
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -62,7 +84,7 @@ public class PrayerJobIntentService extends JobService {
 
     }
 
-    public static void schedulePrayerJob(long nextPrayerTimeMillis,Context context) {
+    public static void schedulePrayerJob(long nextPrayerTimeMillis, Context context) {
         long currentTimeMillis = System.currentTimeMillis();
         long delayMillis = nextPrayerTimeMillis - currentTimeMillis;
 
@@ -75,15 +97,16 @@ public class PrayerJobIntentService extends JobService {
 
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             jobScheduler.schedule(builder.build());
-            Log.e("testLog","schedulePrayerJob done at "+convertMillisToTime(nextPrayerTimeMillis));
+            Log.e("testLog", "schedulePrayerJob done at " + convertMillisToTime(nextPrayerTimeMillis));
         } else {
             // The next prayer time is in the past, handle this case accordingly
-        } }
+        }
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e("testLog","Job service destroyed ");
+        Log.e("testLog", "Job service destroyed ");
     }
 
     public static String convertMillisToTime(long millis) {
@@ -96,25 +119,24 @@ public class PrayerJobIntentService extends JobService {
         // Perform background work here, e.g., send notification for prayer time
 
         // After handling the current prayer, schedule the next one
-        long nextPrayerTimeDelayMillis = getNextPrayerTimeDelay();
         long nowPrayerTimeDelayMillis = System.currentTimeMillis();
 
         // Show a notification when the prayer time is reached
-        NotificationUtils.showPrayerNotification(this, convertMillisToTime(nowPrayerTimeDelayMillis));
+        NotificationUtils.showPrayerNotification(this,convertMillisToTime(nowPrayerTimeDelayMillis));
 
         // Start the foreground service
         Log.e("testLog", " startForegroundServiceIfNotExists ");
         startForegroundServiceIfNotExists();
 
-        updateForegroundServiceNotification(nextPrayerTimeDelayMillis);
-        schedulePrayerJob(nextPrayerTimeDelayMillis,this);
-        Log.e("testLog","onStartJob");
+        prepareAndScheduleNextPrayerTime(this);
+
+        Log.e("testLog", "onStartJob");
         return false;
     }
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        Log.e("testLog","onStopJob");
+        Log.e("testLog", "onStopJob");
         return false;
     }
 
@@ -153,5 +175,145 @@ public class PrayerJobIntentService extends JobService {
         }
         return false; // Notification with the specified ID is not active
     }
+
+
+    public static long getMidnightTimeInMillisToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        // Set the time to midnight
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return  calendar.getTimeInMillis();
+    }
+    public static long getMidnightTimeInMillisNextDAY() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        // Set the time to midnight
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTimeInMillis();
+    }
+
+    public static Pair<String,Long> getTheNextPrayer(PrayerTimes PrayerTimesToday, long FajrTimeTommorow) {
+        long Nextmillseconds;
+        Calendar currant = Calendar.getInstance();
+        long MidnightTimeInMillis_NextDAY = getMidnightTimeInMillisNextDAY();
+        long MidnightTimeInMillis_Today = getMidnightTimeInMillisToday();
+        long currantMilliseconds = currant.getTimeInMillis();
+
+        //test
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(MidnightTimeInMillis_NextDAY);
+        Log.e("testLog", "middle time today " + c.getTime());
+        c.add(Calendar.DAY_OF_MONTH, 1);
+        Log.e("testLog", "middle time next day " + c.getTime());
+
+
+        String nextSalatName;
+        if (currantMilliseconds > PrayerTimesToday.ishaa && currantMilliseconds < MidnightTimeInMillis_NextDAY) {
+            Nextmillseconds = FajrTimeTommorow;
+            nextSalatName = "الفجر";
+        } else if (currantMilliseconds > MidnightTimeInMillis_Today && currantMilliseconds < PrayerTimesToday.fajr) {
+            Nextmillseconds = PrayerTimesToday.fajr;
+            nextSalatName = "الفجر";
+        } else if (currantMilliseconds > PrayerTimesToday.fajr && currantMilliseconds < PrayerTimesToday.sunrise) {
+            Nextmillseconds = PrayerTimesToday.sunrise;
+            nextSalatName = "الشروق";
+        } else if (currantMilliseconds > PrayerTimesToday.sunrise && currantMilliseconds < PrayerTimesToday.duhr) {
+            Nextmillseconds = PrayerTimesToday.duhr;
+            nextSalatName = "الظهر";
+        } else if (currantMilliseconds > PrayerTimesToday.duhr && currantMilliseconds < PrayerTimesToday.assr) {
+            Nextmillseconds = PrayerTimesToday.assr;
+            nextSalatName = "العصر";
+        } else if (currantMilliseconds > PrayerTimesToday.assr && currantMilliseconds < PrayerTimesToday.maghrib) {
+            Nextmillseconds = PrayerTimesToday.maghrib;
+            nextSalatName = "المغرب";
+        } else {
+            Nextmillseconds = PrayerTimesToday.ishaa;
+            nextSalatName = "العشاء";
+        }
+
+        String notifyTitle = "صلاة : " + nextSalatName ;
+
+        long millisDelay = Nextmillseconds - System.currentTimeMillis();
+
+        return new Pair<>(notifyTitle,Nextmillseconds);
+    }
+
+    private static long getTomorrowFajr(DayPrayerTimes nextDayPrayerTimes, DayPrayerTimes todayDayPrayerTimes) {
+        DecimalFormat decimalFormat = new DecimalFormat("00");
+        //tommorow fajr
+        Calendar c = Calendar.getInstance();
+        if (nextDayPrayerTimes == null) {
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            c.set(Calendar.HOUR_OF_DAY, getIntHour(todayDayPrayerTimes.getFajr()));
+            c.set(Calendar.MINUTE, getIntMinute(todayDayPrayerTimes.getFajr()));
+
+        } else {
+            c.set(Calendar.MONTH, nextDayPrayerTimes.getMonth() - 1);
+            c.set(Calendar.DAY_OF_MONTH, nextDayPrayerTimes.getDay());
+            c.set(Calendar.HOUR_OF_DAY, getIntHour(nextDayPrayerTimes.getFajr()));
+            c.set(Calendar.MINUTE, getIntMinute(nextDayPrayerTimes.getFajr()));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String dateString = dateFormat.format(c.getTime());
+            Log.e("alarm", "next day " + dateString + "   " + nextDayPrayerTimes.toString());
+        }
+        return c.getTimeInMillis();
+    }
+
+    public static Integer getIntHour(String time) {
+        return Integer.parseInt(time.substring(0, 2));
+    }
+
+    public static Integer getIntMinute(String time) {
+        return Integer.parseInt(time.substring(3, 5));
+    }
+
+    public static PrayerTimes getConvertTimeMilliSeconds(DayPrayerTimes DayPrayerTimes) {
+        Log.e("alarm", " ConvertTimeMilliSeconds ");
+
+        PrayerTimes prayerTimes = new PrayerTimes();
+        Calendar calendar = Calendar.getInstance();
+
+        //fajr
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(DayPrayerTimes.getFajr()));
+        calendar.set(Calendar.MINUTE, getIntMinute(DayPrayerTimes.getFajr()));
+        prayerTimes.fajr = calendar.getTimeInMillis();
+
+        //sunrise
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(DayPrayerTimes.getSunrise()));
+        calendar.set(Calendar.MINUTE, getIntMinute(DayPrayerTimes.getSunrise()));
+        prayerTimes.sunrise = calendar.getTimeInMillis();
+
+        //thuhr
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(DayPrayerTimes.getDhuhr()));
+        calendar.set(Calendar.MINUTE, getIntMinute(DayPrayerTimes.getDhuhr()));
+        prayerTimes.duhr = calendar.getTimeInMillis();
+
+        //assr
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(DayPrayerTimes.getAsr()));
+        calendar.set(Calendar.MINUTE, getIntMinute(DayPrayerTimes.getAsr()));
+        prayerTimes.assr = calendar.getTimeInMillis();
+
+        //maghrib
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(DayPrayerTimes.getMaghrib()));
+        calendar.set(Calendar.MINUTE, getIntMinute(DayPrayerTimes.getMaghrib()));
+        prayerTimes.maghrib = calendar.getTimeInMillis();
+
+        //ishaa
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(DayPrayerTimes.getIsha()));
+        calendar.set(Calendar.MINUTE, getIntMinute(DayPrayerTimes.getIsha()));
+        prayerTimes.ishaa = calendar.getTimeInMillis();
+
+        return prayerTimes;
+    }
+
 
 }
