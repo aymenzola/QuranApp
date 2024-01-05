@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class AdhanActivity extends AppCompatActivity {
     public static final int JOB_ID = 1001; // Unique ID for the job
-    public static final int JOB_IDtest = 1001; // Unique ID for the job
+    public static final int JOB_IDtest2= 1001; // Unique ID for the job
 
     // ...
 
