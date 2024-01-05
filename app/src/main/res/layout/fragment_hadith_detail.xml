@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color">
+
+        <include
+            android:id="@+id/included"
+            layout="@layout/include_action_bar_with_back"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/button_linear"
+            android:layout_below="@+id/included"
+            android:layout_centerInParent="true"
+            android:background="@color/background_color" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/button_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/background_color"
+            >
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_back"
+                android:layout_width="@dimen/img_icons_width"
+                android:layout_height="@dimen/img_icons_width"
+                android:rotation="180"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="40dp"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:background="?selectableItemBackground"
+                >
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/ic_next_icon"
+                    app:tint="#4C241D"
+                    android:background="@drawable/ripple_effect_card"
+                    />
+
+            </androidx.cardview.widget.CardView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_save_hadith"
+                android:layout_width="@dimen/img_icons_width"
+                android:layout_height="@dimen/img_icons_width"
+                android:src="@drawable/ic_baseline_navigate_next_24"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:background="?selectableItemBackground"
+
+                >
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_save"
+                    android:padding="16dp"
+                    android:background="@drawable/ripple_effect_card"
+                    />
+
+            </androidx.cardview.widget.CardView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_next"
+                android:layout_width="@dimen/img_icons_width"
+                android:layout_height="@dimen/img_icons_width"
+                android:src="@drawable/ic_baseline_navigate_next_24"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:background="?selectableItemBackground"
+                >
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_next_icon"
+                    android:padding="15dp"
+                    app:tint="#4C241D"
+                    android:background="@drawable/ripple_effect_card"
+                    />
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </RelativeLayout>
+</layout>

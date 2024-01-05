@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color"
+        >
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:background="#FAFBFD" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/pageimage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/center_view"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            app:lottie_rawRes="@raw/anim_1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            app:lottie_loop="false"
+            app:lottie_autoPlay="true"
+            />
+
+        <View
+            android:id="@+id/center_view"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:visibility="visible"
+            android:layout_height="1dp" />
+
+
+        <LinearLayout
+            android:id="@+id/dots_linear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnmainpage"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/dots_2"
+                android:layout_width="40dp"
+                android:layout_height="6dp"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/dots_shape_white" />
+
+            <View
+                android:id="@+id/dots_1"
+                android:layout_width="40dp"
+                android:layout_height="6dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/dots_shape_white" />
+
+            <View
+                android:id="@+id/dots_0"
+                android:layout_width="40dp"
+                android:layout_height="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/shapebleu_ripple" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnmainpage"
+            style="@style/MyTvStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="70dp"
+            android:textSize="@dimen/tv_normal_size_tablet"
+            android:background="@drawable/ripple_effect_play_gradient"
+            android:text="التالي" />
+
+    </RelativeLayout>
+</layout>

@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">كنوز</string>
+    <!-- Strings used for fragments for navigation -->
+
+    <string name="title_sura">القرآن</string>
+    <string name="title_prayer">الأذان</string>
+    <string name="title_Collection">المكتبة</string>
+    <string name="title_Books">كتب</string>
+    <string name="check_internet">تحقق من الاتصال بالانترنت</string>
+    <string name="home">الرئيسية</string>
+    <string name="my_string">تطبيق كنوز، هو معينك على الخير، مفتاحك لكنز رضى الله و نيل رحماته. \n حيث يضبط لك أوقات الصلاة فتكون من الَّذِينَ هُمْ عَلَىٰ صَلَوَاتِهِمْ يُحَافِظُونَ.\n و يعينك على الحفاظ على وردك القرآني و أوراد الذكر اليومي، فتغدو من الَّذِينَ يَذْكُرُونَ اللَّهَ قِيَامًا وَقُعُودًا وَعَلَىٰ جُنُوبِهِمْ وَيَتَفَكَّرُونَ.\nو يفتح لك مكتبته الغنية بكتب العلم الشرعي، و هَلْ يَسْتَوِي الَّذِينَ يَعْلَمُونَ وَالَّذِينَ لا يَعْلَمُونَ.\nراجين المولى أن يتقبل منا هذا العمل الصالح المبارك و يكتب لنا و لكم و لكل من شارك في نشر هذا الخير، الأجر و البركة في الدنيا و الآخرة.\n نوينا هذا التطبيق صدقة جارية على المرحوم بإذن الله محفوظ مهري و المرحومة بإذن الله فريدة بلعزوق رحمهما الله و سائر موتى المسلمين.</string>
+
+
+
+    <!--Qibla Menu Strings-->
+    <string name="gps_settings_title">GPS settings</string>
+    <string name="gps_settings_text">GPS is not enabled, you must activate it first from the settings to get the Qibla direction.</string>
+    <string name="permission_not_garanted">Permissions are not activated</string>
+    <string name="permissiongaranted">Permissions have been activated, please activate GPS and re-enter the list to renew the data</string>
+    <string name="coord">Coordinates:</string>
+    <string name="qibladirection">Qiblah:</string>
+    <string name="fromnorth">Degrees from the north</string>
+    <string name="lastlocation">Data of the previous time</string>
+    <string name="locationunready">Please check the GPS settings and try again</string>
+    <string name="gpsplz">Check the GPS settings to be able to determine the direction of the Qiblah</string>
+    <string name="consignes">Instructions</string>
+    <string name="qiblatips">To get accurate orientation, please place the phone on a flat surface, check the GPS settings, then re-enter this menu.</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
+    <string name="ok">حسنا</string>
+
+
+</resources>

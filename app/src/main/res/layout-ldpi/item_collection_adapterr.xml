@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".FirstFragment">
+
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/book_image"
+            android:layout_width="50dp"
+            android:layout_height="70dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            tools:src="@drawable/alafasy"
+            app:riv_corner_radius="10dp"
+            android:layout_margin="10dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_book_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toStartOf="@+id/book_image"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:text="صحيح البخاري"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_normal_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_book_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_book_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:layout_toStartOf="@+id/book_image"
+            android:text="المؤلف : أبو عبد الله محمد بن إسماعيل الجعفي البخاري"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_normal_size"
+            android:textStyle="normal" />
+
+
+        <View
+            android:id="@+id/click_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/buttom_view"
+            android:layout_centerHorizontal="true"
+            android:background="?selectableItemBackground"
+            android:layout_alignParentTop="true"
+            />
+
+        <View
+            android:id="@+id/buttom_view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/book_image"
+            android:background="#EDECEC"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_centerHorizontal="true"
+            />
+
+
+    </RelativeLayout>
+</layout>

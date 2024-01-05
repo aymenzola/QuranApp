@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/included_relative"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@drawable/toolbar_background"
+        >
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="القرآن الكريم"
+            android:gravity="center"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:textStyle="normal"
+            android:layout_toStartOf="@+id/img_back"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/tv_title_size" />
+
+        <ImageView
+            android:id="@+id/tv_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/star_background1"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:gravity="center"
+            android:padding="15dp"
+            android:background="?selectableItemBackground"
+            android:layout_centerVertical="true"
+            android:src="@drawable/back_arrow"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/img_full"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:gravity="center"
+            android:padding="18dp"
+            android:background="@drawable/ripple_effect_constant"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_full"
+            android:layout_toEndOf="@+id/img_filter"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+
+        <ImageView
+            android:id="@+id/img_filter"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:gravity="center"
+            android:padding="17dp"
+            android:background="@drawable/ripple_effect_constant"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/settings"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+
+
+    </RelativeLayout>
+</layout>
