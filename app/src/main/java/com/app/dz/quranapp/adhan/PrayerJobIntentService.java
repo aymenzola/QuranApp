@@ -7,10 +7,13 @@ import static com.app.dz.quranapp.adhan.AdhanActivity.JOB_ID;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
+import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
+import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
@@ -22,21 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class PrayerJobIntentService extends JobIntentService {
-    @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-        // Perform background work here, e.g., send notification for prayer time
+public class PrayerJobIntentService extends JobService {
 
-        // After handling the current prayer, schedule the next one
-        long nextPrayerTimeDelayMillis = getNextPrayerTimeDelay();
-
-        // Show a notification when the prayer time is reached
-        NotificationUtils.showPrayerNotification(this, convertMillisToTime(nextPrayerTimeDelayMillis));
-
-        updateForegroundServiceNotification(nextPrayerTimeDelayMillis);
-        schedulePrayerJob(nextPrayerTimeDelayMillis);
-
-    }
 
     private long getNextPrayerTimeDelay() {
         // Implement logic to calculate the delay until the next prayer time
@@ -66,6 +56,7 @@ public class PrayerJobIntentService extends JobIntentService {
 
         // Use startForeground to update the existing notification in the foreground service
         startForeground(NOTIFICATION_ID, updatedNotification);
+
     }
 
     private void schedulePrayerJob(long nextPrayerTimeMillis) {
@@ -87,5 +78,27 @@ public class PrayerJobIntentService extends JobIntentService {
     public static String convertMillisToTime(long millis) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return sdf.format(new Date(millis));
+    }
+
+    @Override
+    public boolean onStartJob(JobParameters jobParameters) {
+        // Perform background work here, e.g., send notification for prayer time
+
+        // After handling the current prayer, schedule the next one
+        long nextPrayerTimeDelayMillis = getNextPrayerTimeDelay();
+
+        // Show a notification when the prayer time is reached
+        NotificationUtils.showPrayerNotification(this, convertMillisToTime(nextPrayerTimeDelayMillis));
+
+        updateForegroundServiceNotification(nextPrayerTimeDelayMillis);
+        schedulePrayerJob(nextPrayerTimeDelayMillis);
+        Log.e("testLog","onStartJob");
+        return false;
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters jobParameters) {
+        Log.e("testLog","onStopJob");
+        return false;
     }
 }

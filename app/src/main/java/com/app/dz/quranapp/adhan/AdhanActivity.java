@@ -4,7 +4,9 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,7 +34,8 @@ public class AdhanActivity extends AppCompatActivity {
         }
     private void schedulePrayerJob(long nextPrayerTimeMillis) {
         long currentTimeMillis = System.currentTimeMillis();
-        long delayMillis = nextPrayerTimeMillis - currentTimeMillis;
+//        long delayMillis = nextPrayerTimeMillis - currentTimeMillis;
+        long delayMillis = 5000;
 
         if (delayMillis > 0) {
             ComponentName serviceComponent = new ComponentName(this, PrayerJobIntentService.class);
@@ -41,7 +44,14 @@ public class AdhanActivity extends AppCompatActivity {
                     .setOverrideDeadline(delayMillis + 1000); // Set the maximum delay for the job
 
             JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            Log.e("testLog","jobScheduler.schedule(builder.build())");
             jobScheduler.schedule(builder.build());
+
+
+         // Create an intent to start the PrayerForegroundService
+                Intent serviceIntent = new Intent(this, PrayerForegroundService.class);
+                startService(serviceIntent);
+
         } else {
             // The next prayer time is in the past, handle this case accordingly
         }

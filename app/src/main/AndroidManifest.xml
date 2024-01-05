@@ -85,10 +85,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.qibla_parte.QiblaFinder" />
         <activity android:name="com.app.dz.quranapp.MushafParte.mushaf_list.MushafListActivity" />
-<<<<<<< HEAD
         <activity android:name="com.app.dz.quranapp.adhan.AdhanActivity" />
-=======
->>>>>>> 1a53f28 (v1)
 
         <service
             android:name=".Services.ForegroundPlayAudioService"

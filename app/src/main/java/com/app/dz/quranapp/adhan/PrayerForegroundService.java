@@ -18,6 +18,12 @@ public class PrayerForegroundService extends Service {
     public static final String CHANNEL_ID = "PrayerChannel";
     public static final int NOTIFICATION_ID = 101; // Unique ID for the notification
 
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
