@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private int lastPage = 1;
-    private int lastPagem = 2;
+    private int lastPagemh = 2;
 
     private DayPrayerTimes TodayTimesG;
     private DayPrayerTimes NextDayTimesG;
