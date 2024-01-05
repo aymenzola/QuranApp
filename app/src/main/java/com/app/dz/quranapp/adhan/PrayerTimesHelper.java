@@ -183,9 +183,9 @@ public class PrayerTimesHelper {
         //test
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(MidnightTimeInMillis_NextDAY);
-        Log.e("testLog", "middle time today " + c.getTime());
+       // Log.e("testLog", "middle time today " + c.getTime());
         c.add(Calendar.DAY_OF_MONTH, 1);
-        Log.e("testLog", "middle time next day " + c.getTime());
+       // Log.e("testLog", "middle time next day " + c.getTime());
 
 
         String nextSalatName;

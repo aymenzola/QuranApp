@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -21,14 +22,16 @@ public class PrayerForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
+        String title = intent.getStringExtra("title");
+        startForeground(NOTIFICATION_ID, createNotification(title));
+        return START_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
-        startForeground(NOTIFICATION_ID, createNotification("Next Prayer Time"));
+        Log.e("testLog", "----> we are creating notifcation channel "+CHANNEL_ID+" notif Id + "+NOTIFICATION_ID);
     }
 
     @Override

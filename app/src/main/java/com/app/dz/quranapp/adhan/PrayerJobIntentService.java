@@ -14,6 +14,7 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.util.Pair;
@@ -21,29 +22,25 @@ import android.util.Pair;
 import androidx.core.app.NotificationCompat;
 
 import com.app.dz.quranapp.Entities.DayPrayerTimes;
-import com.app.dz.quranapp.MainFragmentsParte.TimeParte.PrayerTimes;
 import com.app.dz.quranapp.R;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
 public class PrayerJobIntentService extends JobService {
-
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
         Log.e("testLog", "onStartJob");
 
-        long nowPrayerTimeDelayMillis = System.currentTimeMillis();
-        NotificationUtils.showPrayerNotification(this,convertMillisToTime(nowPrayerTimeDelayMillis));
-        Log.e("testLog", " startForegroundServiceIfNotExists ");
-        startForegroundServiceIfNotExists();
-        prepareAndScheduleNextPrayerTime(this);
+        PersistableBundle data = jobParameters.getExtras();
+        boolean isThisFirstForConfiguration = false;
+        if (data != null) isThisFirstForConfiguration = data.getInt("isThisTheFirstForConfiguration", 0) != 0;
 
-        return false;
+        prepareAndScheduleNextPrayerTime(jobParameters,this,isThisFirstForConfiguration);
+
+        return true;
     }
 
     @Override
@@ -53,7 +50,7 @@ public class PrayerJobIntentService extends JobService {
     }
 
 
-    public void prepareAndScheduleNextPrayerTime(Context context) {
+    public void prepareAndScheduleNextPrayerTime(JobParameters jobParameters, Context context, boolean isThisFirstForConfiguration) {
         PrayerTimesHelper prayerTimesHelper = new PrayerTimesHelper(new PrayerTimesHelper.TimesListener() {
             @Override
             public void onPrayerTimesResult(Map<String, DayPrayerTimes> TimesMap) {
@@ -65,8 +62,14 @@ public class PrayerJobIntentService extends JobService {
                 //todo real one long nextPrayerTimeDelayMillis = NameTimePair.second;
                 long nextPrayerTimeDelayMillis = System.currentTimeMillis() + 5 * 60 * 1000;
 
-                updateForegroundServiceNotification(NameTimePair.first,nextPrayerTimeDelayMillis);
-                schedulePrayerJob(nextPrayerTimeDelayMillis,context);
+
+                if (!isThisFirstForConfiguration) NotificationUtils.showPrayerNotification(context,convertMillisToTime(System.currentTimeMillis()),NameTimePair.first);
+
+//                startForegroundService(NameTimePair.first+" " + convertMillisToTime(NameTimePair.second));
+                startForegroundService(NameTimePair.first+" " + convertMillisToTime(nextPrayerTimeDelayMillis));
+                //updateForegroundServiceNotification(NameTimePair.first,nextPrayerTimeDelayMillis);
+                schedulePrayerJob(nextPrayerTimeDelayMillis,context,false);
+                jobFinished(jobParameters,false);
             }
 
             @Override
@@ -86,25 +89,35 @@ public class PrayerJobIntentService extends JobService {
         // Create a notification for the foreground service with updated content
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_location_icon)
-                .setContentTitle("Prayer App")
-                .setContentText(timeName+" " + convertMillisToTime(nextPrayerTime))
+                .setContentTitle(timeName+" " + convertMillisToTime(nextPrayerTime))
+                .setContentText("اضغط لرؤية كل اوقات الصلاة")
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         Notification updatedNotification = builder.build();
 
+        Log.e("testLog", "we are updating notifcation channel "+CHANNEL_ID+" notif Id + "+NOTIFICATION_ID);
         // Use startForeground to update the existing notification in the foreground service
         startForeground(NOTIFICATION_ID, updatedNotification);
 
     }
 
-    public static void schedulePrayerJob(long nextPrayerTimeMillis, Context context) {
+
+    private static PersistableBundle createDataBundle(boolean isThisTheFirstForConfiguration) {
+        PersistableBundle  dataBundle = new PersistableBundle ();
+        dataBundle.putInt("isThisTheFirstForConfiguration",isThisTheFirstForConfiguration ? 1 : 0);
+        // Add other data as needed
+        return dataBundle;
+    }
+
+    public static void schedulePrayerJob(long nextPrayerTimeMillis,Context context,Boolean isThisFirstForConfiguration) {
         long currentTimeMillis = System.currentTimeMillis();
         long delayMillis = nextPrayerTimeMillis - currentTimeMillis;
 
         if (delayMillis > 0) {
             ComponentName serviceComponent = new ComponentName(context, PrayerJobIntentService.class);
             JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceComponent)
+                    .setExtras(createDataBundle(isThisFirstForConfiguration))
                     .setPersisted(true)
                     .setMinimumLatency(delayMillis) // Set the delay until the job is scheduled
                     .setOverrideDeadline(delayMillis + 1000); // Set the maximum delay for the job
@@ -128,22 +141,10 @@ public class PrayerJobIntentService extends JobService {
         return sdf.format(new Date(millis));
     }
 
-    private void startForegroundServiceIfNotExists() {
-        if (!isNotificationActive(NOTIFICATION_ID)) {
-            // Notification is not active, start the foreground service
-            Log.e("testLog", "Starting foreground service");
-
-            Intent serviceIntent = new Intent(this, PrayerForegroundService.class);
-            startService(serviceIntent);
-
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(new Intent(this, PrayerForegroundService.class));
-            } else {
-                startService(new Intent(this, PrayerForegroundService.class));
-            }*/
-        } else {
-            Log.e("testLog", "the notification already exists ");
-        }
+    private void startForegroundService(String title) {
+        Intent serviceIntent = new Intent(this,PrayerForegroundService.class);
+        serviceIntent.putExtra("title", title);
+        startService(serviceIntent);
     }
 
     private boolean isNotificationActive(int notificationId) {

@@ -32,31 +32,10 @@ public class AdhanActivity extends AppCompatActivity {
         QuranActivityBinding binding = QuranActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.included.imgFilter.setOnClickListener(view -> schedulePrayerJob(getNextPrayerTimeDelay()));
+        binding.included.imgFilter.setOnClickListener(view -> schedulePrayerJob());
         }
-    private void schedulePrayerJob(long nextPrayerTimeMillis) {
-        long currentTimeMillis = System.currentTimeMillis();
-//        long delayMillis = nextPrayerTimeMillis - currentTimeMillis;
-        long delayMillis = 5000;
-
-        if (delayMillis > 0) {
-            ComponentName serviceComponent = new ComponentName(this, PrayerJobIntentService.class);
-            JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceComponent)
-                    .setMinimumLatency(delayMillis) // Set the delay until the job is scheduled
-                    .setOverrideDeadline(delayMillis + 1000); // Set the maximum delay for the job
-
-            JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            Log.e("testLog","jobScheduler.schedule(builder.build())");
-            jobScheduler.schedule(builder.build());
-
-
-         // Create an intent to start the PrayerForegroundService
-                Intent serviceIntent = new Intent(this, PrayerForegroundService.class);
-                startService(serviceIntent);
-
-        } else {
-            // The next prayer time is in the past, handle this case accordingly
-        }
+    private void schedulePrayerJob() {
+        PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 5000,AdhanActivity.this,true);
     }
     private long getNextPrayerTimeDelay() {
         return System.currentTimeMillis() + 5 * 60 * 1000;
