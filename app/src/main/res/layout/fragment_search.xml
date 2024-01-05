@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Fragments.HomeParte.HomeFragment"
+        android:background="@color/background_color"
+        >
+
+        <!-- TODO: Update blank fragment layout -->
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/edit_search"
+            android:layout_alignBottom="@+id/edit_search"
+            android:background="@drawable/searchviewshape"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+
+            />
+
+        <EditText
+            android:id="@+id/edit_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="40dp"
+            android:background="#F7F5F5"
+            android:hint="البحث"
+            android:fontFamily="@font/ffshamel_book"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textColorHint="#B6B2B2"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/item_search_icon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_alignTop="@+id/edit_search"
+            android:layout_alignBottom="@+id/edit_search"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="5dp"
+            app:srcCompat="@drawable/ic_search_black_24dp"
+            app:tint="@color/purple_700" />
+
+        <RelativeLayout
+            android:id="@+id/item_clear_click_parent"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/edit_search"
+            android:layout_alignBottom="@+id/edit_search"
+            android:background="?selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            tools:visibility="visible"
+            >
+
+            <ImageView
+                android:id="@+id/item_clear_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_close_icon"
+                app:tint="@color/purple_700" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_height="1dp"
+            android:id="@+id/view_id"
+            android:layout_width="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:background="#F4F6F8"
+            android:layout_centerHorizontal="true"
+            />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@+id/view_id"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            >
+
+            <TextView
+                android:id="@+id/btn_books"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounde_button_selected"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="كتب"
+                android:textColor="@color/purple_700"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/btn_chapters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounde_button"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="اجزاء الكتب"
+                android:textColor="@color/white"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/btn_hadiths"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounde_button"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="احاديث"
+                android:textColor="@color/white"
+                android:textSize="15dp" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/linear"
+            android:layout_centerHorizontal="true"
+            android:background="@color/background_color"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+        <TextView
+            android:id="@+id/tv_no_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="لا توجد نتائج"
+            android:textSize="17sp"
+            android:textColor="@color/text_color_dark"
+            android:fontFamily="@font/ffshamel_book"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+
+    </RelativeLayout>
+</layout>

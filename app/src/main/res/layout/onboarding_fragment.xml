@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color">
+
+        <View
+            android:id="@+id/top_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tv_title"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            android:background="@drawable/main_shape1" />
+
+
+
+
+        <View
+            android:id="@+id/center_view"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/center_view"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:layout_centerHorizontal="true"
+            android:background="@color/background_color"
+            android:lineSpacingExtra="10dp"
+            android:paddingBottom="10dp"
+            android:textStyle="bold"
+            android:text="مفتاحك..."
+            android:textColor="@color/tv_color"
+            android:textSize="@dimen/tv_normal_size_tablet"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:background="@color/background_color"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:paddingBottom="20dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="تطبيق سهل و ميسر"
+            android:textColor="@color/tv_color"
+            android:textSize="@dimen/tv_title_size" />
+
+    </RelativeLayout>
+</layout>

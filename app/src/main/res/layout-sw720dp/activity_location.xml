@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color">
+
+        <ImageView
+            android:id="@+id/img_close_location"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_close_icon"
+            android:background="?selectableItemBackground"
+            app:tint="@color/black"
+            android:padding="13dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            />
+
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/img_location_image_width10"
+            android:layout_below="@+id/img_close_location"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_location" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageview"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounde10"
+            android:backgroundTint="#28B07A1A"
+            android:fontFamily="@font/ffshamel_book"
+            android:padding="10dp"
+            android:text="التطبيق يحتاج الوصول الى الموقع لحساب مواقيت الصلاة الخاصة بمنطقتك"
+            android:textColor="#4C241D"
+            android:textSize="@dimen/tv_normal_size_tablet10" />
+
+        <View
+            android:id="@+id/view_centre"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"
+            />
+
+        <TextView
+            android:id="@+id/tv_location_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageview"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textColor="#424242"
+            android:textSize="@dimen/tv_normal_size_tablet10"
+            android:visibility="gone"
+            app:drawableEndCompat="@drawable/ic_location_icon"
+            app:drawableTint="#424242"
+            tools:text="بوعاتي محمود قالمة"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_previous"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_location_result"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:drawableEnd="@drawable/ic_baseline_access_time_24"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:padding="10dp"
+            android:text="المواقع الاخيرة"
+            android:textColor="@color/black"
+            android:textSize="@dimen/tv_normal_size_tablet10"
+            android:visibility="gone"
+            app:drawableTint="@color/black" />
+
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageview"
+            android:layout_marginEnd="-50dp"
+            android:text="تحديد الموقع تلقائيا"
+            android:indeterminateTint="@color/brown"
+            android:indeterminate="false"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_saving_location_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btn_get_location"
+            android:layout_alignTop="@+id/progress_bar_saving"
+            android:layout_centerHorizontal="true"
+            android:layout_toStartOf="@+id/progress_bar_saving"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="جاري حساب وقت الصلاة ..."
+            android:textColor="@color/black"
+            android:textSize="@dimen/tv_normal_size_tablet10"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar_saving"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_above="@id/btn_get_location"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:indeterminate="true"
+            android:padding="10dp"
+            android:indeterminateTint="@color/brown"
+            android:layout_centerHorizontal="true"
+            tools:visibility="visible"
+            android:visibility="gone"
+            />
+
+
+        <TextView
+            android:id="@+id/btn_get_location"
+            style="@style/MyTvStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="50dp"
+            android:text="تحديد الموقع تلقائيا"
+            android:textSize="@dimen/tv_normal_size_tablet10" />
+
+
+    </RelativeLayout>
+</layout>

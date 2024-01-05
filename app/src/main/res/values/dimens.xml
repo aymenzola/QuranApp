@@ -1,0 +1,29 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="count_image_size">45dp</dimen>
+
+
+    <dimen name="tv_small_size">14sp</dimen>
+    <dimen name="tv_normal_size">16sp</dimen>
+    <dimen name="tv_title_size">18sp</dimen>
+    <dimen name="img_logo_width">150dp</dimen>
+
+    <dimen name="img_icons_width">50dp</dimen>
+    <dimen name="tv_time_size">50sp</dimen>
+    <dimen name="tv_quran_size">22sp</dimen>
+
+    <dimen name="img_location_image_width">160dp</dimen>
+
+
+    <!--    tablet 7-->
+    <dimen name="img_location_image_width_tablet">250dp</dimen>
+    <dimen name="tv_small_size_tablet">18sp</dimen>
+    <dimen name="tv_normal_size_tablet">21sp</dimen>
+    <dimen name="tv_title_size_tablet">24sp</dimen>
+
+
+    <!--    tablet 10-->
+    <dimen name="img_location_image_width10">350dp</dimen>
+    <dimen name="tv_normal_size_tablet10">23sp</dimen>
+
+</resources>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+
+
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/icon_round"
+        android:supportsRtl="false"
+        android:theme="@style/Theme.QuranApp"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:supportsRtl"
+        tools:targetApi="31">
+
+        <activity
+            android:name=".LocationParte.SplashScreenActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.QuranApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.app.dz.quranapp.MushafParte.QuranActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name="com.app.dz.quranapp.LocationParte.UserSearchActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.app.dz.quranapp.OnBoardingParte.StartActivityPager"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.app.dz.quranapp.paginationOpenAi.SuraListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.app.dz.quranapp.MushafParte.TafsirParte.AudioFilesActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.app.dz.quranapp.MushafParte.TafsirParte.ReaderListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity android:name="com.app.dz.quranapp.LocationParte.LocationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.LocationParte.AboutActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.CollectionParte.BooksParte.ActivityBooksList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.CollectionParte.HadithDetailsParte.ActivityHadithDetailsList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.CollectionParte.chaptreParte.ActivityChapterList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.quran.searchParte.SearchActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.quran.QuranSearchParte.ActivitySearchQuran"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.AdkarDetailsParte.ActivityDikrDetailsList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.qibla_parte.QiblaFinder" />
+        <activity android:name="com.app.dz.quranapp.MushafParte.mushaf_list.MushafListActivity" />
+        <activity android:name="com.app.dz.quranapp.adhan.AdhanActivity" />
+
+        <service
+            android:name=".Services.ForegroundPlayAudioService"
+            android:exported="false" />
+        <service
+            android:name=".Services.ForegroundDownloadAudioService"
+            android:exported="false" />
+        <service
+            android:name=".Services.ForegroundDownloadBookService"
+            android:exported="false" />
+        <service android:name="com.app.dz.quranapp.Services.ForegroundDownloadMushafService"
+            android:exported="false"/>
+        <service android:name="com.app.dz.quranapp.Services.ForegroundExtractMushafService"
+            android:exported="false"/>
+        <service android:name="com.app.dz.quranapp.MushafParte.mushaf_list.DownloadService" />
+
+        <receiver
+            android:name=".MainFragmentsParte.TimeParte.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+
+        <!-- Declare the JobIntentService -->
+        <service
+            android:name=".adhan.PrayerJobIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false"
+            android:enabled="true"/>
+
+        <!-- Declare the ForegroundService -->
+        <service
+            android:name=".adhan.PrayerForegroundService"
+            android:exported="false"
+            android:enabled="true"/>
+
+
+    </application>
+
+</manifest>

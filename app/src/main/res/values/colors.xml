@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+ <!--    <color name="purple_700">#CB906E</color>-->
+<!--        <color name="purple_700">#b07a1a</color>-->
+<!--        <color name="purple_500">#b07a1a</color>&ndash;&gt;-->
+<!--    <color name="purple_500">#CB906E</color>-->
+   <color name="teal_200">#e0b045</color>
+    <color name="teal_700">#e0b045</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blan">#ffffff</color>
+ <color name="orange">#FF5722</color>
+    <color name="text_color_dark">#9DA3AA</color>
+ <color name="communBrown">#E6A34C</color>
+ <color name="selectitem_color">#59EDD3A3</color>
+    <color name="transparent_more">#00232120</color>
+    <color name="text_color">#424141</color>
+
+    <color name="purple_700">#E6A34C</color>
+    <color name="purple_500">#E6A34C</color>
+ <color name="brown">#B75F08</color>
+    <color name="tv_color">#424242</color>
+    <color name="button_color">#E6A34C</color>
+ <color name="tv_gri_color">#424242</color>
+    <color name="blue_clear">#FAFBFD</color>
+    <color name="brown_color">#4E261E</color><![CDATA[-->
+
+    ]]>
+ <color name="background_color">#FAFBFD</color>
+    <color name="item_count_color">#724A30</color>
+
+
+</resources>

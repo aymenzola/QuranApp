@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/fragment_home">
+
+    <fragment
+        android:id="@+id/fragment_home"
+        android:name="com.app.dz.quranapp.MainFragmentsParte.HomeFragment.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home" >
+
+        <action
+            android:id="@+id/action_navigation_sura_to_searchQuranFragment"
+            app:destination="@id/searchQuranFragment" />
+        <action
+            android:id="@+id/action_fragment_home_to_fragments_collection"
+            app:destination="@id/fragments_collection"
+            app:popUpTo="@id/fragment_home"
+            app:popUpToInclusive="true"
+            />
+        <action
+            android:id="@+id/action_fragment_home_to_navigation_Prayer"
+            app:destination="@id/navigation_Prayer"
+            app:popUpTo="@id/fragment_home"
+            app:popUpToInclusive="true"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_Prayer"
+        android:name="com.app.dz.quranapp.MainFragmentsParte.TimeParte.FragmentPrayer"
+        android:label="@string/title_prayer"
+        tools:layout="@layout/fragment_prayer_times" >
+        <action
+            android:id="@+id/action_navigation_Prayer_to_fragment_home"
+            app:destination="@id/fragment_home"
+            app:popUpTo="@id/fragment_home"
+            app:popUpToInclusive="true"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragments_collection"
+        android:name="com.app.dz.quranapp.MainFragmentsParte.CollectionsParte.FragmentLibraryList"
+        android:label="@string/title_Collection"
+        tools:layout="@layout/fragment_library" >
+        <action
+            android:id="@+id/action_fragments_collection_to_fragment_home"
+            app:destination="@id/fragment_home"
+            app:popUpTo="@id/fragment_home"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchQuranFragment"
+        android:name="com.app.dz.quranapp.quran.QuranSearchParte.ActivitySearchQuran"
+        android:label="SearchQuranFragment"
+        tools:layout="@layout/fragment_quran_search"
+        />
+    <fragment
+        android:id="@+id/quranFragment"
+        android:name="com.app.dz.quranapp.MainFragmentsParte.HomeFragment.QuranFragment"
+        android:label="QuranFragment"
+        tools:layout="@layout/fragment_quran_list"
+        />
+
+
+</navigation>

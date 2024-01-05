@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color">
+
+        <include
+            android:id="@+id/included"
+            layout="@layout/include_home_action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <ScrollView
+            android:id="@+id/relative_location"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/included"
+            android:layout_centerInParent="true"
+            android:background="@color/background_color"
+            android:visibility="visible"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_color"
+                >
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="20dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="25dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/card_background">
+
+                        <TextView
+                            android:id="@+id/tv_salat_message"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerInParent="true"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/ffshamel_book"
+                            android:gravity="center|start"
+                            android:paddingEnd="15dp"
+                            android:text="بقي على أذان الظهر"
+                            android:textColor="@color/blan"
+                            android:textSize="@dimen/tv_normal_size" />
+
+                        <TextView
+                            android:id="@+id/tv_next_prayer_countdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_salat_message"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="15dp"
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center"
+                            android:textColor="@color/blan"
+                            android:textSize="@dimen/tv_time_size"
+                            tools:text="1:05:11" />
+
+                    </RelativeLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cardview_time"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="?selectableItemBackground"
+                    android:drawablePadding="10dp"
+                    android:fontFamily="@font/ffshamel_book"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/tv_normal_size"
+                    android:textStyle="normal"
+                    android:visibility="gone"
+                    app:drawableEndCompat="@drawable/ic_location_icon"
+                    app:drawableTint="@color/tv_gri_color"
+                    tools:ignore="HardcodedText"
+                    tools:text="بوعاتي محمود قالمة"
+                    tools:visibility="visible" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/tv_location"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="10dp"
+                    android:background="@color/blan"
+                    >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/blan"
+                        >
+
+                        <LinearLayout
+                            android:id="@+id/linear_day"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/rounde_top"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <ImageView
+                                android:id="@+id/img_back"
+                                android:layout_width="?actionBarSize"
+                                android:layout_height="?actionBarSize"
+                                android:layout_gravity="center"
+                                android:layout_weight="0"
+                                android:background="?selectableItemBackground"
+                                android:checked="true"
+                                android:padding="15dp"
+                                android:rotation="180"
+                                android:src="@drawable/ic_next_icon" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tv_day_hijri"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/ffshamel_book"
+                                    android:gravity="center"
+                                    android:lines="1"
+                                    android:textColor="@color/black"
+                                    android:textSize="13sp"
+                                    tools:text="الاحد 12 فيفري 2023" />
+
+                                <TextView
+                                    android:id="@+id/tv_day"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/ffshamel_book"
+                                    android:gravity="center"
+                                    android:lines="1"
+                                    android:textColor="@color/black"
+                                    android:textSize="12sp"
+                                    android:visibility="visible"
+                                    tools:text="الموافق ل 21 رمضان 1444" />
+
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/img_next"
+                                android:layout_width="?actionBarSize"
+                                android:layout_height="?actionBarSize"
+                                android:layout_gravity="center"
+                                android:layout_weight="0"
+                                android:background="?selectableItemBackground"
+                                android:checked="true"
+                                android:padding="15dp"
+                                android:src="@drawable/ic_next_icon" />
+
+
+                        </LinearLayout>
+
+                        <androidx.viewpager2.widget.ViewPager2
+                            android:id="@+id/viewpager"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/linear_day"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:background="@color/blan" />
+
+                        <TextView
+                            android:id="@+id/tv_getting_timing"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/linear_day"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:background="@color/blan"
+                            android:fontFamily="@font/ffshamel_book"
+                            android:gravity="center"
+                            android:text="جاري حساب مواقيت الصلاة"
+                            android:textColor="@color/black"
+                            android:textSize="17sp"
+                            android:visibility="gone" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+            </RelativeLayout>
+
+        </ScrollView>
+
+        <RelativeLayout
+            android:id="@+id/relative_no_location"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/included"
+            android:layout_centerInParent="true"
+            android:background="@color/background_color"
+            android:visibility="gone"
+            >
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:background="@color/blan"
+                app:cardElevation="5dp"
+                >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/blan"
+                    >
+
+                    <TextView
+                        android:id="@+id/tv_no_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="20dp"
+                        android:background="@color/blan"
+                        android:fontFamily="@font/ffshamel_book"
+                        android:gravity="center_vertical"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="لاظهار مواقيت الصلاة عليك ادخال الموقع"
+                        android:textColor="@color/tv_gri_color"
+                        android:textSize="@dimen/tv_normal_size" />
+
+                    <TextView
+                        android:id="@+id/btn_get_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_no_location"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/ripple_effect_play_gradient"
+                        android:fontFamily="@font/ffshamel_family_bold"
+                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="20dp"
+                        android:paddingBottom="5dp"
+                        android:text="تحديد الموقع"
+                        android:textColor="@color/blan"
+                        android:textSize="@dimen/tv_normal_size"
+                        />
+
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/image_get_location"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_baseline_add_location_alt_24"
+                app:tint="#D8D7D7" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+</layout>
