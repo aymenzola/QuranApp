@@ -21,14 +21,14 @@ public class BootReceiver extends BroadcastReceiver {
                 || intent.getAction().equals("com.htc.intent.action.QUICKBOOT_POWERON")) {
             // Schedule the job again when the device is rebooted
             Log.e("testLog", "onReceive schdule next job ");
-            PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 60 * 1000, context);
+            PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 60 * 1000, context,true);
             checkAndRestartJob(context);
         } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_POWER_CONNECTED)) {
             Log.e("testLog", "onReceive ACTION_POWER_CONNECTED");
             if (checkAndRestartJob(context)) {
 
             } else {
-                PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 60 * 1000, context);
+                PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 60 * 1000, context,true);
             }
         }
     }
