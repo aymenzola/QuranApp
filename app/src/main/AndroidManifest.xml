@@ -121,6 +121,18 @@
             android:exported="false"
             android:enabled="true"/>
 
+        <receiver
+            android:name="com.app.dz.quranapp.adhan.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
 
     </application>
 
