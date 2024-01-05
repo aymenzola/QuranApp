@@ -58,7 +58,6 @@ public class HomeFragment extends Fragment {
     private Calendar calendar = Calendar.getInstance();
 
     private OnListenerInterface listener;
-    private OnListenerInterface l3istener;
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private int lastPage = 1;

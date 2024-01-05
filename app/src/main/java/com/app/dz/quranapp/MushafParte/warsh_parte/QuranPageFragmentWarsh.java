@@ -165,6 +165,11 @@ public class QuranPageFragmentWarsh extends Fragment {
     @SuppressLint("CheckResult")
     private void displayMushafImage(int pageNumber) {
 
+        //https://raw.githubusercontent.com/BetimShala/quran-images-api/master/quran-images/1.png
+        String url = "https://raw.githubusercontent.com/BetimShala/quran-images-api/master/quran-images/"+pageNumber+".png";
+        Glide.with(this).load(url).into(binding.imageview);
+
+        /*
         if (getImageDesitination().exists()){
             Log.e("tag","image exist for "+pageNumber);
             Bitmap bitmap = BitmapFactory.decodeFile(getImageDesitination().getPath());
@@ -172,7 +177,7 @@ public class QuranPageFragmentWarsh extends Fragment {
         }else {
             Log.e("tag","image does not exist for "+pageNumber);
             Toast.makeText(getActivity(), "image does not exist", Toast.LENGTH_SHORT).show();
-        }
+        } */
         /*
         String url = "";
         switch (pageNumber) {

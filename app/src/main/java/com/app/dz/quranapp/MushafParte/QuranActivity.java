@@ -388,6 +388,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
 
     private void setListenrs() {
 
+<<<<<<< HEAD
 
         binding.included.imgFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -395,6 +396,8 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
                 startActivity(new Intent(QuranActivity.this, AdhanActivity.class));
             }
         }));
+=======
+>>>>>>> 1a53f28 (v1)
         binding.tvShare.setOnClickListener(v -> {
             if (selectedAya != null)
                 shareAyaTafsir(selectedAya.getText() + " \n " + " التفسير " + "\n" + selectedAya.getTafseer(), "مشاركة");
@@ -416,7 +419,11 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
             if (selectedAya != null) dialog_tafsir();
         });
 
+<<<<<<< HEAD
         //todo binding.included.imgFilter.setOnClickListener(v -> showButtomSheet());
+=======
+        binding.included.imgFilter.setOnClickListener(v -> showButtomSheet());
+>>>>>>> 1a53f28 (v1)
 
         binding.imgPlayClick.setOnClickListener(v -> {
             Aya currantAya;
@@ -1100,7 +1107,10 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
             Toast.makeText(QuranActivity.this, "complete" + result, Toast.LENGTH_SHORT).show();
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1a53f28 (v1)
     public void unzipCSV(Context context, String zipFileName, String destDirectory, String zipDestDirectory) throws IOException {
         Log.e("zip", "zip start");
         //InputStream is = context.getAssets().open(zipFileName);
