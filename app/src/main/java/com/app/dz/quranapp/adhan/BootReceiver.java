@@ -16,7 +16,7 @@ public class BootReceiver extends BroadcastReceiver {
                 || intent.getAction().equals("com.htc.intent.action.QUICKBOOT_POWERON")) {
             // Schedule the job again when the device is rebooted
             Log.e("testLog","onReceive schdule next job ");
-            PrayerJobIntentService.schedulePrayerJob(getNextPrayerTimeDelay(),context);
+            PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 60 * 1000,context);
         }
     }
 

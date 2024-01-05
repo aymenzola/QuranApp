@@ -69,14 +69,22 @@ public class PrayerJobIntentService extends JobService {
         if (delayMillis > 0) {
             ComponentName serviceComponent = new ComponentName(context, PrayerJobIntentService.class);
             JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceComponent)
+                    .setPersisted(true)
                     .setMinimumLatency(delayMillis) // Set the delay until the job is scheduled
                     .setOverrideDeadline(delayMillis + 1000); // Set the maximum delay for the job
 
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             jobScheduler.schedule(builder.build());
+            Log.e("testLog","schedulePrayerJob done at "+convertMillisToTime(nextPrayerTimeMillis));
         } else {
             // The next prayer time is in the past, handle this case accordingly
         } }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("testLog","Job service destroyed ");
+    }
 
     public static String convertMillisToTime(long millis) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
