@@ -25,6 +25,7 @@ import com.app.dz.quranapp.Entities.Juz;
 import com.app.dz.quranapp.Entities.Sura;
 import com.app.dz.quranapp.MushafParte.QuranActivity;
 import com.app.dz.quranapp.MushafParte.ReadingPosition;
+import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayatListActivity;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.databinding.FragmentQuranListBinding;
@@ -172,7 +173,7 @@ public class QuranFragment extends Fragment {
     }
 
     private void OpenMushaf(int startPage) {
-        Intent intent = new Intent(getActivity(), QuranActivity.class);
+        Intent intent = new Intent(getActivity(), RiwayatListActivity.class);
         intent.putExtra("page", startPage);
         startActivity(intent);
     }

@@ -1,5 +1,10 @@
 package com.app.dz.quranapp.Util;
 
+import com.app.dz.quranapp.Entities.Sura;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class QuranInfoManager {
     private static QuranInfoManager instance;
 
@@ -217,6 +222,35 @@ public class QuranInfoManager {
             default:
                 return prefex + " الثلاثون ";
         }
+    }
+
+
+    public static List<Sura> getSuraList(int currantPage) {
+        List<Sura> suraList = new ArrayList<>();
+        if (currantPage == 1) suraList.add(new Sura(1, "الفاتحة", "الفاتحة", "الفاتحة", "", 1, 7));
+
+        if (currantPage >= 2 && currantPage <= 49)
+            suraList.add(new Sura(2, "البقرة", "البقرة", "البقرة", "", 2, 286));
+
+        if (currantPage >= 50 && currantPage <= 76)
+            suraList.add(new Sura(3, "ال عمران", "", "", "", 2, 200));
+
+        if (currantPage >= 77 && currantPage <= 105)
+            suraList.add(new Sura(4, "النساء", "", "", "", 2, 176));
+
+        if (currantPage == 106) {
+            suraList.add(new Sura(4, "النساء", "", "", "", 2, 176));
+            suraList.add(new Sura(5, "المائدة", "", "", "", 2, 120));
+        }
+
+        if (currantPage >= 107 && currantPage <= 127) {
+            suraList.add(new Sura(5, "المائدة", "", "", "", 2, 120));
+        }
+        if (currantPage >= 128 && currantPage <= 150) {
+            suraList.add(new Sura(6, "الانعام", "", "", "", 2, 165));
+        }
+
+        return suraList;
     }
 
 

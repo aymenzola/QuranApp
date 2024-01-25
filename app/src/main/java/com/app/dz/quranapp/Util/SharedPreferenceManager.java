@@ -91,10 +91,21 @@ public class SharedPreferenceManager {
       editor.apply();
    }
 
+   public void saveSelectedReaderId(int readerId) {
+      SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+      SharedPreferences.Editor editor = sharedPreferences.edit();
+      editor.putInt("readerId",readerId);
+      editor.apply();
+   }
+
 
    public String getSelectedReader() {
       SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
       return sharedPreferences.getString("readerName","Shuraym");
+   }
+   public int getSelectedReaderId() {
+      SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+      return sharedPreferences.getInt("readerId",1);
    }
 
    public boolean iSThereAyaSaved() {

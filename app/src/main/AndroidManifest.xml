@@ -42,7 +42,8 @@
             android:name=".LocationParte.SplashScreenActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.QuranApp">
+            android:theme="@style/Theme.QuranApp"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,6 +87,8 @@
         <activity android:name="com.app.dz.quranapp.qibla_parte.QiblaFinder" />
         <activity android:name="com.app.dz.quranapp.MushafParte.mushaf_list.MushafListActivity" />
         <activity android:name="com.app.dz.quranapp.adhan.AdhanActivity" />
+        <activity android:name="com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayatListActivity" />
+        <activity android:name="com.app.dz.quranapp.MushafParte.QuranActivityDev" />
 
         <service
             android:name=".Services.ForegroundPlayAudioService"

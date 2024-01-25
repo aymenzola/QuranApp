@@ -1,5 +1,7 @@
 package com.app.dz.quranapp.MushafParte;
 
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+
 public class Reader {
    public int readerId;
    public String readerName;
@@ -11,4 +13,5 @@ public class Reader {
       this.readerName = readerName;
       this.readerEnglishName = readerEnglishName;
    }
+
 }

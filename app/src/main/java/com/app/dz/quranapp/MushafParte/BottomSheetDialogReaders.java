@@ -15,13 +15,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.app.dz.quranapp.Entities.Riwaya;
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentMultipleRiwayat;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.databinding.BottomSheetLayoutLogoutBinding;
+import com.app.dz.quranapp.room.Daos.ReaderAudioDao;
+import com.app.dz.quranapp.room.MushafDatabase;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.io.IOException;
@@ -29,31 +35,41 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class BottomSheetDialogReaders extends BottomSheetDialogFragment implements ReadersAdapter.OnAdapterClickListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private BottomSheetListener mListener;
+    private static final CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     private BottomSheetLayoutLogoutBinding mBinding;
     private MediaPlayer mediaPlayer;
     private int PlayingReaderId = -1;
     private PublicMethods publicMethods;
     private SharedPreferenceManager sharedPreferenceManager;
     private QuranInfoManager quranInfoManager;
-    private String DefaultSelectedReader;
-    private String CurrantSelectedReader;
-
+    private int DefaultSelectedReader;
+    private int CurrantSelectedReader;
+    private static List<ReaderAudio> readersList = new ArrayList<>();
     public BottomSheetDialogReaders() {
+
     }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         publicMethods = PublicMethods.getInstance();
+        getReaderAudioList(getActivity());
         sharedPreferenceManager = SharedPreferenceManager.getInstance(getActivity());
-        DefaultSelectedReader = sharedPreferenceManager.getSelectedReader();
+        DefaultSelectedReader = sharedPreferenceManager.getSelectedReaderId();
         quranInfoManager = QuranInfoManager.getInstance();
         CurrantSelectedReader = DefaultSelectedReader;
+
 
 
         mediaPlayer = new MediaPlayer();
@@ -62,40 +78,19 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
 
         ReadersAdapter adapter;
         // Create some example data
-        List<Reader> readersList = new ArrayList<>();
-        readersList.add(new Reader(1, "مشاري العفاسي", quranInfoManager.getReaderName(0)));
-        readersList.add(new Reader(2, "سعود الشريم", quranInfoManager.getReaderName(1)));
-        readersList.add(new Reader(3, "عبد الرحمن السديس", quranInfoManager.getReaderName(2)));
-        readersList.add(new Reader(4, "خليل الحصري", quranInfoManager.getReaderName(3)));
-        readersList.add(new Reader(5, "عبد الباسط عبد الصمد", quranInfoManager.getReaderName(4)));
+        //todo receive the correct list
+
         adapter = new ReadersAdapter(readersList, getActivity(), this);
 
         mBinding.recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mBinding.recyclerview.setHasFixedSize(true);
         mBinding.recyclerview.setAdapter(adapter);
+        adapter.selectItem(DefaultSelectedReader-1);
 
-
-        switch (DefaultSelectedReader) {
-            case ("Alafasy"):
-                adapter.selectItem(0);
-                break;
-            case ("Shuraym"):
-                adapter.selectItem(1);
-                break;
-            case ("Sudais"):
-                adapter.selectItem(2);
-                break;
-            case ("Mohammad_al_Tablaway_128kbps"):
-                adapter.selectItem(3);
-                break;
-            case ("AbdulBaset/Murattal"):
-                adapter.selectItem(4);
-                break;
-        }
 
         mBinding.tvSave.setOnClickListener(v -> {
             if (!Objects.equals(DefaultSelectedReader, CurrantSelectedReader)) {
-                sharedPreferenceManager.saveSelectedReader(CurrantSelectedReader);
+                sharedPreferenceManager.saveSelectedReaderId(CurrantSelectedReader);
                 mListener.onReaderChanger(CurrantSelectedReader);
                 Log.e("bottomsheet", "we send to activity "+CurrantSelectedReader);
             }
@@ -114,21 +109,21 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
     }
 
     @Override
-    public void onClick(Reader reader, int position) {
-        CurrantSelectedReader = reader.readerEnglishName;
+    public void onClick(ReaderAudio reader, int position) {
+        CurrantSelectedReader = reader.getId();
     }
 
     @Override
-    public void onAudioPlayClicked(Reader reader, int position) {
-        Toast.makeText(getActivity(), "audio " + reader.readerName, Toast.LENGTH_SHORT).show();
-        CurrantSelectedReader = reader.readerEnglishName;
+    public void onAudioPlayClicked(ReaderAudio reader, int position) {
+        Toast.makeText(getActivity(), "audio " + reader.getName(), Toast.LENGTH_SHORT).show();
+        CurrantSelectedReader = reader.getId();
 
         if (PlayingReaderId == -1) {
             //no playing audio
             new Thread(() -> {
                 try {
-                    PlayingReaderId = reader.readerId;
-                    String url = publicMethods.getCorrectUrlWithReaderRank(reader.readerId, 112);
+                    PlayingReaderId = reader.getId();
+                    String url = publicMethods.getSreamLink(publicMethods.getReaderFromList(reader.getId(),readersList), 112);
                     Log.e("bottomsheet", "read url : "+url);
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(getActivity(),Uri.parse(url));
@@ -140,12 +135,12 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
             }).start();
         } else {
             mediaPlayer.reset();
-            if (PlayingReaderId != reader.readerId) {
+            if (PlayingReaderId != reader.getId()) {
                 //  audio is playing and user click on another one
                 new Thread(() -> {
                     try {
-                        PlayingReaderId = reader.readerId;
-                        String url = publicMethods.getCorrectUrlWithReaderRank(reader.readerId, 112);
+                        PlayingReaderId = reader.getId();
+                        String url = publicMethods.getSreamLink(publicMethods.getReaderFromList(reader.getId(),readersList), 112);
                         mediaPlayer.setDataSource(getActivity(), Uri.parse(url));
                         mediaPlayer.prepareAsync();
                     } catch (IOException e) {
@@ -173,7 +168,7 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
 
 
     public interface BottomSheetListener {
-        void onReaderChanger(String selctedReader);
+        void onReaderChanger(int readerId);
     }
 
     @Override
@@ -192,7 +187,19 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         mediaPlayer.release();
+    }
+    public static void getReaderAudioList(Context context) {
+        MushafDatabase database = MushafDatabase.getInstance(context);
+        ReaderAudioDao dao = database.getReaderAudioDao();
 
+        compositeDisposable.add(dao.getAvailableReaders()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(readerList->{
+                    readersList = readerList;
+                }, e->{
+                    Log.e("checkdata","audios data error   "+e.getMessage());
+                }));
     }
 
 }

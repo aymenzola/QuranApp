@@ -13,14 +13,6 @@ public class ModuleFragments {
         this.fragment = fragment;
     }
 
-    public String getTabname() {
-        return tabname;
-    }
-
-    public void setTabname(String tabname) {
-        this.tabname = tabname;
-    }
-
     public Fragment getFragment() {
         return fragment;
     }

@@ -14,12 +14,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class PublicMethods {
     private static PublicMethods instance;
@@ -36,20 +38,26 @@ public class PublicMethods {
         return instance;
     }
 
-    public String getCorrectUrlWithReaderRank(int readerId, int suraIndex) {
+    public ReaderAudio getReaderFromList(int readerId,List<ReaderAudio> readerAudioList) {
+        for (ReaderAudio readerAudio:readerAudioList) {
+            if (readerAudio.getId()==readerId) return readerAudio;
+        }
+        return new ReaderAudio();
+    }
 
-        String suraFormatNumber = decimalFormat.format(suraIndex);
-        switch (readerId) {
-            case 1:
-                return "https://download.quranicaudio.com/qdc/mishari_al_afasy/murattal/" + suraIndex + ".mp3";
-            case 2:
-                return "https://download.quranicaudio.com/qdc/saud_ash-shuraym/murattal/" + suraFormatNumber + ".mp3";
-            case 3:
-                return "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/" + suraIndex + ".mp3";
-            case 4:
-                return "https://download.quranicaudio.com/qdc/khalil_al_husary/murattal/" + suraIndex + ".mp3";
-            default:
-                return "https://download.quranicaudio.com/qdc/abdul_baset/murattal/" + suraIndex + ".mp3";
+
+
+    public String getSreamLink(ReaderAudio readerAudio, int suraIndex) {
+        /** check type
+         // if 3 --> the link will be :  link/1.mp3
+         // else 1 --> the link will be : link/001.mp3
+         // else 0 --> the link will be with aya number : link/001001.mp3 **/
+
+        if (readerAudio.getAudioType() == 3) {
+            return readerAudio.getUrl() + suraIndex + ".mp3";
+        } else {
+            String suraFormatNumber = decimalFormat.format(suraIndex);
+            return readerAudio.getUrl() + suraFormatNumber + ".mp3";
         }
     }
 

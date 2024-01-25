@@ -233,7 +233,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void OpenMushaf(int startPage) {
-        Intent intent = new Intent(getActivity(), QuranActivity.class);
+        Intent intent = new Intent(getActivity(),QuranActivity.class);
         intent.putExtra("page", startPage);
         startActivity(intent);
     }

@@ -5,27 +5,25 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.app.dz.quranapp.MushafParte.QuranActivity.QURAN_HAFS_TYPE;
 import static com.app.dz.quranapp.MushafParte.QuranActivity.QURAN_WARSH_TYPE;
 import static com.app.dz.quranapp.MushafParte.QuranActivity.TAFSIR_TYPE;
-import static com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentWarsh.QuranWarchFolderName;
+import static com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentMultipleRiwayat.QuranWarchFolderName;
 import static com.app.dz.quranapp.Services.ForegroundDownloadAudioService.AppfolderName;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.databinding.BottomSheetLayoutBinding;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -33,7 +31,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class FilterButtomSheetclass extends BottomSheetDialogFragment {
@@ -117,7 +114,8 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
             if (FirstType != PageType) {
                 editor.putInt("page_type", PageType);
                 editor.apply();
-                listener.onTypeChanged(PageType);
+
+                //todo listener.onTypeChanged(PageType);
                 dismiss();
                 return;
             }
@@ -173,7 +171,7 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
     public interface Bottomsheetlistener {
         void onTextSizeChanged(int textsize);
 
-        void onTypeChanged(int type);
+        void onTypeChanged(Riwaya riwaya);
 
         void onDownloadWarsh(int type);
     }

@@ -44,17 +44,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.app.dz.quranapp.Entities.Aya;
 import com.app.dz.quranapp.Entities.AyaAudioLimitsFirebase;
+import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.Entities.Sura;
 import com.app.dz.quranapp.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.Entities.SuraDownload;
 import com.app.dz.quranapp.MushafParte.TafsirParte.QuranPageTafsirFragment;
 import com.app.dz.quranapp.MushafParte.hafs_parte.QuranPageFragment;
-import com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentWarsh;
+import com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentMultipleRiwayat;
 import com.app.dz.quranapp.PlayerAudioNotification.NetworkHelper;
 import com.app.dz.quranapp.PlayerAudioNotification.Statics;
 import com.app.dz.quranapp.R;
@@ -63,7 +64,6 @@ import com.app.dz.quranapp.Services.ForegroundDownloadMushafService;
 import com.app.dz.quranapp.Services.ForegroundDownloadAudioService;
 import com.app.dz.quranapp.FilterButtomSheetclass;
 import com.app.dz.quranapp.Util.PublicMethods;
-import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.adhan.AdhanActivity;
 import com.app.dz.quranapp.databinding.QuranActivityBinding;
@@ -89,7 +89,6 @@ import io.reactivex.schedulers.Schedulers;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class QuranActivity extends AppCompatActivity implements OnFragmentListeners, FilterButtomSheetclass.Bottomsheetlistener, BottomSheetDialogReaders.BottomSheetListener, EasyPermissions.PermissionCallbacks {
-
 
     public static final int DOWNLOAD_TYPE_AUDIO = 1;
     public static final int DOWNLOAD_TYPE_MUSHAF_IMAGES = 2;
@@ -120,15 +119,11 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
     private BroadcastReceiver DownloadReceiver;
     private int startPage;
     private Aya selectedAya;
-    private SharedPreferenceManager sharedPreferenceManager;
-    private QuranInfoManager quranInfoManager;
-    private boolean areInFullScreen_Mode = false;
     private MyViewModel viewModel;
     private PublicMethods publicMethods;
-    private int WRITE_REQUEST_CODE_DOWNLOAD = 1;
+    private final int WRITE_REQUEST_CODE_DOWNLOAD = 1;
     private int DownloadCount = 1;
-    private int ZipFilesNumber = 8;
-
+    private Riwaya riwaya;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,12 +132,11 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         setContentView(binding.getRoot());
 
         makeStutsBarColored();
-        viewModel = ViewModelProviders.of(this).get(MyViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MyViewModel.class);
         Intent intent = getIntent();
         publicMethods = PublicMethods.getInstance();
         startPage = intent.getIntExtra("page", 1);
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
-        quranInfoManager = QuranInfoManager.getInstance();
+        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
         manageReaderImage(sharedPreferenceManager.getSelectedReader());
 
         SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
@@ -188,6 +182,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         AudioReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent.getAction()==null) return;
                 if (intent.getAction().equals("AUDIO_FINISHED")) {
                     switch (intent.getStringExtra("action")) {
                         case AUDIO_PROGRESS_ACTION:
@@ -252,6 +247,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
             @SuppressLint("SetTextI18n")
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent.getAction()==null) return;
                 if (intent.getAction().equals("DOWNLOAD_FINISHED")) {
                     switch (intent.getStringExtra("action")) {
                         case PROGRESS_ACTION:
@@ -370,7 +366,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
                 if (PageType == QURAN_HAFS_TYPE)
                     list.add(new ModuleFragments("الأولى", QuranPageFragment.newInstance(page)));
                 else if (PageType == QURAN_WARSH_TYPE) {
-                    list.add(new ModuleFragments("الأولى", QuranPageFragmentWarsh.newInstance(page)));
+                    list.add(new ModuleFragments("الأولى", QuranPageFragmentMultipleRiwayat.newInstance(page)));
                 } else
                     list.add(new ModuleFragments("الأولى", QuranPageTafsirFragment.newInstance(page)));
             }
@@ -389,13 +385,8 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
     private void setListenrs() {
 
 
-        binding.included.imgFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(QuranActivity.this, AdhanActivity.class));
-            }
-        });
- binding.tvShare.setOnClickListener(v -> {
+        binding.included.imgFilter.setOnClickListener(view -> startActivity(new Intent(QuranActivity.this, AdhanActivity.class)));
+        binding.tvShare.setOnClickListener(v -> {
             if (selectedAya != null)
                 shareAyaTafsir(selectedAya.getText() + " \n " + " التفسير " + "\n" + selectedAya.getTafseer(), "مشاركة");
         });
@@ -436,9 +427,10 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
                 } else {
                     InisilizeCurrantSura(currantAya);
                 }
-            } else if (adapterPagerForSign.getItem(binding.viewPager.getCurrentItem()) instanceof QuranPageFragmentWarsh) {
+            }
+            else if (adapterPagerForSign.getItem(binding.viewPager.getCurrentItem()) instanceof QuranPageFragmentMultipleRiwayat) {
                 Fragment f = adapterPagerForSign.getItem(binding.viewPager.getCurrentItem());
-                QuranPageFragmentWarsh quranPageFragmentWarsh = (QuranPageFragmentWarsh) f;
+                QuranPageFragmentMultipleRiwayat quranPageFragmentWarsh = (QuranPageFragmentMultipleRiwayat) f;
                 int currantPage = quranPageFragmentWarsh.getCurrantPage();
 
                 selectedAyaCountInSura = 1;
@@ -464,7 +456,8 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
                 }
 
 
-            } else {
+            }
+            else {
                 Fragment f = adapterPagerForSign.getItem(binding.viewPager.getCurrentItem());
                 QuranPageTafsirFragment fragment = (QuranPageTafsirFragment) f;
                 currantAya = fragment.getCurrantSura();
@@ -558,7 +551,6 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         binding.linearAyaInfo.setVisibility(View.GONE);
         makeStutsBarWhite();
         viewModel.setData(true);
-        areInFullScreen_Mode = true;
         if (binding.playLinear.getVisibility() == View.VISIBLE) {
             lastVisibleLayoutId = binding.playLinear.getId();
             lastHidenLayoutId = binding.downloadLinear.getId();
@@ -836,8 +828,8 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         if (f instanceof QuranPageFragment) {
             QuranPageFragment fragment = (QuranPageFragment) f;
             startPage = fragment.getCurrantPage();
-        } else if (f instanceof QuranPageFragmentWarsh) {
-            QuranPageFragmentWarsh fragment = (QuranPageFragmentWarsh) f;
+        } else if (f instanceof QuranPageFragmentMultipleRiwayat) {
+            QuranPageFragmentMultipleRiwayat fragment = (QuranPageFragmentMultipleRiwayat) f;
             startPage = fragment.getCurrantPage();
         } else {
             QuranPageTafsirFragment fragment = (QuranPageTafsirFragment) f;
@@ -847,11 +839,11 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
     }
 
     @Override
-    public void onTypeChanged(int type) {
-        if (type != PageType) {
+    public void onTypeChanged(Riwaya riwaya) {
+        /*if (riwaya.tag != PageType) {
             PageType = type;
             createNewFragemnts();
-        }
+        }*/
     }
 
     @Override
@@ -894,10 +886,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         exitFullMode();
     }
 
-    @Override
-    public void onReaderChanger(String selectedRe) {
-        manageReaderImage(selectedRe);
-    }
+
 
     private void manageReaderImage(String selectedRe) {
         Log.e("bottomsheet", "we recieve selected : " + selectedRe);
@@ -1027,6 +1016,11 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         dialog.show();
     }
 
+    @Override
+    public void onReaderChanger(int readerId) {
+
+    }
+
 
     // Todo this function add new reader limits
     class SaveFirebaseAsyncTask_Devloped extends AsyncTask<Void, Void, String> {
@@ -1151,7 +1145,8 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
         bos.close();
         Log.e(TAG, "zip finished");
 
-        if (DownloadCount == ZipFilesNumber) {
+        int zipFilesNumber = 8;
+        if (DownloadCount == zipFilesNumber) {
             Log.e(TAG, "we hava finished");
         }
     }

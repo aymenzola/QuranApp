@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemReaderBinding;
 import com.bumptech.glide.Glide;
@@ -21,30 +22,30 @@ import java.util.List;
 public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHolder_Reader> {
 
     private final Context mCtx;
-    private final List<Reader> arrayList;
+    private final List<ReaderAudio> arrayList;
     private final OnAdapterClickListener listener;
     private int lastselcted = -1;
 
-    public ReadersAdapter(List<Reader> arrayList, Context mCtx, OnAdapterClickListener listener1) {
+    public ReadersAdapter(List<ReaderAudio> arrayList, Context mCtx, OnAdapterClickListener listener1) {
         this.arrayList = arrayList;
         this.mCtx = mCtx;
         this.listener = listener1;
     }
 
-    public Reader getItem(int position) {
+    public ReaderAudio getItem(int position) {
         return arrayList.get(position);
     }
 
     public void selectItem(int position) {
         if (lastselcted != -1) {
-            Reader reader = arrayList.get(lastselcted);
-            reader.isSelected = false;
+            ReaderAudio reader = arrayList.get(lastselcted);
+            reader.setSelected(false);
             arrayList.set(lastselcted, reader);
             notifyItemChanged(lastselcted);
         }
         lastselcted = position;
-        Reader reader = arrayList.get(position);
-        reader.isSelected = true;
+        ReaderAudio reader = arrayList.get(position);
+        reader.setSelected(true);
         arrayList.set(position, reader);
         notifyItemChanged(position);
     }
@@ -60,16 +61,16 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder_Reader holder, int position) {
 
-        Reader reader = arrayList.get(position);
+        ReaderAudio reader = arrayList.get(position);
 
-        holder.binding.itemName.setText(reader.readerName);
+        holder.binding.itemName.setText(reader.getName());
 
-        if (reader.isSelected) {
+        if (reader.isSelected()) {
             holder.binding.linearParent.setBackgroundColor(mCtx.getResources().getColor(R.color.selectitem_color));
         } else
             holder.binding.linearParent.setBackgroundColor(mCtx.getResources().getColor(R.color.white));
 
-        switch (reader.readerId) {
+        switch (reader.getId()) {
             case 1:
                 Glide.with(mCtx).load(R.drawable.alafasy).into(holder.binding.readerImage);
                 break;
@@ -116,9 +117,9 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
     }
 
     public interface OnAdapterClickListener {
-        void onClick(Reader reader, int position);
+        void onClick(ReaderAudio reader, int position);
 
-        void onAudioPlayClicked(Reader reader, int position);
+        void onAudioPlayClicked(ReaderAudio reader, int position);
     }
 
 }
