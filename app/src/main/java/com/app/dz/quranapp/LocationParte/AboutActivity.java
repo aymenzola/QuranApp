@@ -14,7 +14,6 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.app.dz.quranapp.BuildConfig;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ActivityAboutBinding;
 import com.bumptech.glide.Glide;
@@ -79,7 +78,7 @@ public class AboutActivity extends AppCompatActivity {
     private void shareApp() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        String shareMessage = "Check out this amazing app: https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
+        String shareMessage = "Check out this amazing app: https://play.google.com/store/apps/details?id=com.app.dz.quranapp"+ "\n\n";
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
         startActivity(Intent.createChooser(shareIntent, "Share app via"));
     }
