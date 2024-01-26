@@ -5,27 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.app.dz.quranapp.MushafParte.Reader;
 import com.app.dz.quranapp.MushafParte.ReadersAdapter;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
-import com.app.dz.quranapp.Util.PublicMethods;
-import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.databinding.ActivityAudioFilesBinding;
-import com.app.dz.quranapp.room.Daos.ReaderAudioDao;
-import com.app.dz.quranapp.room.MushafDatabase;
+import com.app.dz.quranapp.riwayat.CsvReader;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class ReaderListActivity extends AppCompatActivity {
     private ReadersAdapter adapter;
@@ -74,17 +67,7 @@ public class ReaderListActivity extends AppCompatActivity {
     }
 
     public static void getReaderAudioList(Context context) {
-        MushafDatabase database = MushafDatabase.getInstance(context);
-        ReaderAudioDao dao = database.getReaderAudioDao();
-
-        compositeDisposable.add(dao.getAvailableReaders()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(readerList->{
-                    readersList = readerList;
-                }, e->{
-                    Log.e("checkdata","audios data error   "+e.getMessage());
-                }));
+        readersList = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
     }
 
 }

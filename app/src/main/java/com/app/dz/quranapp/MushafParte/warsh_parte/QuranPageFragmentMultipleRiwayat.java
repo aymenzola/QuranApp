@@ -98,6 +98,8 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
         if (getActivity()==null) return;
         StateViewModel = new ViewModelProvider(this).get(MyViewModel.class);
 
+        Log.e("logtag", "onViewCreated "+riwaya.name);
+
         setListeners();
         setObservers();
 
@@ -133,6 +135,7 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
     @SuppressLint("CheckResult")
     private void displayMushafImage(int pageNumber) {
         String url = riwaya.quran_page_image_url+pageNumber+".png";
+        Log.e("logtag", "url "+url);
         Glide.with(this).load(url).into(binding.imageview);
     }
 

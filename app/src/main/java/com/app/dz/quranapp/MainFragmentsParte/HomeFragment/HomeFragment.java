@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -27,12 +28,15 @@ import com.app.dz.quranapp.LocationParte.AboutActivity;
 import com.app.dz.quranapp.MainFragmentsParte.TimeParte.PrayerTimes;
 import com.app.dz.quranapp.MushafParte.QuranActivity;
 import com.app.dz.quranapp.MushafParte.ReadingPosition;
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.MushafParte.mushaf_list.MushafListActivity;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.Util.UserLocation;
 import com.app.dz.quranapp.databinding.FragmentHomeBinding;
-import com.app.dz.quranapp.qibla_parte.QiblaFinder;
+import com.app.dz.quranapp.riwayat.audio;
+import com.app.dz.quranapp.riwayat.CsvReader;
+
 
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -44,6 +48,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -124,6 +129,8 @@ public class HomeFragment extends Fragment {
         setObservers();
         viewModel.setDayPrayer();
         viewModel.setRandomDikr();
+        new LoadAudioTask(getActivity()).execute();
+
     }
 
     private void setListeners() {
@@ -572,6 +579,36 @@ public class HomeFragment extends Fragment {
         } else {
             //binding.tvDay.setVisibility(View.GONE);
             return "";
+        }
+    }
+    private static class LoadAudioTask extends AsyncTask<Void, Void, List<ReaderAudio>> {
+        private Context context;
+
+        public LoadAudioTask(Context context) {
+            this.context = context;
+        }
+        @Override
+        protected List<ReaderAudio> doInBackground(Void... voids) {
+
+            Log.e(TAG, "start prepare database ");
+
+            // Get the Room database instance
+            List<ReaderAudio> audioList = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+
+            Log.e(TAG, "finish prepare database ");
+
+            return audioList;
+        }
+
+        @Override
+        protected void onPostExecute(List<ReaderAudio> audioList) {
+            // Handle the result
+            Log.e(TAG, "onpost prepare database "+audioList.size());
+
+            for (ReaderAudio audio : audioList) {
+                Log.e(TAG, "result "+audio.getReaderTag());
+                // Process each audio item
+            }
         }
     }
 }

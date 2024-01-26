@@ -1,5 +1,7 @@
 package com.app.dz.quranapp.MushafParte.riwayat_parte;
 
+import static com.app.dz.quranapp.Constants.QuranHafsIMAGE_LINK;
+import static com.app.dz.quranapp.Constants.QuranWARCH_TAJWID_IMAGE_LINK;
 import static com.app.dz.quranapp.Constants.QuranWarchIMAGE_LINK;
 
 import android.annotation.SuppressLint;
@@ -104,8 +106,8 @@ public class RiwayatListActivity extends AppCompatActivity {
         list.add(new Riwaya(1,"المصحف التفاعلي",RiwayaType.HAFS_SMART.name(),"",QuranWarchIMAGE_LINK,604));
         list.add(new Riwaya(2,"المصحف مع التفسير",RiwayaType.TAFSIR_QURAN.name(),"",QuranWarchIMAGE_LINK,604));
         list.add(new Riwaya(3,"القران برواية ورش",RiwayaType.WARCH.name(),"",QuranWarchIMAGE_LINK,604));
-        list.add(new Riwaya(4,"القران برواية حفص",RiwayaType.HAFS.name(),"",QuranWarchIMAGE_LINK,604));
-        list.add(new Riwaya(5,"مصحف التجويد",RiwayaType.WARCH_TAJWID.name(),"",QuranWarchIMAGE_LINK,604));
+        list.add(new Riwaya(4,"القران برواية حفص",RiwayaType.HAFS.name(),"",QuranHafsIMAGE_LINK,604));
+        list.add(new Riwaya(5,"مصحف التجويد",RiwayaType.WARCH_TAJWID.name(),"",QuranWARCH_TAJWID_IMAGE_LINK,604));
         list.add(new Riwaya(6,"القران باللغة الفرنسية",RiwayaType.FRENCH_QURAN.name(),"",QuranWarchIMAGE_LINK,604));
         list.add(new Riwaya(7,"القران بالغة الانجليزية",RiwayaType.ENGLISH_QURAN.name(),"",QuranWarchIMAGE_LINK,604));
 

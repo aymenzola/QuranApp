@@ -15,18 +15,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
-import com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentMultipleRiwayat;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.databinding.BottomSheetLayoutLogoutBinding;
-import com.app.dz.quranapp.room.Daos.ReaderAudioDao;
+import com.app.dz.quranapp.riwayat.CsvReader;
 import com.app.dz.quranapp.room.MushafDatabase;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -35,9 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class BottomSheetDialogReaders extends BottomSheetDialogFragment implements ReadersAdapter.OnAdapterClickListener,
@@ -190,16 +185,7 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
     }
     public static void getReaderAudioList(Context context) {
         MushafDatabase database = MushafDatabase.getInstance(context);
-        ReaderAudioDao dao = database.getReaderAudioDao();
-
-        compositeDisposable.add(dao.getAvailableReaders()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(readerList->{
-                    readersList = readerList;
-                }, e->{
-                    Log.e("checkdata","audios data error   "+e.getMessage());
-                }));
+        readersList = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
     }
 
 }
