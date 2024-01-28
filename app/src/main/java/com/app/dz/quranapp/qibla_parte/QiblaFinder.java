@@ -45,21 +45,22 @@ public class QiblaFinder extends AppCompatActivity {
         prefs = getSharedPreferences("qibla", MODE_PRIVATE);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        arrowViewQiblat =  findViewById(R.id.main_image_qibla);
-        imageDial =  findViewById(R.id.main_image_dial);
-        text_up =  findViewById(R.id.text_up);
-        text_down =  findViewById(R.id.text_down);
-        arrowViewQiblat.setVisibility(INVISIBLE);
-        arrowViewQiblat.setVisibility(View.GONE);
+        arrowViewQiblat = findViewById(R.id.main_image_qibla);
+        imageDial = findViewById(R.id.main_image_dial);
+        text_up = findViewById(R.id.text_up);
+        text_down = findViewById(R.id.text_down);
+        //arrowViewQiblat.setVisibility(INVISIBLE);
+        //arrowViewQiblat.setVisibility(View.GONE);
 
 
         setupCompass();
     }
+
     @Override
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "start compass");
-        if(compass != null) {
+        if (compass != null) {
             compass.start();
         }
     }
@@ -67,7 +68,7 @@ public class QiblaFinder extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(compass != null) {
+        if (compass != null) {
             compass.stop();
         }
     }
@@ -75,7 +76,7 @@ public class QiblaFinder extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(compass != null) {
+        if (compass != null) {
             compass.start();
         }
     }
@@ -84,26 +85,31 @@ public class QiblaFinder extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "stop compass");
-        if(compass != null) {
+        if (compass != null) {
             compass.stop();
         }
     }
 
     private void setupCompass() {
         Boolean permission_granted = GetBoolean("permission_granted");
-        if(permission_granted) {
+        if (permission_granted) {
             getBearing();
-        }else{
+        } else {
             text_up.setText("");
             text_down.setText(getResources().getString(R.string.permission_not_garanted));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            }else{getBearing();}
+            } else {
+                getBearing();
+            }
         }
         compass = new Compass(this);
         Compass.CompassListener cl = new Compass.CompassListener() {
             @Override
-            public void onNewAzimuth(float azimuth) { adjustGambarDial(azimuth); adjustArrowQiblat(azimuth); }
+            public void onNewAzimuth(float azimuth) {
+                adjustGambarDial(azimuth);
+                adjustArrowQiblat(azimuth);
+            }
         };
         compass.setListener(cl);
     }
@@ -117,24 +123,25 @@ public class QiblaFinder extends AppCompatActivity {
         an.setFillAfter(true);
         imageDial.startAnimation(an);
     }
+
     public void adjustArrowQiblat(float azimuth) {
         float QiblaDegree = GetFloat("QiblaDegree");
-        Animation an = new RotateAnimation(-(currentAzimuth)+QiblaDegree, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        Animation an = new RotateAnimation(-(currentAzimuth) + QiblaDegree, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         currentAzimuth = (azimuth);
         an.setDuration(500);
         an.setRepeatCount(0);
         an.setFillAfter(true);
         arrowViewQiblat.startAnimation(an);
-        if(QiblaDegree > 0){
-            arrowViewQiblat .setVisibility(View.VISIBLE);
-        }else{
-            arrowViewQiblat .setVisibility(INVISIBLE);
-            arrowViewQiblat .setVisibility(View.GONE);
+        if (QiblaDegree > 0) {
+            arrowViewQiblat.setVisibility(View.VISIBLE);
+        } else {
+            arrowViewQiblat.setVisibility(INVISIBLE);
+            arrowViewQiblat.setVisibility(View.GONE);
         }
     }
 
     @SuppressLint("MissingPermission")
-    public void getBearing(){
+    public void getBearing() {
         // Get the location manager
 
         fetch_GPS();
@@ -148,8 +155,6 @@ public class QiblaFinder extends AppCompatActivity {
             fetch_GPS();
         }*/
     }
-
-
 
 
     @Override
@@ -175,21 +180,24 @@ public class QiblaFinder extends AppCompatActivity {
         }
     }
 
-    public  void SaveBoolean(String key, Boolean bb){
+    public void SaveBoolean(String key, Boolean bb) {
         SharedPreferences.Editor edit = prefs.edit();
         edit.putBoolean(key, bb);
         edit.apply();
     }
-    public Boolean GetBoolean(String key){
+
+    public Boolean GetBoolean(String key) {
         Boolean result = prefs.getBoolean(key, false);
         return result;
     }
-    public void SaveFloat(String key, Float ff){
+
+    public void SaveFloat(String key, Float ff) {
         SharedPreferences.Editor edit = prefs.edit();
         edit.putFloat(key, ff);
         edit.apply();
     }
-    public Float GetFloat(String key){
+
+    public Float GetFloat(String key) {
         Float ff = prefs.getFloat(key, 0);
         return ff;
     }
@@ -205,37 +213,39 @@ public class QiblaFinder extends AppCompatActivity {
         return true;
     }
 
-    public void fetch_GPS(){
+    public void fetch_GPS() {
         double result = 0;
         gps = new GPSTracker(this);
-        if(gps.canGetLocation()){
+        if (gps.canGetLocation()) {
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
-            text_down.setText(getResources().getString(R.string.coord)+ "\n"+getResources().getString(R.string.latitude)+": " + latitude + getResources().getString(R.string.longitude)+": " + longitude);
+            text_down.setText(getResources().getString(R.string.coord) + "\n" + getResources().getString(R.string.latitude) + ": " + latitude + getResources().getString(R.string.longitude) + ": " + longitude);
             Log.e("TAG", "GPS is on");
-            double lat_saya = gps.getLatitude ();
-            double lon_saya = gps.getLongitude ();
-            if(lat_saya < 0.001 && lon_saya < 0.001) {
+            double lat_saya = gps.getLatitude();
+            double lon_saya = gps.getLongitude();
+            Log.e("TAG", "GPS is on  lat_saya " +lat_saya+ " lon_saya : "+lon_saya);
+            if (lat_saya < 0.001 && lon_saya < 0.001) {
                 arrowViewQiblat.setVisibility(INVISIBLE);
                 arrowViewQiblat.setVisibility(View.GONE);
                 text_up.setText("");
                 text_down.setText(getResources().getString(R.string.locationunready));
-            }else{
+            } else {
                 double longitude2 = 39.826209; // Kaabah Position https://www.latlong.net/place/kaaba-mecca-saudi-arabia-12639.html
                 double longitude1 = lon_saya;
                 double latitude2 = Math.toRadians(21.422507); // Kaabah Position https://www.latlong.net/place/kaaba-mecca-saudi-arabia-12639.html
                 double latitude1 = Math.toRadians(lat_saya);
-                double longDiff= Math.toRadians(longitude2-longitude1);
-                double y= Math.sin(longDiff)*Math.cos(latitude2);
-                double x=Math.cos(latitude1)*Math.sin(latitude2)-Math.sin(latitude1)*Math.cos(latitude2)*Math.cos(longDiff);
-                result = (Math.toDegrees(Math.atan2(y, x))+360)%360;
-                float result2 = (float)result;
+                double longDiff = Math.toRadians(longitude2 - longitude1);
+                double y = Math.sin(longDiff) * Math.cos(latitude2);
+                double x = Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longDiff);
+                result = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+                float result2 = (float) result;
+                Log.e("logstep","dsaveDegree "+result2 +" and show the arrow");
                 SaveFloat("QiblaDegree", result2);
-                text_up.setText(getResources().getString(R.string.qibladirection) +" "+ result2 + " "+ getResources().getString(R.string.fromnorth));
-                arrowViewQiblat .setVisibility(View.VISIBLE);
+                text_up.setText(getResources().getString(R.string.qibladirection) + " " + result2 + " " + getResources().getString(R.string.fromnorth));
+                arrowViewQiblat.setVisibility(View.VISIBLE);
 
             }
-        }else{
+        } else {
             gps.showSettingsAlert();
             arrowViewQiblat.setVisibility(INVISIBLE);
             arrowViewQiblat.setVisibility(View.GONE);
@@ -244,8 +254,8 @@ public class QiblaFinder extends AppCompatActivity {
         }
     }
 
-    public void QiblaTips(View v){
-        final Context mContext=this;
+    public void QiblaTips(View v) {
+        final Context mContext = this;
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
         alertDialog.setTitle(mContext.getResources().getString(R.string.consignes));
         alertDialog.setMessage(mContext.getResources().getString(R.string.qiblatips));

@@ -52,6 +52,7 @@ import com.app.dz.quranapp.Entities.Aya;
 import com.app.dz.quranapp.Entities.AyaAudioLimitsFirebase;
 import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.Entities.Sura;
+import com.app.dz.quranapp.Entities.SuraAudio;
 import com.app.dz.quranapp.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.Entities.SuraDownload;
 import com.app.dz.quranapp.FilterButtomSheetclass;
@@ -68,7 +69,6 @@ import com.app.dz.quranapp.Services.ForegroundDownloadMushafService;
 import com.app.dz.quranapp.Services.ForegroundPlayAudioService;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
-import com.app.dz.quranapp.adhan.AdhanActivity;
 import com.app.dz.quranapp.databinding.QuranActivityBinding;
 import com.app.dz.quranapp.room.Daos.AyaDao;
 import com.app.dz.quranapp.room.MushafDatabase;
@@ -96,21 +96,14 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
 
 
     public static final int DOWNLOAD_TYPE_AUDIO = 1;
-    public static final int DOWNLOAD_TYPE_MUSHAF_IMAGES = 2;
-    public String DOWNLOAD_LINK = "https://drive.google.com/uc?export=download&id=";
-
     private final static String TAG = QuranActivityDev.class.getSimpleName();
-    public final static Integer TAFSIR_TYPE = 0;
-    public final static Integer QURAN_HAFS_TYPE = 1;
-    public final static Integer QURAN_WARSH_TYPE = 2;
-
     private final ArrayList<ModuleFragments> list = new ArrayList<>();
     private int LastPage;
     private int MinPage;
     private AdapterStartFragments adapterPagerForSign;
     private QuranActivityBinding binding;
 
-    private String selectedReader = "Shuraym";
+    //private String selectedReader = "Shuraym";
     private int selectedAyaCountInSura = 1;
     private boolean isPlayFromLocal = true;
     private Sura currantSura;
@@ -129,6 +122,8 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
     private int DownloadCount = 1;
     private Riwaya selectedRiwaya;
     private static List<ReaderAudio> readersList = new ArrayList<>();
+
+    private static ReaderAudio selectedReader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -302,10 +297,15 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
 
     private void setObservers() {
         viewModel.getValue().observe(this, s -> binding.included.tvTitle.setText(s));
-        viewModel.getReader().observe(this, readerAudio -> manageReaderImage(readerAudio.getReaderImage()));
-        viewModel.getReadersList().observe(this, readerAudioList -> readersList = readerAudioList);
+        viewModel.getReader().observe(this, readerAudio -> {
+            selectedReader = readerAudio;
+            manageReaderImage(selectedReader.getReaderImage());
+    });
+        viewModel.getReadersList().
 
-    }
+    observe(this,readerAudioList ->readersList =readerAudioList);
+
+}
 
     @SuppressLint("SetTextI18n")
     private void HandleDownloadStopIcon() {
@@ -318,7 +318,7 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
     private void startIcons() {
         binding.progress.setVisibility(View.GONE);
         binding.imgPlayClick.setImageResource(R.drawable.ic_baseline_pause_24);
-        if (publicMethods.isReaderSelectionAvailable(selectedReader)) {
+        if (selectedReader.isThereSelection()) {
             binding.imgNext.setImageResource(R.drawable.ic_next33);
             binding.imgBack.setImageResource(R.drawable.ic_next2);
         } else {
@@ -576,7 +576,7 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
     }
 
     private void PreperAudio() {
-        File file = publicMethods.getSuraFile(selectedReader, currantSura.getId());
+        File file = publicMethods.getLocalSuraFile(selectedReader,currantSura.getId());
         Log.e(TAG, "is file exist " + file.exists() + " path " + file.getPath());
         if (file.exists() && file.canRead()) lunchAudio();
         else displayAudioSourceDialog();
@@ -616,7 +616,7 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
         Log.e(TAG, "Received start Intent ");
         binding.downloadLinear.setVisibility(View.VISIBLE);
         binding.playLinear.setVisibility(View.GONE);
-        SuraDownload suraDownload = new SuraDownload(selectedReader, currantSura.getAyas(), currantSura.getId(), publicMethods.isReaderSelectionAvailable(selectedReader));
+        SuraDownload suraDownload = new SuraDownload(String.valueOf(selectedReader.getId()), currantSura.getAyas(), currantSura.getId(),selectedReader.isThereSelection());
         Intent startIntent = new Intent(QuranActivityDev.this, ForegroundDownloadAudioService.class);
         startIntent.setAction(Statics.ACTION.START_ACTION);
         startIntent.putExtra("sura", suraDownload);
@@ -627,11 +627,22 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
         binding.linearAyaInfo.setVisibility(View.GONE);
         Intent startIntent = new Intent(QuranActivityDev.this, ForegroundPlayAudioService.class);
         startIntent.setAction(Statics.ACTION.START_ACTION);
-        startIntent.putExtra("SuraNumber", currantSura.getId());
+
+        SuraAudio suraAudio = new SuraAudio(
+                String.valueOf(selectedReader.getId()),
+                selectedAyaCountInSura,
+                currantSura.getId(),
+                isPlayFromLocal,
+                selectedReader.isThereSelection());
+
+
+        /*startIntent.putExtra("SuraNumber", currantSura.getId());
         startIntent.putExtra("startAya", selectedAyaCountInSura);
-        startIntent.putExtra("readerName", selectedReader);
+        startIntent.putExtra("readerName", selectedReader.getId());
         startIntent.putExtra("isFromLocal", isPlayFromLocal);
-        startIntent.putExtra("isThereSelection", publicMethods.isReaderSelectionAvailable(selectedReader));
+        startIntent.putExtra("isThereSelection",selectedReader.isThereSelection());
+        */
+        startIntent.putExtra("suraAudio",suraAudio);
         startService(startIntent);
     }
 
@@ -865,8 +876,9 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
     }
 
     @Override
-    public void onReaderChanger(int readerId) {
-        manageReaderImage(publicMethods.getReaderFromList(readerId,readersList).getReaderImage());
+    public void onReaderChanger(ReaderAudio reader) {
+        selectedReader = reader;
+        manageReaderImage(reader.getReaderImage());
     }
 
     private void manageReaderImage(String readerImage) {
@@ -919,7 +931,7 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
     }
 
     public void OpenButtomSheet() {
-        BottomSheetDialogReaders bottomSheet = new BottomSheetDialogReaders();
+        BottomSheetDialogReaders bottomSheet = new BottomSheetDialogReaders(selectedRiwaya);
         bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
     }
 
@@ -980,79 +992,80 @@ public class QuranActivityDev extends AppCompatActivity implements OnFragmentLis
     }
 
 
-    // Todo this function add new reader limits
-    class SaveFirebaseAsyncTask_Devloped extends AsyncTask<Void, Void, String> {
+// Todo this function add new reader limits
+class SaveFirebaseAsyncTask_Devloped extends AsyncTask<Void, Void, String> {
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        private final MediaPlayer mediaPlayer = new MediaPlayer();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final MediaPlayer mediaPlayer = new MediaPlayer();
 
-        @Override
-        protected String doInBackground(Void... voids) {
-            // Perform background task here
+    @Override
+    protected String doInBackground(Void... voids) {
+        // Perform background task here
 
-            // Write header row
-            try {
-                String reader = "Mohammad_al_Tablaway_128kbps";
-                Log.e(TAG, "we start " + reader);
-                for (int suraNumber = 63; suraNumber <= 69; suraNumber++) {
-                    SuraAudioFirebase suraAudioFirebase = new SuraAudioFirebase();
-                    suraAudioFirebase.readerName = reader;
-                    suraAudioFirebase.SuraNumber = suraNumber;
+        // Write header row
+        try {
+            String reader = "Mohammad_al_Tablaway_128kbps";
+            Log.e(TAG, "we start " + reader);
+            for (int suraNumber = 63; suraNumber <= 69; suraNumber++) {
+                SuraAudioFirebase suraAudioFirebase = new SuraAudioFirebase();
+                suraAudioFirebase.readerName = reader;
+                suraAudioFirebase.SuraNumber = suraNumber;
 
-                    List<Aya> ayaList = new ArrayList<>(dao.getAyatWithSuraId(suraNumber));
-                    Log.e(TAG, ".............. new suraNumber : " + suraNumber);
-                    Timetotal = 0;
-                    for (Aya aya : ayaList) {
-                        try {
-                            int ayaNumberInSura = aya.getSuraAya();
-                            String v = "" + "s" + suraNumber + " az " + ayaList.size() + " a " + ayaNumberInSura;
-                            Log.e(TAG, v);
-                            viewModel.setValue(v);
-                            mediaPlayer.setDataSource(QuranActivityDev.this, Uri.parse(publicMethods.getCorrectUrlAya(reader, suraNumber, ayaNumberInSura)));
-                            mediaPlayer.prepare();
-                            long duration = mediaPlayer.getDuration();
+                List<Aya> ayaList = new ArrayList<>(dao.getAyatWithSuraId(suraNumber));
+                Log.e(TAG, ".............. new suraNumber : " + suraNumber);
+                Timetotal = 0;
+                for (Aya aya : ayaList) {
+                    try {
+                        int ayaNumberInSura = aya.getSuraAya();
+                        String v = "" + "s" + suraNumber + " az " + ayaList.size() + " a " + ayaNumberInSura;
+                        Log.e(TAG, v);
+                        viewModel.setValue(v);
+                        mediaPlayer.setDataSource(QuranActivityDev.this, Uri.parse(publicMethods.getCorrectUrlAya(reader, suraNumber, ayaNumberInSura)));
+                        mediaPlayer.prepare();
+                        long duration = mediaPlayer.getDuration();
 
-                            AyaAudioLimitsFirebase aya1 = new AyaAudioLimitsFirebase();
-                            aya1.suraAya = aya.getSuraAya();
-                            aya1.startAyaTime = Timetotal;
-                            aya1.endAyaTime = Timetotal + duration;
-                            suraAudioFirebase.ayaAudioList.add(aya1);
+                        AyaAudioLimitsFirebase aya1 = new AyaAudioLimitsFirebase();
+                        aya1.suraAya = aya.getSuraAya();
+                        aya1.startAyaTime = Timetotal;
+                        aya1.endAyaTime = Timetotal + duration;
+                        suraAudioFirebase.ayaAudioList.add(aya1);
 
-                            Timetotal = Timetotal + duration;
+                        Timetotal = Timetotal + duration;
 
-                            mediaPlayer.reset();
+                        mediaPlayer.reset();
 
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
-                    DocumentReference docRef = db.collection("suraaudios").document(publicMethods.getReaderTag(reader)).collection(publicMethods.getReaderTag(reader) + "Audio").document(String.valueOf(suraNumber));
-
-                    int finalSuraNumber = suraNumber;
-                    docRef.set(suraAudioFirebase).addOnSuccessListener(aVoid -> Log.d(TAG, "Sura " + finalSuraNumber + " successfully written!")).addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
 
                 }
 
+                DocumentReference docRef = db.collection("suraaudios").document(publicMethods.getReaderTag(reader)).collection(publicMethods.getReaderTag(reader) + "Audio").document(String.valueOf(suraNumber));
 
-                return "Background task completed";
+                int finalSuraNumber = suraNumber;
+                docRef.set(suraAudioFirebase).addOnSuccessListener(aVoid -> Log.d(TAG, "Sura " + finalSuraNumber + " successfully written!")).addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "we get error " + e.getMessage();
             }
 
 
+            return "Background task completed";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "we get error " + e.getMessage();
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-            Log.e(TAG, "result " + result);
-            Toast.makeText(QuranActivityDev.this, "complete" + result, Toast.LENGTH_SHORT).show();
-        }
+
     }
+
+    @Override
+    protected void onPostExecute(String result) {
+        Log.e(TAG, "result " + result);
+        Toast.makeText(QuranActivityDev.this, "complete" + result, Toast.LENGTH_SHORT).show();
+    }
+
+}
 
     public void unzipCSV(Context context, String zipFileName, String destDirectory, String zipDestDirectory) throws IOException {
         Log.e("zip", "zip start");

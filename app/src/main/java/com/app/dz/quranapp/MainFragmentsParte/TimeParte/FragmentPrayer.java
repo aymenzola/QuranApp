@@ -36,6 +36,7 @@ import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.Util.UserLocation;
 import com.app.dz.quranapp.databinding.FragmentPrayerTimesBinding;
+import com.app.dz.quranapp.qibla_parte.QiblaFinder;
 import com.app.dz.quranapp.room.AppDatabase;
 import com.app.dz.quranapp.room.Daos.DayPrayerTimesDao;
 import com.app.dz.quranapp.room.DatabaseClient;
@@ -171,6 +172,10 @@ public class FragmentPrayer extends Fragment {
 
 
     private void setListeners() {
+
+        binding.included.tvTitle.setOnClickListener(v->startActivity(new Intent(getActivity(),
+                QiblaFinder.class)));
+
         binding.imgBack.setOnClickListener(v -> {
             int currentItem = binding.viewpager.getCurrentItem();
             if (currentItem > 0) {

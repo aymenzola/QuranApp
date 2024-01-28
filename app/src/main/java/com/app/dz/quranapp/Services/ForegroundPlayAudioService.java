@@ -21,10 +21,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
@@ -34,6 +36,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.annotation.RequiresApi;
+
 import com.app.dz.quranapp.Entities.Aya;
 import com.app.dz.quranapp.Entities.AyaAudioLimits;
 import com.app.dz.quranapp.Entities.AyaAudioLimitsFirebase;
@@ -41,6 +45,7 @@ import com.app.dz.quranapp.Entities.Sura;
 import com.app.dz.quranapp.Entities.SuraAudio;
 import com.app.dz.quranapp.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.MushafParte.QuranActivity;
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.PlayerAudioNotification.Statics;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
@@ -54,6 +59,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Timer;
@@ -61,6 +68,7 @@ import java.util.Timer;
 public class ForegroundPlayAudioService extends Service implements MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnBufferingUpdateListener {
 
     private final static String FOREGROUND_CHANNEL_ID = "foreground_channel_id";
+    private ReaderAudio selectedReader;
     DecimalFormat decimalFormat = new DecimalFormat("000");
     private final static String TAG = ForegroundPlayAudioService.class.getSimpleName();
     static private int mStateService = Statics.STATE_SERVICE.NOT_INIT;
@@ -100,9 +108,6 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
     };
     private int currentPosition = 0;
     private MediaSessionCompat mediaSession;
-    private int count = 0;
-    final Handler handler = new Handler();
-    Timer timer = new Timer();
     private AyaDao dao;
     private AyaAudioLimitDao daoAppDB;
     private List<Aya> AyatList;
@@ -150,16 +155,24 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
         switch (intent.getAction()) {
             case Statics.ACTION.START_ACTION:
                 Log.e(TAG, "Received start Intent");
+
                 mStateService = Statics.STATE_SERVICE.PREPARE;
-                SuraAudio suraAudio = new SuraAudio();
+                this.suraAudio =  (SuraAudio) intent.getSerializableExtra("suraAudio");
+
+                /*
                 suraAudio.SuraNumber = (int) intent.getSerializableExtra("SuraNumber");
                 suraAudio.startAya = (int) intent.getSerializableExtra("startAya");
-                suraAudio.readerName = (String) intent.getSerializableExtra("readerName");
+                int id = (Integer) intent.getSerializableExtra("readerName");
+                suraAudio.readerName = String.valueOf(id);
                 suraAudio.isFromLocal = (Boolean) intent.getSerializableExtra("isFromLocal");
                 suraAudio.isThereSelection = (Boolean) intent.getSerializableExtra("isThereSelection");
-                this.suraAudio = suraAudio;
+*/
+
+                //prepare and get the reader audio object
+                this.selectedReader = PublicMethods.getReaderAudioWithId(Integer.parseInt(suraAudio.readerName),this);
+
                 suraArabicName = quranInfoManager.getSuraName(suraAudio.SuraNumber-1);
-                new Thread(() -> bitmapIcon = getReaderBitmap(suraAudio.readerName)).start();
+                new Thread(() -> bitmapIcon = getReaderBitmap()).start();
                 initializeSuraPage(suraAudio.SuraNumber);
                 toldTheActivty(AUDIO_PROGRESS_ACTION, currantAudio);
                 if (suraAudio.isThereSelection) getSuraFromId(suraAudio);
@@ -237,12 +250,12 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
     private void getSuraLimits(SuraAudio suraAudio, Sura sura) {
 
         new Thread(() -> {
-            int count = daoAppDB.getSuraAyatLimitsCount(suraAudio.SuraNumber, suraAudio.readerName);
+            int count = daoAppDB.getSuraAyatLimitsCount(suraAudio.SuraNumber, selectedReader.getReaderTag());
             Log.e(TAG, "getSuraLimits count : "+count);
             if ((!suraAudio.isFromLocal && count != sura.getAyas()) || count == 0) {
 
                 Log.e(TAG, "we are getting limits from room count : " + count + " ayat count " + sura.getAyas()
-                        + " isfromlocal " + suraAudio.isFromLocal + " suranumber " + suraAudio.SuraNumber + " readername " + suraAudio.readerName);
+                        + " isfromlocal " + suraAudio.isFromLocal + " suranumber " + suraAudio.SuraNumber + " readername " + selectedReader.getReaderTag());
                 getAyatFromFireBase(suraAudio, sura);
             } else getAyatLimitsFromRoom(suraAudio);
         }).start();
@@ -252,7 +265,7 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
 
     private void getAyatLimitsFromRoom(SuraAudio suraAudio) {
         new Thread(() -> {
-            suraAudio.ayaAudioList = daoAppDB.getSuraAyatLimitsWithId(suraAudio.SuraNumber, suraAudio.readerName);
+            suraAudio.ayaAudioList = daoAppDB.getSuraAyatLimitsWithId(suraAudio.SuraNumber, selectedReader.getReaderTag());
             Log.e(TAG, "sura audio limits size : " + suraAudio.ayaAudioList.size());
             prepareSuraAudio(suraAudio);
         }).start();
@@ -361,9 +374,9 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
         suraAudiolocal.SuraNumber = suraAudio.SuraNumber + plus;
         suraAudiolocal.startAya = 1;
         suraAudiolocal.readerName = suraAudio.readerName;
-        suraAudiolocal.isThereSelection = publicMethods.isReaderSelectionAvailable(suraAudio.readerName);
+        suraAudiolocal.isThereSelection = selectedReader.isThereSelection();
         suraArabicName = quranInfoManager.getSuraName(suraAudiolocal.SuraNumber-1);
-        File file = publicMethods.getSuraFile(suraAudio.readerName, suraAudiolocal.SuraNumber);
+        File file =  publicMethods.getLocalSuraFile(selectedReader,suraAudiolocal.SuraNumber);
         Log.e(TAG, "is file exist " + file.exists() + " path " + file.getPath());
         suraAudiolocal.isFromLocal = file.exists() && file.canRead();
 
@@ -455,8 +468,13 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
                 //TODO
                 mPlayer.reset();
                 mPlayer.setVolume(1.0f, 1.0f);
-                Log.d(TAG, "played " + currantAudio);
-                mPlayer.setDataSource(this, Uri.parse(publicMethods.getCorrectUrlOrPath(suraAudio.readerName, suraAudio.SuraNumber, suraAudio.isFromLocal)));
+
+                Log.d(TAG, "played getting url or path ");
+                String urlOrPath = publicMethods.getCorrectUrlOrPath(selectedReader.getId(),suraAudio.SuraNumber,suraAudio.isFromLocal,this);
+
+                mPlayer.setDataSource(this, Uri.parse(urlOrPath));
+
+                Log.d(TAG, "the started Url is " + urlOrPath);
                 mPlayer.prepareAsync();
 
             } catch (Exception e) {
@@ -646,7 +664,7 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
 
     private void getAyatFromFireBase(SuraAudio suraAudio, Sura sura) {
 
-        String reader = publicMethods.getReaderTag(suraAudio.readerName);
+        String reader = selectedReader.getReaderTag();
 
         DocumentReference docRef = FirebaseFirestore.getInstance().collection("suraaudios")
                 .document(reader).collection(reader + "Audio").document(String.valueOf(suraAudio.SuraNumber));
@@ -662,7 +680,7 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
                             for (AyaAudioLimitsFirebase ayaAudioLimitsFirebase : ayaAudioLimitsFirebaseList) {
 
                                 String id = decimalFormat.format(suraAudio.SuraNumber) + "" + decimalFormat.format(ayaAudioLimitsFirebase.suraAya);
-                                String RoomId = id + "_" + publicMethods.getReaderTag(suraAudio.readerName);
+                                String RoomId = id + "_" + selectedReader.getReaderTag();
 
                                 AyaAudioLimits ayaAudioLimits = new AyaAudioLimits(RoomId, suraAudio.SuraNumber, ayaAudioLimitsFirebase.suraAya,
                                         ayaAudioLimitsFirebase.startAyaTime, ayaAudioLimitsFirebase.endAyaTime, reader);
@@ -761,7 +779,7 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
 
         builder.setSmallIcon(R.drawable.ic_mashaf)
                 .setContentTitle("سورة " +suraArabicName)
-                .setContentText(suraAudio.readerName)
+                .setContentText(selectedReader.getName())
                 .setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setLargeIcon(bitmapIcon)
@@ -790,19 +808,21 @@ public class ForegroundPlayAudioService extends Service implements MediaPlayer.O
 
     }
 
-    public Bitmap getReaderBitmap(String readerName) {
-        switch (readerName) {
-            case "Alafasy":
-                return BitmapFactory.decodeResource(getResources(),R.drawable.alafasy);
-            case "Shuraym":
-                return BitmapFactory.decodeResource(getResources(),R.drawable.sharum);
-            case "Sudais":
-                return BitmapFactory.decodeResource(getResources(),R.drawable.sudais);
-            case "Mohammad_al_Tablaway_128kbps":
-                return BitmapFactory.decodeResource(getResources(),R.drawable.khalil_hosary);
-            default:
-                return BitmapFactory.decodeResource(getResources(),R.drawable.abd_baset);
+    public Bitmap getReaderBitmap() {
+        try {
+            URL url = new URL(selectedReader.getReaderImage());
+            return BitmapFactory.decodeStream(url.openConnection().getInputStream());
+        } catch(IOException e) {
+            System.out.println(e);
+            return null;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void setPlaybackSpeed(float speed) {
+        PlaybackParams params = mPlayer.getPlaybackParams();
+        params.setSpeed(speed);
+        mPlayer.setPlaybackParams(params);
     }
 
 

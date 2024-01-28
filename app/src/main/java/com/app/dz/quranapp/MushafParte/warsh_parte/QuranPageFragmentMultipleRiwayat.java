@@ -16,8 +16,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.MyViewModel;
 import com.app.dz.quranapp.MushafParte.OnFragmentListeners;
+import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.QuranPageFragmentWarshBinding;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
+
+import java.text.DecimalFormat;
 
 public class QuranPageFragmentMultipleRiwayat extends Fragment {
 
@@ -134,9 +140,28 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
 
     @SuppressLint("CheckResult")
     private void displayMushafImage(int pageNumber) {
-        String url = riwaya.quran_page_image_url+pageNumber+".png";
+        DecimalFormat format = new DecimalFormat("000");
+        String url;
+        if (riwaya.quran_page_image_url.contains("qurancomplex")
+                || riwaya.quran_page_image_url.contains("QuranHub")
+                || riwaya.quran_page_image_url.contains("hafs-tajweed"))
+
+            url = riwaya.quran_page_image_url+pageNumber+".jpg";
+
+        else if (riwaya.quran_page_image_url.contains("GovarJabbar"))
+
+            url = riwaya.quran_page_image_url+format.format(pageNumber)+".png";
+
+        else
+            url = riwaya.quran_page_image_url+pageNumber+".png";
+
+
         Log.e("logtag", "url "+url);
-        Glide.with(this).load(url).into(binding.imageview);
+        // For additional configurations, you can use RequestOptions
+        RequestOptions options = new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .override(Target.SIZE_ORIGINAL); // Load the original size for max quality
+        Glide.with(this).load(url).apply(options).into(binding.imageview);
     }
 
     private void setObservers() {

@@ -17,14 +17,14 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayaType;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.databinding.BottomSheetLayoutLogoutBinding;
-import com.app.dz.quranapp.riwayat.CsvReader;
-import com.app.dz.quranapp.room.MushafDatabase;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.io.IOException;
@@ -39,19 +39,18 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
         MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener {
 
     private BottomSheetListener mListener;
-    private static final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
     private BottomSheetLayoutLogoutBinding mBinding;
     private MediaPlayer mediaPlayer;
     private int PlayingReaderId = -1;
     private PublicMethods publicMethods;
     private SharedPreferenceManager sharedPreferenceManager;
-    private QuranInfoManager quranInfoManager;
     private int DefaultSelectedReader;
-    private int CurrantSelectedReader;
+    private ReaderAudio CurrantSelectedReader;
+    private final Riwaya selectedRiwaya;
     private static List<ReaderAudio> readersList = new ArrayList<>();
-    public BottomSheetDialogReaders() {
 
+    public BottomSheetDialogReaders(Riwaya selectedRiwaya) {
+        this.selectedRiwaya = selectedRiwaya;
     }
 
 
@@ -62,11 +61,9 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
         getReaderAudioList(getActivity());
         sharedPreferenceManager = SharedPreferenceManager.getInstance(getActivity());
         DefaultSelectedReader = sharedPreferenceManager.getSelectedReaderId();
-        quranInfoManager = QuranInfoManager.getInstance();
-        CurrantSelectedReader = DefaultSelectedReader;
-
-
-
+        int selectedReaderPosition = getReaderAudioPosition(DefaultSelectedReader);
+        CurrantSelectedReader = getReaderAudioWithId(DefaultSelectedReader);
+        manageTitleName();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnCompletionListener(this);
@@ -80,19 +77,24 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
         mBinding.recyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mBinding.recyclerview.setHasFixedSize(true);
         mBinding.recyclerview.setAdapter(adapter);
-        adapter.selectItem(DefaultSelectedReader-1);
+        if (selectedReaderPosition!=-1) adapter.selectItem(selectedReaderPosition);
 
 
         mBinding.tvSave.setOnClickListener(v -> {
-            if (!Objects.equals(DefaultSelectedReader, CurrantSelectedReader)) {
-                sharedPreferenceManager.saveSelectedReaderId(CurrantSelectedReader);
+            if (!Objects.equals(DefaultSelectedReader, CurrantSelectedReader.getId())) {
+                sharedPreferenceManager.saveSelectedReaderId(CurrantSelectedReader.getId());
                 mListener.onReaderChanger(CurrantSelectedReader);
-                Log.e("bottomsheet", "we send to activity "+CurrantSelectedReader);
+                Log.e("bottomsheet", "we send to activity " + CurrantSelectedReader);
             }
             dismiss();
         });
 
 
+    }
+
+    private void manageTitleName() {
+        if (CurrantSelectedReader.getRiwaya().contains(RiwayaType.HAFS.name())) mBinding.tvTitle.setText("قراء حفص");
+        else mBinding.tvTitle.setText("قراء ورش");
     }
 
     @SuppressLint("SetTextI18n")
@@ -105,23 +107,23 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
 
     @Override
     public void onClick(ReaderAudio reader, int position) {
-        CurrantSelectedReader = reader.getId();
+        CurrantSelectedReader = reader;
     }
 
     @Override
     public void onAudioPlayClicked(ReaderAudio reader, int position) {
         Toast.makeText(getActivity(), "audio " + reader.getName(), Toast.LENGTH_SHORT).show();
-        CurrantSelectedReader = reader.getId();
+        CurrantSelectedReader = reader;
 
         if (PlayingReaderId == -1) {
             //no playing audio
             new Thread(() -> {
                 try {
                     PlayingReaderId = reader.getId();
-                    String url = publicMethods.getSreamLink(publicMethods.getReaderFromList(reader.getId(),readersList), 112);
-                    Log.e("bottomsheet", "read url : "+url);
+                    String url = publicMethods.getSreamLink(CurrantSelectedReader, 112);
+                    Log.e("bottomsheet", "read url : " + url);
                     mediaPlayer.reset();
-                    mediaPlayer.setDataSource(getActivity(),Uri.parse(url));
+                    mediaPlayer.setDataSource(getActivity(), Uri.parse(url));
                     mediaPlayer.prepareAsync();
 
                 } catch (IOException e) {
@@ -135,7 +137,7 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
                 new Thread(() -> {
                     try {
                         PlayingReaderId = reader.getId();
-                        String url = publicMethods.getSreamLink(publicMethods.getReaderFromList(reader.getId(),readersList), 112);
+                        String url = publicMethods.getSreamLink(CurrantSelectedReader, 112);
                         mediaPlayer.setDataSource(getActivity(), Uri.parse(url));
                         mediaPlayer.prepareAsync();
                     } catch (IOException e) {
@@ -163,7 +165,7 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
 
 
     public interface BottomSheetListener {
-        void onReaderChanger(int readerId);
+        void onReaderChanger(ReaderAudio reader);
     }
 
     @Override
@@ -183,9 +185,26 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
         super.onDismiss(dialog);
         mediaPlayer.release();
     }
-    public static void getReaderAudioList(Context context) {
-        MushafDatabase database = MushafDatabase.getInstance(context);
-        readersList = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+
+    public void getReaderAudioList(Context context) {
+        readersList = PublicMethods.getReadersAudiosListWithRiwaya(context,selectedRiwaya.tag);
+    }
+
+    public int getReaderAudioPosition(int readerId) {
+        for (int i = 0; i < readersList.size(); i++) {
+            if (readersList.get(i).getId() == readerId) return i;
+        }
+        return -1;
+    }
+
+    public ReaderAudio getReaderAudioWithId(int readerId) {
+        for (int i = 0; i < readersList.size(); i++) {
+            if (readersList.get(i).getId() == readerId) {
+                Log.e("taglog","audio position "+i);
+                return readersList.get(i);
+            }
+        }
+        return new ReaderAudio();
     }
 
 }

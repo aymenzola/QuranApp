@@ -70,24 +70,7 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
         } else
             holder.binding.linearParent.setBackgroundColor(mCtx.getResources().getColor(R.color.white));
 
-        switch (reader.getId()) {
-            case 1:
-                Glide.with(mCtx).load(R.drawable.alafasy).into(holder.binding.readerImage);
-                break;
-            case 2:
-                Glide.with(mCtx).load(R.drawable.sharum).into(holder.binding.readerImage);
-                break;
-            case 3:
-                Glide.with(mCtx).load(R.drawable.sudais).into(holder.binding.readerImage);
-                break;
-            case 4:
-                Glide.with(mCtx).load(R.drawable.khalil_hosary).into(holder.binding.readerImage);
-                break;
-            default:
-                Glide.with(mCtx).load(R.drawable.abd_baset).into(holder.binding.readerImage);
-                break;
-
-        }
+        Glide.with(mCtx).load(reader.getReaderImage()).into(holder.binding.readerImage);
 
         holder.binding.viewId.setOnClickListener(v -> {
             selectItem(position);

@@ -20,6 +20,9 @@ public class Riwaya implements Serializable {
         this.quran_page_image_url = quran_page_image_url;
     }
 
+    public Riwaya() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

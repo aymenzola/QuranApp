@@ -14,13 +14,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.app.dz.quranapp.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayaType;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.riwayat.CsvReader;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PublicMethods {
@@ -38,14 +42,52 @@ public class PublicMethods {
         return instance;
     }
 
-    public ReaderAudio getReaderFromList(int readerId,List<ReaderAudio> readerAudioList) {
-        for (ReaderAudio readerAudio:readerAudioList) {
-            if (readerAudio.getId()==readerId) return readerAudio;
+    public ReaderAudio getReaderFromList(int readerId, List<ReaderAudio> readerAudioList) {
+        for (ReaderAudio readerAudio : readerAudioList) {
+            if (readerAudio.getId() == readerId) return readerAudio;
         }
         return new ReaderAudio();
     }
 
 
+    public static List<ReaderAudio> getReadersAudiosListList(Context context) {
+        List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+        List<ReaderAudio> filterdList = new ArrayList<>();
+        for (ReaderAudio readerAudio : list)
+            if (readerAudio.getAudioType() != 0) filterdList.add(readerAudio);
+        return filterdList;
+    }
+
+    public static List<ReaderAudio> getReadersAudiosListWithRiwaya(Context context, String riwaya) {
+        List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+        List<ReaderAudio> filterdList = new ArrayList<>();
+
+        if (riwaya.contains(RiwayaType.WARCH.name())) {
+            for (ReaderAudio readerAudio : list)
+                if (readerAudio.getAudioType() != 0 && readerAudio.getRiwaya().contains(RiwayaType.WARCH.name()))
+                    filterdList.add(readerAudio);
+        } else if (riwaya.contains(RiwayaType.HAFS.name())) {
+            for (ReaderAudio readerAudio : list)
+                if (readerAudio.getAudioType() != 0 && readerAudio.getRiwaya().contains(RiwayaType.HAFS.name()))
+                    filterdList.add(readerAudio);
+        }
+        return filterdList;
+    }
+
+    public static ReaderAudio getReaderAudioWithId(int readerId, Context context) {
+        List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+        for (ReaderAudio readerAudio : list)
+            if (readerAudio.getId() == readerId) return readerAudio;
+        return new ReaderAudio();
+    }
+
+    public static List<ReaderAudio> getReadersAudiosListList(Context context, Riwaya riwaya) {
+        List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+        List<ReaderAudio> filterdList = new ArrayList<>();
+        for (ReaderAudio readerAudio : list)
+            if (readerAudio.getAudioType() != 0) filterdList.add(readerAudio);
+        return filterdList;
+    }
 
     public String getSreamLink(ReaderAudio readerAudio, int suraIndex) {
         /** check type
@@ -58,6 +100,34 @@ public class PublicMethods {
         } else {
             String suraFormatNumber = decimalFormat.format(suraIndex);
             return readerAudio.getUrl() + suraFormatNumber + ".mp3";
+        }
+    }
+
+    public File getLocalSuraFile(ReaderAudio selectedReader, int suraIndex) {
+        return getFile(getLocalFileName(selectedReader.getReaderTag(), suraIndex), selectedReader.getReaderTag());
+    }
+
+    public String getCorrectUrlOrPath(int readerId, int suraIndex, boolean isFromLocal, Context context) {
+        String suraFormatNumber = decimalFormat.format(suraIndex);
+
+        //get the selected reader
+        List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+        ReaderAudio selectedReader = new ReaderAudio();
+        for (ReaderAudio readerAudio : list)
+            if (readerAudio.getId() == readerId) {
+                selectedReader = readerAudio;
+                break;
+            }
+
+
+        if (isFromLocal)
+            return getFile(getLocalFileName(selectedReader.getReaderTag(), suraIndex), selectedReader.getReaderTag()).getPath();
+        else {
+            if (selectedReader.getAudioType() == 3) {
+                return selectedReader.getUrl() + suraIndex + ".mp3";
+            } else {
+                return selectedReader.getUrl() + suraFormatNumber + ".mp3";
+            }
         }
     }
 

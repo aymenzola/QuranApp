@@ -24,6 +24,15 @@ public class SuraAudio implements Serializable {
         this.isThereSelection = isThereSelection;
     }
 
+
+    public SuraAudio(String readerName,int startAya,int suraNumber, boolean isFromLocal,boolean isThereSelection) {
+        this.readerName = readerName;
+        this.startAya = startAya;
+        SuraNumber = suraNumber;
+        this.isFromLocal = isFromLocal;
+        this.isThereSelection = isThereSelection;
+    }
+
     public SuraAudio() {
     }
 }

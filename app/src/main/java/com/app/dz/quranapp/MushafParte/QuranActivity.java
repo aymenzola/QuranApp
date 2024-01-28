@@ -55,6 +55,7 @@ import com.app.dz.quranapp.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.Entities.SuraDownload;
 import com.app.dz.quranapp.MushafParte.TafsirParte.QuranPageTafsirFragment;
 import com.app.dz.quranapp.MushafParte.hafs_parte.QuranPageFragment;
+import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentMultipleRiwayat;
 import com.app.dz.quranapp.PlayerAudioNotification.NetworkHelper;
 import com.app.dz.quranapp.PlayerAudioNotification.Statics;
@@ -956,7 +957,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
     }
 
     public void OpenButtomSheet() {
-        BottomSheetDialogReaders bottomSheet = new BottomSheetDialogReaders();
+        BottomSheetDialogReaders bottomSheet = new BottomSheetDialogReaders(new Riwaya());
         bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
     }
 
@@ -1017,7 +1018,7 @@ public class QuranActivity extends AppCompatActivity implements OnFragmentListen
     }
 
     @Override
-    public void onReaderChanger(int readerId) {
+    public void onReaderChanger(ReaderAudio reader) {
 
     }
 

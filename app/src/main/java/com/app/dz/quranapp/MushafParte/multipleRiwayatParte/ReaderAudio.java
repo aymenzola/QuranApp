@@ -83,6 +83,10 @@ public class ReaderAudio {
         return isThereSelection;
     }
 
+    public boolean isThereSelection() {
+        return isThereSelection==1;
+    }
+
     public void setIsThereSelection(int isThereSelection) {
         this.isThereSelection = isThereSelection;
     }

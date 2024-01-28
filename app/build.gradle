@@ -90,4 +90,5 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:3.2.1"
     implementation "com.batoulapps.adhan:adhan:1.2.1"
     implementation "com.airbnb.android:lottie:3.4.0"
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
 }
