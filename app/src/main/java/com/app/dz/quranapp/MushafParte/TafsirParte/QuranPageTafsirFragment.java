@@ -23,8 +23,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Entities.Aya;
-import com.app.dz.quranapp.Entities.AyaTafsir;
+import com.app.dz.quranapp.data.room.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.AyaTafsir;
 import com.app.dz.quranapp.MushafParte.AyaPostion;
 import com.app.dz.quranapp.MushafParte.hafs_parte.AyatPageViewModel;
 import com.app.dz.quranapp.MushafParte.MyViewModel;
@@ -60,6 +60,7 @@ public class QuranPageTafsirFragment extends Fragment {
     private boolean isTitlereated = false;
     private MyViewModel StateViewModel;
     private Boolean isfullModeActiveGlobal = false;
+    private List<Aya> globalItems;
 
 
     public QuranPageTafsirFragment() {
@@ -114,14 +115,17 @@ public class QuranPageTafsirFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(AyatPageViewModel.class);
-        StateViewModel = ViewModelProviders.of(getActivity()).get(MyViewModel.class);
+        StateViewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
 
 
-        binding.tvPageNumber.setText("" + pageNumber);
+
         initializeArticlesAdapter();
         setObservers();
         if (pageNumber == 1) viewModel.setAyatList(pageNumber);
         else getPageAyat(pageNumber);
+
+
+
 
     }
 
@@ -144,6 +148,7 @@ public class QuranPageTafsirFragment extends Fragment {
         int textSize = prefs.getInt("textSize", 25);
         adapter = new MushafPageTafsirAdapter(getActivity(), textSize, aya -> {
             if (isfullModeActiveGlobal) {
+                StateViewModel.setData(false);
                 Log.e("logtag","onItemClick");
                 listeners.onScreenClick();
                 return;
@@ -177,11 +182,22 @@ public class QuranPageTafsirFragment extends Fragment {
         return pageNumber;
     }
 
+    public String getJuzaName() {
+        if (globalItems==null) return "";
+        return "" + QuranInfoManager.getInstance().getJuzaNameNumber(globalItems.get(0).getJuz());
+    }
+
+    public String getSuraName() {
+        if (globalItems==null) return "";
+        return QuranInfoManager.getInstance().getSuraName(globalItems.get(0).getSura() - 1);
+    }
+
+
     @SuppressLint("SetTextI18n")
     private void displayData(List<Aya> items) {
-
-        binding.tvSura.setText("سورة ");
-        binding.tvJuza.setText("" + QuranInfoManager.getInstance().getJuzaName(items.get(0).getJuz()));
+        globalItems = items;
+        //binding.tvSura.setText("سورة ");
+        //binding.tvJuza.setText("" + QuranInfoManager.getInstance().getJuzaName(items.get(0).getJuz()));
 
         List<AyaTafsir> ayaTafsirsList = new ArrayList<>();
 
@@ -245,8 +261,11 @@ public class QuranPageTafsirFragment extends Fragment {
             }
 
         }
-        if (!isTitlereated)
+
+        /*if (!isTitlereated)
             binding.tvSura.setText("سورة " + QuranInfoManager.getInstance().getSuraName(items.get(0).getSura() - 1));
+        */
+
         adapter.additems(ayaTafsirsList);
     }
 
@@ -271,9 +290,8 @@ public class QuranPageTafsirFragment extends Fragment {
     public String getSuraTitle(int sura) {
         isTitlereated = true;
         QuranInfoManager quranSuraNames = QuranInfoManager.getInstance();
-        String suraName = "سورة " + quranSuraNames.getSuraName(sura - 1);
 
-        String value = binding.tvSura.getText().toString();
+        /*String value = binding.tvSura.getText().toString();
         String suraName2 = "" + quranSuraNames.getSuraName(sura - 1);
         String newValue;
         if (value.equals("سورة ")) {
@@ -283,8 +301,8 @@ public class QuranPageTafsirFragment extends Fragment {
         }
         binding.tvSura.setText(newValue);
 
-
-        return suraName;
+*/
+        return "سورة " + quranSuraNames.getSuraName(sura - 1);
     }
 
 

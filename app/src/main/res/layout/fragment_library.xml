@@ -10,160 +10,98 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/ic_adkar_background"/>
+
+        </RelativeLayout>
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background_color"
             app:elevation="0dp"
+            android:background="#00FFFFFF"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways">
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/background_color"
-                app:contentScrim="@color/purple_700"
+                app:contentScrim="#00E6A34C"
                 app:layout_scrollFlags="scroll|enterAlways">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <include
-                        android:id="@+id/included"
-                        layout="@layout/include_home_action_bar"
-                        android:layout_width="match_parent"
-                        android:layout_height="?actionBarSize"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true" />
+                    android:orientation="vertical"
+                    >
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/background_color">
+                        >
+                        <ImageView
+                            android:id="@+id/img_close"
+                            android:layout_width="?actionBarSize"
+                            android:layout_height="?actionBarSize"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"
+                            android:src="@drawable/ic_konouz"
+                            android:background="?selectableItemBackground"
+                            android:padding="12dp"
+                            android:layout_gravity="end"
+                            />
 
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/cardview_library"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="?actionBarSize"
                             android:layout_centerInParent="true"
-                            android:layout_marginStart="15dp"
-                            android:layout_marginTop="15dp"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginBottom="10dp"
-                            app:cardCornerRadius="10dp"
-                            app:cardElevation="6dp">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@color/blan">
-
-                                <TextView
-                                    android:id="@+id/tv_library"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentTop="true"
-                                    android:layout_centerInParent="true"
-                                    android:layout_marginTop="10dp"
-                                    android:fontFamily="@font/ffshamel_family_bold"
-                                    android:gravity="center|start"
-                                    android:paddingEnd="15dp"
-                                    android:text="تابع قراءة كتاب :"
-                                    android:textColor="@color/tv_gri_color"
-                                    android:textSize="@dimen/tv_normal_size" />
-
-                                <TextView
-                                    android:id="@+id/tv_destination"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tv_library"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginEnd="15dp"
-                                    android:fontFamily="@font/ffshamel_book"
-                                    android:gravity="center"
-                                    android:text="صحيح البخاري - كتاب العلم"
-                                    android:textColor="@color/tv_gri_color"
-                                    android:textSize="@dimen/tv_normal_size" />
-
-                                <TextView
-                                    android:id="@+id/tv_chapter"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/tv_destination"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginEnd="15dp"
-                                    android:fontFamily="@font/ffshamel_family_bold"
-                                    android:gravity="center"
-                                    android:lines="1"
-                                    android:text="سيظهر هنا اخر حديث تقوم بحفضه"
-                                    android:textColor="@color/tv_gri_color"
-                                    android:textSize="@dimen/tv_normal_size" />
-
-
-                                <View
-                                    android:id="@+id/view_id2"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="3dp"
-                                    android:layout_below="@+id/tv_chapter"
-                                    android:layout_marginStart="40dp"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginEnd="40dp"
-                                    android:background="#FAFBFD" />
-
-                                <TextView
-                                    android:id="@+id/tv_move_library"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/view_id2"
-                                    android:layout_alignParentStart="true"
-                                    android:layout_centerInParent="true"
-                                    android:background="?selectableItemBackground"
-                                    android:fontFamily="@font/ffshamel_family_bold"
-                                    android:gravity="center"
-                                    android:paddingStart="15dp"
-                                    android:paddingTop="8dp"
-                                    android:paddingEnd="15dp"
-                                    android:paddingBottom="8dp"
-                                    android:text="تابع"
-                                    android:textColor="#E6A34C"
-                                    android:textSize="@dimen/tv_normal_size" />
-
-
-                            </RelativeLayout>
-
-                        </androidx.cardview.widget.CardView>
-
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center"
+                            android:text="المكتبة"
+                            android:textSize="@dimen/tv_normal_size" />
 
                     </RelativeLayout>
+
+                    <include
+                        android:id="@+id/include_saved_book"
+                        layout="@layout/include_saved_book"
+                        />
+
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-            <androidx.cardview.widget.CardView
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="15dp"
-                app:cardCornerRadius="7dp"
-                app:cardElevation="7dp">
+                android:background="@drawable/shape_card_top"
+                android:padding="4dp"
+                >
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linear_titles"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/blan"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -177,7 +115,7 @@
                         android:gravity="center"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:text="الأذكار"
+                        android:text="المتون"
                         android:textColor="@color/tv_gri_color"
                         android:textSize="@dimen/tv_normal_size" />
 
@@ -200,28 +138,30 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-            </androidx.cardview.widget.CardView>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.cardview.widget.CardView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
-            android:layout_marginTop="10dp"
+            android:paddingTop="10dp"
             app:cardCornerRadius="7dp"
             app:cardElevation="6dp"
-            android:paddingTop="10dp"
+            android:background="@drawable/shape_card_bottom"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="10dp"
                 android:background="@color/blan"
                 android:nestedScrollingEnabled="true"
+                android:layout_marginBottom="10dp"
                 android:visibility="visible"
                 tools:listitem="@layout/item_collection_adapterr"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
@@ -230,20 +170,19 @@
                 android:id="@+id/recyclerview_adkar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/blan"
                 android:nestedScrollingEnabled="true"
+                android:layout_marginBottom="10dp"
                 android:visibility="gone"
+                android:padding="5dp"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:itemCount="2"
-                tools:listitem="@layout/item_adkar"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
-        </androidx.cardview.widget.CardView>
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/background_color"
             android:nestedScrollingEnabled="true"
             android:visibility="visible"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" >

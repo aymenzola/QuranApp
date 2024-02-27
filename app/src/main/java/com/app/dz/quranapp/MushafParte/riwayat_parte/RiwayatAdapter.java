@@ -1,12 +1,8 @@
 package com.app.dz.quranapp.MushafParte.riwayat_parte;
 
 
-import static com.app.dz.quranapp.MainFragmentsParte.HomeFragment.HomeFragment.QURAN_TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,10 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Entities.Juz;
-import com.app.dz.quranapp.Entities.Riwaya;
+import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.ItemJuzaBinding;
 import com.app.dz.quranapp.databinding.ItemRiwayaBinding;
 import com.bumptech.glide.Glide;
 

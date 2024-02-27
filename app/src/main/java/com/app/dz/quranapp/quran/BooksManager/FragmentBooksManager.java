@@ -1,7 +1,7 @@
 package com.app.dz.quranapp.quran.BooksManager;
 
 
-import static com.app.dz.quranapp.Services.ForegroundDownloadAudioService.AppfolderName;
+import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -20,14 +20,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Entities.Book;
-import com.app.dz.quranapp.Entities.Hadith;
+import com.app.dz.quranapp.data.room.Entities.Book;
+import com.app.dz.quranapp.data.room.Entities.Hadith;
 import com.app.dz.quranapp.databinding.FragmentBookListBinding;
-import com.app.dz.quranapp.CollectionParte.BooksParte.BooksViewModel;
+import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.BooksViewModel;
 import com.app.dz.quranapp.quran.quranParte.ArabicNormalizer;
-import com.app.dz.quranapp.room.AppDatabase;
-import com.app.dz.quranapp.room.Daos.BookDao;
-import com.app.dz.quranapp.room.DatabaseClient;
+import com.app.dz.quranapp.data.room.AppDatabase;
+import com.app.dz.quranapp.data.room.Daos.BookDao;
+import com.app.dz.quranapp.data.room.DatabaseClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;

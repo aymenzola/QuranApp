@@ -6,9 +6,9 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.app.dz.quranapp.Entities.Aya;
-import com.app.dz.quranapp.room.Daos.AyaDao;
-import com.app.dz.quranapp.room.MushafDatabase;
+import com.app.dz.quranapp.data.room.Entities.Aya;
+import com.app.dz.quranapp.data.room.Daos.AyaDao;
+import com.app.dz.quranapp.data.room.MushafDatabase;
 
 import java.util.ArrayList;
 import java.util.List;

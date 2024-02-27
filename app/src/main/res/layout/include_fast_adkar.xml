@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardview_quran"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="6dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginEnd="15dp"
+    android:layout_marginBottom="10dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blan">
+
+        <TextView
+            android:id="@+id/tv_fast_adkar_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center|start"
+            android:paddingEnd="15dp"
+            android:text="أذكار سريعة :"
+            android:textColor="#424242"
+            android:textSize="@dimen/tv_small_size" />
+
+        <TextView
+            android:id="@+id/tv_fast_adkar_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_fast_adkar_title"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/shape_button_gradien"
+            android:ellipsize="marquee"
+            android:fontFamily="@font/ffshamel_book"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp"
+            android:singleLine="true"
+            tools:text="سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر، ولا حولَ ولا قوةَ إلا بالله العلي العظيم"
+            android:textColor="#4C4C4C"
+            android:textSize="@dimen/tv_small_size" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_fast_adkar"
+            android:text="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_fast_adkar_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="18dp"
+            android:layout_marginEnd="18dp"
+            android:background="@drawable/shape_button"
+            android:gravity="center"
+            android:lines="1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/tv_quran_size" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

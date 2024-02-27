@@ -2,7 +2,7 @@ package com.app.dz.quranapp.quran.QuranReadParte;
 
 import android.text.SpannableStringBuilder;
 
-import com.app.dz.quranapp.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.Aya;
 
 import java.util.List;
 

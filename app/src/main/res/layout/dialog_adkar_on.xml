@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="15dp"
+        android:background="@drawable/shape_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:text="تم تشغيل خاصية اشعارات الاذكار"
+
+            android:textSize="@dimen/tv_normal_size" />
+
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:text="بتفعيلك خاصية الاشعارات في الوضع العادي ستصلك 7 إشعارات في اليوم!"
+            android:textSize="@dimen/tv_small_size" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_done"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_button"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:text="تمام"
+            android:textColor="@color/white"
+            android:textSize="@dimen/tv_normal_size" />
+
+    </LinearLayout>
+</layout>

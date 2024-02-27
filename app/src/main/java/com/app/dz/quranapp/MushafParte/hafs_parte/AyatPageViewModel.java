@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.app.dz.quranapp.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.Aya;
 
 import java.util.List;
 

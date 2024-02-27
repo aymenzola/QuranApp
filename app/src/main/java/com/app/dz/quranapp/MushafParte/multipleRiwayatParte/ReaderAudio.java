@@ -5,8 +5,10 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity(tableName = "audio")
-public class ReaderAudio {
+public class ReaderAudio implements Serializable {
     @PrimaryKey
     private int id;
 
@@ -121,5 +123,20 @@ public class ReaderAudio {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    @Override
+    public String toString() {
+        return "ReaderAudio{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", nameEnglish='" + nameEnglish + '\'' +
+                ", audioType=" + audioType +
+                ", isThereSelection=" + isThereSelection +
+                ", riwaya='" + riwaya + '\'' +
+                ", readerTag='" + readerTag + '\'' +
+                ", readerImage='" + readerImage + '\'' +
+                ", isSelected=" + isSelected +
+                '}';
     }
 }

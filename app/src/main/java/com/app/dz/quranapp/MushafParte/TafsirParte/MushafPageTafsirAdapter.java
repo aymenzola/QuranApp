@@ -10,19 +10,15 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Entities.Aya;
-import com.app.dz.quranapp.Entities.AyaString;
-import com.app.dz.quranapp.Entities.AyaTafsir;
+import com.app.dz.quranapp.data.room.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.AyaTafsir;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.ItemAyatStringBinding;
 import com.app.dz.quranapp.databinding.ItemAyatTafsirBinding;
 import com.app.dz.quranapp.databinding.ItemBasmalaBinding;
 import com.app.dz.quranapp.databinding.ItemCustomViewBinding;
@@ -97,10 +93,10 @@ public class MushafPageTafsirAdapter extends RecyclerView.Adapter<RecyclerView.V
             ViewHolder_ holderp = (ViewHolder_) holder;
             AyaTafsir model = (AyaTafsir) arrayList.get(position);
             Log.e("tvsizetag", "we write again ................ ");
-            holderp.binding.tvAyatText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            //holderp.binding.tvAyatText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             holderp.binding.tvAyatText.setText(colorNumbersInText(" ﴿ "+model.getAya().getSuraAya()+" ﴾ "+model.getAya().getText()));
 
-            holderp.binding.tvAyaTafsir.setTextSize(TypedValue.COMPLEX_UNIT_SP,textSize);
+            //holderp.binding.tvAyaTafsir.setTextSize(TypedValue.COMPLEX_UNIT_SP,textSize);
             holderp.binding.tvAyaTafsir.setText(model.getAya().getTafseer());
 
             holderp.binding.tvAyatText.setOnClickListener(v -> listener.onClick(model.getAya()));
@@ -109,7 +105,7 @@ public class MushafPageTafsirAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         } else if (getItemViewType(position) == VIEW_TYPE_SURA_STAR) {
             ViewHolder_Sura holderp = (ViewHolder_Sura) holder;
-            holderp.binding.tvAyatText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+            //holderp.binding.tvAyatText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             holderp.binding.tvAyatText.setText("بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ");
         } else {
             ViewHolder_CUSTOM holderp = (ViewHolder_CUSTOM) holder;

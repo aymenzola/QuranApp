@@ -1,10 +1,11 @@
 package com.app.dz.quranapp.Util;
 
 
-import static com.app.dz.quranapp.Services.ForegroundDownloadAudioService.AppfolderName;
+import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -14,13 +15,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.app.dz.quranapp.Entities.Riwaya;
+import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayaType;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.riwayat.CsvReader;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -60,13 +59,15 @@ public class PublicMethods {
 
     public static List<ReaderAudio> getReadersAudiosListWithRiwaya(Context context, String riwaya) {
         List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
+
         List<ReaderAudio> filterdList = new ArrayList<>();
 
         if (riwaya.contains(RiwayaType.WARCH.name())) {
             for (ReaderAudio readerAudio : list)
                 if (readerAudio.getAudioType() != 0 && readerAudio.getRiwaya().contains(RiwayaType.WARCH.name()))
                     filterdList.add(readerAudio);
-        } else if (riwaya.contains(RiwayaType.HAFS.name())) {
+        } else {
+            //default readers
             for (ReaderAudio readerAudio : list)
                 if (readerAudio.getAudioType() != 0 && readerAudio.getRiwaya().contains(RiwayaType.HAFS.name()))
                     filterdList.add(readerAudio);
@@ -103,10 +104,6 @@ public class PublicMethods {
         }
     }
 
-    public File getLocalSuraFile(ReaderAudio selectedReader, int suraIndex) {
-        return getFile(getLocalFileName(selectedReader.getReaderTag(), suraIndex), selectedReader.getReaderTag());
-    }
-
     public String getCorrectUrlOrPath(int readerId, int suraIndex, boolean isFromLocal, Context context) {
         String suraFormatNumber = decimalFormat.format(suraIndex);
 
@@ -121,7 +118,7 @@ public class PublicMethods {
 
 
         if (isFromLocal)
-            return getFile(getLocalFileName(selectedReader.getReaderTag(), suraIndex), selectedReader.getReaderTag()).getPath();
+            return getFile(context,selectedReader.getReaderTag(),suraIndex).getPath();
         else {
             if (selectedReader.getAudioType() == 3) {
                 return selectedReader.getUrl() + suraIndex + ".mp3";
@@ -131,120 +128,54 @@ public class PublicMethods {
         }
     }
 
-    public String getReaderTag(String readerName) {
-        switch (readerName) {
-            case "Alafasy":
-                return "Alafasy";
-            case "Shuraym":
-                return "Shuraym";
-            case "Sudais":
-                return "Sudais";
-            case "Mohammad_al_Tablaway_128kbps":
-                return "MohammadTab";
-            default:
-                return "AbdulBaset";
-        }
-    }
+    public String getCorrectUrlOrPath(ReaderAudio selectedReader,int suraIndex,boolean isFromLocal,Context context) {
 
-    public boolean isReaderSelectionAvailable(String selectedRe) {
-        switch (selectedRe) {
-            case "Alafasy":
-                return true;
-            case "Shuraym":
-                return true;
-            case "Sudais":
-                return true;
-            case "Mohammad_al_Tablaway_128kbps":
-                return false;
-            case "AbdulBaset/Murattal":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public File getSuraFile(String selectedReader, int suraId) {
-        return getFile(getLocalFileName(selectedReader, suraId), selectedReader);
-    }
-
-    public String getCorrectUrlOrPath(String readerName, int suraIndex, boolean isFromLocal) {
-
-        String suraFormatNumber = decimalFormat.format(suraIndex);
         if (isFromLocal)
-            return getFile(getLocalFileName(readerName, suraIndex), readerName).getPath();
+            return getFile(context,selectedReader.getReaderTag(),suraIndex).getPath();
         else {
-            switch (readerName) {
-                case "Alafasy":
-                    return "https://download.quranicaudio.com/qdc/mishari_al_afasy/murattal/" + suraIndex + ".mp3";
-                case "Shuraym":
-                    return "https://download.quranicaudio.com/qdc/saud_ash-shuraym/murattal/" + suraFormatNumber + ".mp3";
-                case "Sudais":
-                    return "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/" + suraIndex + ".mp3";
-                case "Mohammad_al_Tablaway_128kbps":
-                    return "https://download.quranicaudio.com/qdc/khalil_al_husary/murattal/" + suraIndex + ".mp3";
-                default:
-                    return "https://download.quranicaudio.com/qdc/abdul_baset/murattal/" + suraIndex + ".mp3";
+            if (selectedReader.getAudioType() == 3) {
+                return selectedReader.getUrl() + suraIndex + ".mp3";
+            } else {
+                return selectedReader.getUrl() + decimalFormat.format(suraIndex) + ".mp3";
             }
         }
     }
 
+    public File getFile(Context context,String readerTag,int suraIndex) {
+        String filename = readerTag + "_" + suraIndex + ".mp3";
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + readerTag + "/" + filename);
+    }
 
-    public String getCorrectUrlAya(String readerName, int suraIndex, int ayaIndex) {
-        String number = decimalFormat.format(suraIndex) + "" + decimalFormat.format(ayaIndex);
-        switch (readerName) {
-            case "Mohammad_al_Tablaway_128kbps":
-                return "https://mirrors.quranicaudio.com/everyayah/Mohammad_al_Tablaway_128kbps/" + number + ".mp3";
-            default:
-                return "https://verses.quran.com/" + readerName + "/mp3/" + number + ".mp3";
+
+    /*public File getFile(Context context, String readerTag, int suraIndex) {
+        String filename = readerTag + "_" + suraIndex + ".mp3";
+        File downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        if (downloadsDir != null) {
+            return new File(downloadsDir.getPath() + "/" + AppfolderName + "/" + readerTag + "/" + filename);
+        } else {
+            return null;
         }
+    }*/
 
-    }
-
-    public File getFile(String filename, String readerName) {
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-         */
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + getReaderTag(readerName) + "/" + filename);
-        /*} else {
-            return new File(Environment.getExternalStorageDirectory().getPath() + "/" + AppfolderName + "/" + filename);
-        }*/
-    }
+    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+              return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + readerTag + "/" + filename);
+          } else {
+              return new File(Environment.getExternalStorageDirectory().getPath() + "/" + AppfolderName + "/" + filename);
+          }*/
 
 
-    public String getLocalFileName(String readerName, int suraIndex) {
-        return getReaderTag(readerName) + "_" + suraIndex + ".mp3";
+
+    public String getLocalFileName(String readerTag, int suraIndex) {
+        return readerTag + "_" + suraIndex + ".mp3";
     }
 
     public boolean checkNetworkConnection(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
-                return true;
-            }
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
         }
         return false;
-    }
-
-    public void showNoInternetDialog(Context context, String message, String message2) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, R.style.AlertDialogRounded);
-        builder.setTitle("تنبيه");
-        builder.setMessage(message);
-        builder.setPositiveButton("حسنا", (dialog, which) -> {
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public void showNoInternetSnackbar(View view, String message) {
-        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE)
-                .setAction("Hide", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // do nothing
-                    }
-                });
-        snackbar.show();
     }
 
 
@@ -269,6 +200,27 @@ public class PublicMethods {
 
         btn_ok.setOnClickListener(v -> dialog.dismiss());
 
+    }
+
+    public static boolean isDeviceInSilentMode(Context context) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (audioManager != null) {
+            return audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT;
+        }
+        return false;
+    }
+
+    public static boolean isInternetAvailable(Context pContext) {
+        if (pContext == null) {
+            return false;
+        }
+        ConnectivityManager cm =
+                (ConnectivityManager) pContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 
 

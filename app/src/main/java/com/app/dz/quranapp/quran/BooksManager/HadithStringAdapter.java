@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Entities.Book;
+import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemBookBinding;
 

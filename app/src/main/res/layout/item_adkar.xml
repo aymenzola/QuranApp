@@ -1,70 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+>
 
     <data>
 
     </data>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blan">
+        android:background="@drawable/shape_dikr_category"
+        android:layout_marginBottom="10dp"
+        >
 
-        <TextView
-            android:id="@+id/tv_sura_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/tv_count"
-            android:fontFamily="@font/ffshamel_family_bold"
-            android:layout_centerVertical="true"
-            android:text="اذكار الصباح"
-            android:textColor="@color/tv_gri_color"
-            android:textSize="@dimen/tv_normal_size" />
-
-        <TextView
-            android:id="@+id/tv_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/tv_sura_name"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_centerVertical="true"
-            android:text="05 اذكار"
-            android:textStyle="bold"
-            android:fontFamily="@font/ffshamel_book"
-            android:textColor="#989797"
-            android:textSize="@dimen/tv_small_size" />
-
-        <TextView
-            android:id="@+id/tv_count"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="20dp"
+        <ImageView
+            android:id="@+id/img_save"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/ic_star"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="1"
-            android:textSize="@dimen/tv_small_size"
-            android:textColor="#4E261E"
-            android:textStyle="bold" />
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_unsaved_new"
+            />
 
-        <View
-            android:id="@+id/click_view"
+        <TextView
+            android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:background="?selectableItemBackground"
-            android:layout_alignBottom="@+id/tv_count"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-10dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@+id/img_save"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:text="اذكار الصباح"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_small_size" />
+
+        <TextView
+            android:id="@+id/tv_dikr_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img_save"
+            android:layout_toEndOf="@+id/img_save"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_centerHorizontal="true"
+            android:text="اللهم إني أسألك علماً نافعاً، ورزقاً طيباً، وعملاً متقبلاً"
+            android:fontFamily="@font/ffshamel_book"
+            android:textColor="#424242"
+            android:textSize="@dimen/tv_small_size"
+            android:visibility="gone"
             />
 
     </RelativeLayout>

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.app.dz.quranapp.MushafParte.ReadersAdapter;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.databinding.ActivityAudioFilesBinding;
-import com.app.dz.quranapp.riwayat.CsvReader;
+import com.app.dz.quranapp.Util.CsvReader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import io.reactivex.disposables.CompositeDisposable;
 public class ReaderListActivity extends AppCompatActivity {
     private ReadersAdapter adapter;
     private static List<ReaderAudio> readersList = new ArrayList<>();
-    private static final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    public static final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private static final String TAG = ReaderListActivity.class.getSimpleName();
 

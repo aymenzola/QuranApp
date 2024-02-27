@@ -1,11 +1,11 @@
 package com.app.dz.quranapp.Services;
 
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_CANCEL_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_COMPLETE_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_ERROR_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_PREPAREING_FILES_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.PROGRESS_ACTION;
-import static com.app.dz.quranapp.Services.ForegroundDownloadAudioService.AppfolderName;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_CANCEL_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_COMPLETE_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_ERROR_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_PREPAREING_FILES_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.PROGRESS_ACTION;
+import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -26,15 +26,15 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.app.dz.quranapp.Entities.Book;
-import com.app.dz.quranapp.Entities.BookCollection;
-import com.app.dz.quranapp.Entities.Hadith;
-import com.app.dz.quranapp.PlayerAudioNotification.Statics;
+import com.app.dz.quranapp.data.room.Entities.Book;
+import com.app.dz.quranapp.data.room.Entities.BookCollection;
+import com.app.dz.quranapp.data.room.Entities.Hadith;
+import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.MainActivity;
-import com.app.dz.quranapp.room.AppDatabase;
-import com.app.dz.quranapp.room.Daos.BookDao;
-import com.app.dz.quranapp.room.DatabaseClient;
+import com.app.dz.quranapp.data.room.AppDatabase;
+import com.app.dz.quranapp.data.room.Daos.BookDao;
+import com.app.dz.quranapp.data.room.DatabaseClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -415,13 +415,24 @@ public class ForegroundDownloadBookService extends Service {
                     return "Collection cant read the file or does not exist :" + file.exists() + " canRead :" + file.canRead()+" path "+file.getPath();
                 } else {
                     List<Hadith> hadithList;
+
+
+
                     try {
                         InputStream inputStream = new FileInputStream(file);
                         Gson gson = new Gson();
                         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                        hadithList = gson.fromJson(bufferedReader, new TypeToken<List<Hadith>>() {
-                        }.getType());
+                        hadithList = gson.fromJson(bufferedReader, new TypeToken<List<Hadith>>() {}.getType());
+
                         inputStream.close();
+
+                        //change item that equals bab to bab 1
+                        for (Hadith hadith : hadithList) {
+                            if (hadith.chapterTitle.equals("باب")) {
+                                hadith.chapterTitle = "باب " + hadith.chapterId + " كتاب " + hadith.bookNumber;
+                            }
+                        }
+
                         dao.insertHadithList(hadithList);
                         toldTheActivty(PROGRESS_ACTION, 100);
                         return "we save the json data successfully";

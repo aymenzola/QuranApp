@@ -18,8 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Entities.Aya;
-import com.app.dz.quranapp.Entities.AyaString;
+import com.app.dz.quranapp.data.room.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.AyaString;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemAyatStringBinding;
 import com.app.dz.quranapp.databinding.ItemBasmalaBinding;

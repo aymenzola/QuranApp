@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment_home"
-        android:name="com.app.dz.quranapp.MainFragmentsParte.HomeFragment.HomeFragment"
+        android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.HomeFragment"
         android:label="@string/home"
         tools:layout="@layout/fragment_home" >
 
@@ -26,11 +26,29 @@
             app:popUpTo="@id/fragment_home"
             app:popUpToInclusive="true"
             />
+        <action
+            android:id="@+id/action_fragment_home_to_adkarFragment"
+            app:destination="@id/adkarFragment"
+            app:popUpTo="@id/fragment_home"
+            app:popUpToInclusive="false"
+            />
+        <action
+            android:id="@+id/action_fragment_home_to_qublaFragment"
+            app:destination="@id/qublaFragment"
+            app:popUpTo="@id/fragment_home"
+            app:popUpToInclusive="false"
+            />
+        <action
+            android:id="@+id/action_fragment_home_to_quranFragmentDev"
+            app:destination="@id/quranFragmentDev" />
+        <action
+            android:id="@+id/action_fragment_home_to_adkarDetailsFragment"
+            app:destination="@id/adkarDetailsFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_Prayer"
-        android:name="com.app.dz.quranapp.MainFragmentsParte.TimeParte.FragmentPrayer"
+        android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.FragmentPrayer"
         android:label="@string/title_prayer"
         tools:layout="@layout/fragment_prayer_times" >
         <action
@@ -43,7 +61,7 @@
 
     <fragment
         android:id="@+id/fragments_collection"
-        android:name="com.app.dz.quranapp.MainFragmentsParte.CollectionsParte.FragmentLibraryList"
+        android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.FragmentLibraryList"
         android:label="@string/title_Collection"
         tools:layout="@layout/fragment_library" >
         <action
@@ -55,16 +73,63 @@
 
     <fragment
         android:id="@+id/searchQuranFragment"
-        android:name="com.app.dz.quranapp.quran.QuranSearchParte.ActivitySearchQuran"
+        android:name="com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran"
         android:label="SearchQuranFragment"
         tools:layout="@layout/fragment_quran_search"
         />
     <fragment
         android:id="@+id/quranFragment"
-        android:name="com.app.dz.quranapp.MainFragmentsParte.HomeFragment.QuranFragment"
+        android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.QuranFragment"
         android:label="QuranFragment"
         tools:layout="@layout/fragment_quran_list"
         />
+    <fragment
+        android:id="@+id/adkarFragment"
+        android:name="com.app.dz.quranapp.ui.activities.AdkarParte.AdkarFragment"
+        android:label="AdkarFragment"
+        tools:layout="@layout/fragment_adkar"
+        >
+        <action
+            android:id="@+id/action_adkarFragment_to_adkarDetailsFragment"
+            app:destination="@id/adkarDetailsFragment"
+            app:popUpTo="@id/adkarFragment"
+            app:popUpToInclusive="false"
+            />
+        <action
+            android:id="@+id/action_adkarFragment_to_fragment_home"
+            app:destination="@id/fragment_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/qublaFragment"
+        android:name="com.app.dz.quranapp.ui.activities.qibla_parte.QublaFragment"
+        android:label="QublaFragment"
+        tools:layout="@layout/fragment_qubla">
+        <action
+            android:id="@+id/action_qublaFragment_to_fragment_home"
+            app:destination="@id/fragment_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quranFragmentDev"
+        android:name="com.app.dz.quranapp.ui.activities.quran.QuranFragmentDev"
+        android:label="QuranFragmentDev"
+        tools:layout="@layout/quran_activity"
+        >
+        <action
+            android:id="@+id/action_quranFragmentDev_to_fragment_home"
+            app:destination="@id/fragment_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/adkarDetailsFragment"
+        android:name="com.app.dz.quranapp.ui.activities.AdkarParte.AdkarDetailsFragment"
+        android:label="AdkarDetailsFragment"
+        tools:layout="@layout/fragment_adkar_details"
+        >
+        <action
+            android:id="@+id/action_adkarDetailsFragment_to_adkarFragment"
+            app:destination="@id/adkarFragment" />
+    </fragment>
+
 
 
 </navigation>

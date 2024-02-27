@@ -2,14 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/fragment_home"
-        android:icon="@drawable/ic_home"
-        android:title="@string/home" />
-
-    <item
-        android:id="@+id/quranFragment"
-        android:icon="@drawable/ic_mushaf"
-        android:title="@string/title_sura" />
+        android:id="@+id/navigation_Prayer"
+        android:icon="@drawable/adhan"
+        android:title="@string/title_prayer" />
 
     <item
         android:id="@+id/fragments_collection"
@@ -17,7 +12,12 @@
         android:title="@string/title_Collection" />
 
     <item
-        android:id="@+id/navigation_Prayer"
-        android:icon="@drawable/adhan"
-        android:title="@string/title_prayer" />
+        android:id="@+id/quranFragmentDev"
+        android:icon="@drawable/ic_mushaf"
+        android:title="@string/title_sura" />
+
+    <item
+    android:id="@+id/fragment_home"
+    android:icon="@drawable/ic_home_menu"
+    android:title="@string/home" />
 </menu>

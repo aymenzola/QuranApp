@@ -2,11 +2,8 @@ package com.app.dz.quranapp;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import static com.app.dz.quranapp.MushafParte.QuranActivity.QURAN_HAFS_TYPE;
-import static com.app.dz.quranapp.MushafParte.QuranActivity.QURAN_WARSH_TYPE;
-import static com.app.dz.quranapp.MushafParte.QuranActivity.TAFSIR_TYPE;
 import static com.app.dz.quranapp.MushafParte.warsh_parte.QuranPageFragmentMultipleRiwayat.QuranWarchFolderName;
-import static com.app.dz.quranapp.Services.ForegroundDownloadAudioService.AppfolderName;
+import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,12 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.app.dz.quranapp.Entities.Riwaya;
+import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.databinding.BottomSheetLayoutBinding;
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -57,7 +53,8 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
 
         prefs = context.getSharedPreferences("MyPrefs", MODE_PRIVATE);
         int defaultSize = prefs.getInt("textSize", 25);
-        PageType = prefs.getInt("page_type", QURAN_HAFS_TYPE);
+        /*
+        PageType = prefs.getInt("page_type", RiwayaType.HAFS.name());
         FirstType = PageType;
         if (PageType == TAFSIR_TYPE)
             binding.radioTafsir.setChecked(true);
@@ -66,6 +63,7 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
         if (PageType == QURAN_WARSH_TYPE)
             binding.radioQuranWarsh.setChecked(true);
 
+        */
 
         boolean isAlreadyDownloaded = getImageDesitination(1).exists();
         if (isAlreadyDownloaded) {
@@ -100,6 +98,7 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
 
         });
 
+        /*
         binding.tvSave.setOnClickListener(v -> {
             if (PageType == QURAN_WARSH_TYPE && !isAlreadyDownloaded) {
                 Toast.makeText(context, "يجب تحميل هذه الرواية أولا", Toast.LENGTH_SHORT).show();
@@ -124,6 +123,7 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
 
             dismiss();
         });
+
 
         binding.radioQuran.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
@@ -153,6 +153,8 @@ public class FilterButtomSheetclass extends BottomSheetDialogFragment {
             dismiss();
         });
 
+
+         */
         return binding.getRoot();
     }
 

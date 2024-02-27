@@ -28,6 +28,114 @@
                 android:layout_marginBottom="5dp"
                 android:src="@drawable/salam" />
 
+            <TextView
+                android:id="@+id/tv_home_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="30dp"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:text="سارع و اعمل حسنات أينما كنت .."
+                android:textColor="@color/black"
+                android:textSize="@dimen/tv_small_size" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="10dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="6dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/card_background">
+
+                    <TextView
+                        android:id="@+id/tv_salat_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/ffshamel_book"
+                        android:gravity="center|start"
+                        android:paddingEnd="15dp"
+                        android:text="بقي على أذان الظهر"
+                        android:textColor="@color/blan"
+                        android:textSize="@dimen/tv_normal_size" />
+
+                    <TextView
+                        android:id="@+id/tv_next_prayer_countdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_salat_message"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="15dp"
+                        android:fontFamily="@font/ffshamel_family_bold"
+                        android:gravity="center"
+                        tools:text="1:05:11"
+                        android:textColor="@color/blan"
+                        android:textSize="@dimen/tv_time_size" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_next_prayer_countdown"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:drawableEnd="@drawable/ic_location_icon_blan"
+                        android:drawablePadding="5dp"
+                        android:fontFamily="@font/ffshamel_book"
+                        android:gravity="center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textColor="@color/blan"
+                        android:textSize="@dimen/tv_small_size"
+                        android:visibility="gone"
+                        tools:text="بوعاتي محمود قالمة"
+                        tools:visibility="visible" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv_location"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:fontFamily="@font/ffshamel_book"
+                        android:gravity="center"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textColor="@color/blan"
+                        android:textSize="11sp"
+                        android:visibility="visible"
+                        tools:text="الأحد 27 شعبان 1444 الموافق لـ 19-03-2023"
+                        />
+
+
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <include
+                android:id="@+id/include_home_hor_buttons_card"
+                layout="@layout/include_home_hor_buttons" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardview_quran"
                 android:layout_width="match_parent"
@@ -120,96 +228,9 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="6dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/card_background">
-
-                    <TextView
-                        android:id="@+id/tv_salat_message"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center|start"
-                        android:paddingEnd="15dp"
-                        android:text="بقي على أذان الظهر"
-                        android:textColor="@color/blan"
-                        android:textSize="@dimen/tv_normal_size" />
-
-                    <TextView
-                        android:id="@+id/tv_next_prayer_countdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_salat_message"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        tools:text="1:05:11"
-                        android:textColor="@color/blan"
-                        android:textSize="@dimen/tv_time_size" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_location"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_next_prayer_countdown"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:drawableEnd="@drawable/ic_location_icon_blan"
-                        android:drawablePadding="5dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:textColor="@color/blan"
-                        android:textSize="@dimen/tv_small_size"
-                        android:visibility="gone"
-                        tools:text="بوعاتي محمود قالمة"
-                        tools:visibility="visible" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_location"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:textColor="@color/blan"
-                        android:textSize="11sp"
-                        android:visibility="visible"
-                        tools:text="الأحد 27 شعبان 1444 الموافق لـ 19-03-2023"
-                        />
-
-
-
-                </RelativeLayout>
-
-            </androidx.cardview.widget.CardView>
+            <include
+                android:id="@+id/include_fast_adkar_card"
+                layout="@layout/include_fast_adkar" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardview_library"
@@ -332,7 +353,7 @@
                         android:fontFamily="@font/ffshamel_family_bold"
                         android:gravity="center|start"
                         android:paddingEnd="15dp"
-                        android:text="اخترنا لك من الأذكار :"
+                        android:text="من الأذكار المختارة لك  :"
                         android:textColor="@color/tv_gri_color"
                         android:textSize="@dimen/tv_normal_size" />
 

@@ -17,12 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.app.dz.quranapp.Entities.Riwaya;
+import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayaType;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
-import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.databinding.BottomSheetLayoutLogoutBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -31,8 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import io.reactivex.disposables.CompositeDisposable;
 
 
 public class BottomSheetDialogReaders extends BottomSheetDialogFragment implements ReadersAdapter.OnAdapterClickListener,
@@ -93,7 +90,8 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
     }
 
     private void manageTitleName() {
-        if (CurrantSelectedReader.getRiwaya().contains(RiwayaType.HAFS.name())) mBinding.tvTitle.setText("قراء حفص");
+        if (CurrantSelectedReader.getRiwaya().contains(RiwayaType.HAFS.name()))
+            mBinding.tvTitle.setText("قراء حفص");
         else mBinding.tvTitle.setText("قراء ورش");
     }
 
@@ -199,12 +197,14 @@ public class BottomSheetDialogReaders extends BottomSheetDialogFragment implemen
 
     public ReaderAudio getReaderAudioWithId(int readerId) {
         for (int i = 0; i < readersList.size(); i++) {
+            Log.e("taglog","list id "+readersList.get(i).getId()+" selected one : "+readerId);
             if (readersList.get(i).getId() == readerId) {
                 Log.e("taglog","audio position "+i);
                 return readersList.get(i);
             }
         }
-        return new ReaderAudio();
+        Log.e("taglog","return empty audio"+readersList.size());
+        return readersList.get(0);
     }
 
 }

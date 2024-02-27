@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|end"
+        >
+
+        <TextView
+            android:id="@+id/tv_social_media"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center|start"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:text="مواقع التواصل الخاصة بنا"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_small_size" />
+
+        <ImageView
+            android:id="@+id/img_youtube"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_youtube" />
+
+        <ImageView
+            android:id="@+id/img_instagram"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_instagram" />
+
+        <ImageView
+            android:id="@+id/img_facebook"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_facebook" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical|end"
+        >
+
+        <TextView
+            android:id="@+id/tv_website"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center|start"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:text="موقعنا : "
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_small_size" />
+
+        <ImageView
+            android:id="@+id/img_website"
+            android:layout_width="33dp"
+            android:layout_height="33dp"
+            android:src="@drawable/ic_website" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/img_qr1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/ic_qr_code1" >
+        <ImageView
+            android:id="@+id/img_qr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_qr_code" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/tv_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/ffshamel_book"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center|start"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="200dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:text="تطبيق كنوز، هو معينك على الخير"
+        android:textColor="@color/tv_gri_color"
+        android:textSize="@dimen/tv_small_size" />
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/shape_edit_text"
+        >
+
+        <ImageView
+            android:id="@+id/img_close"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="5dp"
+            android:layout_weight="0"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_close_icon"
+            android:visibility="gone"
+            app:tint="@color/text_color" />
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:hint="ابحث من هنا"
+            android:layout_margin="5dp"
+            android:drawablePadding="10dp"
+            android:drawableEnd="@drawable/ic_search_24px"
+            android:textColorHint="@color/text_color_dark"
+            android:textColor="@color/black"
+            android:padding="10dp" />
+
+
+    </LinearLayout>
+</layout>
+

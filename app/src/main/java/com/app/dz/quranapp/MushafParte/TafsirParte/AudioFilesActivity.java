@@ -1,7 +1,7 @@
 package com.app.dz.quranapp.MushafParte.TafsirParte;
 
 
-import static com.app.dz.quranapp.Services.ForegroundDownloadAudioService.AppfolderName;
+import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
 
 import android.content.Intent;
 import android.os.Bundle;

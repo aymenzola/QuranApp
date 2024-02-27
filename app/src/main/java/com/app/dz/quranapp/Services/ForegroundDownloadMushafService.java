@@ -1,12 +1,10 @@
 package com.app.dz.quranapp.Services;
 
-import static com.app.dz.quranapp.MushafParte.QuranActivity.DOWNLOAD_TYPE_AUDIO;
-import static com.app.dz.quranapp.MushafParte.QuranActivity.DOWNLOAD_TYPE_MUSHAF_IMAGES;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_CANCEL_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_COMPLETE_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_ERROR_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_PREPAREING_FILES_ACTION;
-import static com.app.dz.quranapp.PlayerAudioNotification.Statics.BROADCAST_DOWNLOAD_ACTION.PROGRESS_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_CANCEL_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_COMPLETE_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_ERROR_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_PREPAREING_FILES_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.PROGRESS_ACTION;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -19,37 +17,22 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.app.dz.quranapp.Entities.AyaAudioLimits;
-import com.app.dz.quranapp.Entities.AyaAudioLimitsFirebase;
-import com.app.dz.quranapp.Entities.SuraAudioFirebase;
-import com.app.dz.quranapp.Entities.SuraDownload;
 import com.app.dz.quranapp.MainActivity;
-import com.app.dz.quranapp.PlayerAudioNotification.Statics;
+import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.Util.PublicMethods;
-import com.app.dz.quranapp.room.AppDatabase;
-import com.app.dz.quranapp.room.Daos.AyaAudioLimitDao;
-import com.app.dz.quranapp.room.DatabaseClient;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ForegroundDownloadMushafService extends Service {
 
     private final static String FOREGROUND_CHANNEL_ID = "foreground_channel_id_1";
     private final static String TAG = ForegroundDownloadMushafService.class.getSimpleName();
+    private static final int DOWNLOAD_TYPE_MUSHAF_IMAGES = 10;
     static private int mStateService = Statics.STATE_SERVICE.NOT_INIT;
     private NotificationManager mNotificationManager;
     private WifiManager.WifiLock mWiFiLock;

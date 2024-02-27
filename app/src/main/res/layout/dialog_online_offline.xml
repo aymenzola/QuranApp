@@ -1,84 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:layout_margin="15dp"
-    android:background="@drawable/rounde"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:visibility="gone"
-        android:src="@drawable/ic_internet"
-        />
+    <data>
 
-    <TextView
-        android:id="@+id/tv_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp"
-        android:text="اختر"
-        android:fontFamily="@font/ffshamel_book"
-        android:textColor="@color/black"
-        android:textSize="@dimen/tv_normal_size" />
+    </data>
 
-    <RadioGroup
-        android:id="@+id/radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-        <RadioButton
-            android:id="@+id/radio_online"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="10dp"
-            android:background="?selectableItemBackground"
-            android:text="قراءة اونلاين"
-            android:textSize="@dimen/tv_normal_size"
-            android:textColor="@color/tv_gri_color"
-            android:fontFamily="@font/ffshamel_book"
-            android:buttonTint="@color/purple_700"
-            />
-
-        <RadioButton
-            android:id="@+id/radio_download"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:checked="true"
-            android:background="?selectableItemBackground"
-            android:layout_marginBottom="5dp"
-            android:textSize="@dimen/tv_normal_size"
-            android:textColor="@color/tv_gri_color"
-            android:fontFamily="@font/ffshamel_book"
-            android:buttonTint="@color/purple_700"
-            android:text="تحميل السورة"
-            />
-
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/btn_ok"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/ripple_effect_play_gradient"
-        android:paddingStart="40dp"
-        android:paddingEnd="40dp"
-        android:paddingTop="7dp"
+        android:layout_margin="15dp"
+        android:background="@drawable/shape_card"
         android:gravity="center"
-        android:paddingBottom="7dp"
-        android:layout_marginTop="16dp"
-        android:text="تأكيد"
-        android:fontFamily="@font/ffshamel_book"
-        android:textColor="@color/white"
-        android:textSize="@dimen/tv_normal_size" />
+        android:orientation="vertical"
+        android:padding="24dp">
 
-</LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:text="يمكنك تشغيلها من النت أو حملها وشغلها وقتما أردت"
+            android:textSize="@dimen/tv_normal_size" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/linear_download"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/shape_card_strok"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_download"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="10dp" />
+
+                <TextView
+                    android:id="@+id/btn_play_online"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/ffshamel_family_bold"
+                    android:gravity="center"
+                    android:text="تحميل"
+                    android:textColor="@color/purple_500"
+                    android:textSize="@dimen/tv_small_size" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/shape_card_strok"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_play"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="10dp" />
+
+                <TextView
+                    android:id="@+id/btn_play_offline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/ffshamel_family_bold"
+                    android:gravity="center"
+                    android:text="تشغيل"
+                    android:textColor="@color/purple_500"
+                    android:textSize="@dimen/tv_small_size" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

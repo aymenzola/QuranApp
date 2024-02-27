@@ -6,24 +6,33 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import com.app.dz.quranapp.MainFragmentsParte.TimeParte.FragmentPrayer;
+import com.app.dz.quranapp.MushafParte.MyViewModel;
+import com.app.dz.quranapp.MushafParte.OnFragmentListeners;
+import com.app.dz.quranapp.MushafParte.OnQuranFragmentListeners;
+import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.databinding.ActivityMainBinding;
-import com.app.dz.quranapp.quran.QuranSearchParte.ActivitySearchQuran;
-import com.app.dz.quranapp.quran.searchParte.SearchActivity;
+import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
+import com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran;
+import com.app.dz.quranapp.ui.activities.searchParte.SearchActivity;
 
-public class MainActivity extends AppCompatActivity implements SearchActivity.OnFragmentInteractionListener, ActivitySearchQuran.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        SearchActivity.OnFragmentInteractionListener,
+        ActivitySearchQuran.OnFragmentInteractionListener,
+        OnFragmentListeners,
+        OnQuranFragmentListeners {
 
     private ActivityMainBinding binding;
     private final static String TAG = MainActivity.class.getSimpleName();
     private NavController navController;
     private int backCount = 0;
+    private MyViewModel viewModel;
+    private Boolean isFullModeActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +45,31 @@ public class MainActivity extends AppCompatActivity implements SearchActivity.On
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             getWindow().setStatusBarColor(getColor(R.color.blan));
         }
+        viewModel = new ViewModelProvider(MainActivity.this).get(MyViewModel.class);
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main3);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+        viewModel.getData().observe(this, isFullModeActivee -> isFullModeActive = isFullModeActivee);
+
+        // Get the data from the Intent
+        AdkarModel adkarModel = (AdkarModel) getIntent().getSerializableExtra("adkarModel");
+        int page = getIntent().getIntExtra("page",-1);
+
+        if (adkarModel != null) {
+            // If the data is not null, navigate to the desired Fragment
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main3);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("adkarModel", adkarModel);
+            navController.navigate(R.id.action_fragment_home_to_adkarDetailsFragment, bundle);
+        }
+
+        if (page != -1) {
+            NavController navController = Navigation.findNavController(this,R.id.nav_host_fragment_activity_main3);
+            Bundle bundle = new Bundle();
+            bundle.putInt("page",page);
+            navController.navigate(R.id.action_fragment_home_to_quranFragmentDev,bundle);
+        }
 
     }
 
@@ -58,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SearchActivity.On
     public void onBackPressed() {
 
 
-        //handel back clickes
+        //handel back clicks
         FragmentManager fm = getSupportFragmentManager();
         int count = fm.getBackStackEntryCount();
 
@@ -67,11 +97,92 @@ public class MainActivity extends AppCompatActivity implements SearchActivity.On
         } else if (count == 0 && binding.navView.getSelectedItemId() == R.id.fragments_collection) {
             navController.navigate(R.id.action_fragments_collection_to_fragment_home);
         } else if (binding.navView.getSelectedItemId() == R.id.fragment_home) {
-            if (backCount != 0) finish();
-            backCount++;
+
+            if (navController.getCurrentDestination() != null) {
+                Log.e("quran_tag", "here 1");
+                int currentDestinationId = navController.getCurrentDestination().getId();
+
+                // Check if the current destination is AdkarDetailsFragment
+                if (currentDestinationId == R.id.adkarDetailsFragment) {
+                    backCount = 0;
+                    navController.navigate(R.id.action_adkarDetailsFragment_to_adkarFragment);
+                }
+                if (currentDestinationId == R.id.adkarFragment) {
+                    backCount = 0;
+                    navController.navigate(R.id.action_adkarFragment_to_fragment_home);
+                }
+                if (currentDestinationId == R.id.qublaFragment) {
+                    backCount = 0;
+                    navController.navigate(R.id.action_qublaFragment_to_fragment_home);
+                }
+            } else {
+                if (backCount != 0) finish();
+                backCount++;
+            }
+
+
+        } else if (binding.navView.getSelectedItemId() == R.id.quranFragmentDev) {
+            if (binding.navView.getVisibility() == View.GONE) {
+                viewModel.setIsOnBackClicked(true);
+                if (isFullModeActive) {
+                    viewModel.setData(false);
+                } else {
+                    showBottomBar();
+                }
+
+            } else {
+                backCount = 0;
+                navController.navigate(R.id.action_quranFragmentDev_to_fragment_home);
+            }
         } else {
             super.onBackPressed();
         }
     }
 
+    @Override
+    public void onAyaClick(Aya aya) {
+    }
+
+    @Override
+    public void onHideAyaInfo() {
+
+    }
+
+    @Override
+    public void onSaveAndShare(Aya aya) {
+
+    }
+
+    @Override
+    public void onAyaTouch() {
+
+    }
+
+    @Override
+    public void onScreenClick() {
+
+    }
+
+    @Override
+    public void onPageChanged(int page) {
+
+    }
+
+    public void hideBottomBar() {
+        binding.navView.setVisibility(View.GONE);
+    }
+
+    public void showBottomBar() {
+        binding.navView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onHideBottomBar() {
+        hideBottomBar();
+    }
+
+    @Override
+    public void onShowBottomBar() {
+        showBottomBar();
+    }
 }

@@ -7,14 +7,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
-import com.app.dz.quranapp.riwayat.CsvReader;
-import com.app.dz.quranapp.room.MushafDatabase;
+import com.app.dz.quranapp.Util.CsvReader;
+import com.app.dz.quranapp.data.room.MushafDatabase;
 
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class ReadersRepository {
 
@@ -48,13 +46,18 @@ public class ReadersRepository {
     }
 
     public void setReaderAudio(int readerId) {
+        Log.e("trak_page", "we ask for reader  id "+readerId);
         List<ReaderAudio> list = CsvReader.readReaderAudioListFromCsv(application1.getApplicationContext(), "audio.csv");
         for (ReaderAudio readerAudio : list) {
             if (readerAudio.getId() == readerId) {
+                Log.e("trak_page", "we ask for reader  id "+readerId);
                 selectedReader.setValue(readerAudio);
                 break;
+            } else {
+                Log.e("trak_page", "no equal id "+readerId+"   list reader id "+readerAudio.getId());
             }
         }
+        Log.e("trak_page", "reader loop finished");
     }
 
     public void clearDesposite() {

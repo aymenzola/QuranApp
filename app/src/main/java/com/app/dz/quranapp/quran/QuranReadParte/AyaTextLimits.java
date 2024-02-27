@@ -1,6 +1,6 @@
 package com.app.dz.quranapp.quran.QuranReadParte;
 
-import com.app.dz.quranapp.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.Aya;
 
 public class AyaTextLimits {
     public int id;

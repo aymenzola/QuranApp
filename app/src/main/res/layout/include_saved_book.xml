@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="25dp"
+    android:layout_marginStart="25dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/shape_card">
+
+    <ImageView
+        android:id="@+id/img_save"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="3dp"
+        android:src="@drawable/ic_unsaved_new" />
+
+
+    <LinearLayout
+        android:id="@+id/top_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:gravity="center|end"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:id="@+id/tv_image"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/ic_star2" />
+
+        <TextView
+            android:id="@+id/tv_book_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center_vertical|end"
+            android:maxWidth="210dp"
+            android:singleLine="true"
+            android:text="كتاب الأصول الثلاثة"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_small_size" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_chapters_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/top_linear"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/shape_button_unselected"
+        android:backgroundTint="#F3F3F3"
+        android:fontFamily="@font/ffshamel_book"
+        android:gravity="center|start"
+        android:maxLines="2"
+        android:paddingStart="7dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="7dp"
+        android:paddingBottom="4dp"
+        android:text="الباب الأول : العلم وأهميته في حياة المسلمد"
+        android:textColor="@color/tv_gri_color"
+        android:textSize="13sp" />
+
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/tv_chapters_number"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:background="#FAFBFD" />
+
+    <TextView
+        android:id="@+id/tv_move_library"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_line"
+        android:layout_centerInParent="true"
+        android:background="?selectableItemBackground"
+        android:drawablePadding="3dp"
+        android:fontFamily="@font/ffshamel_family_bold"
+        android:gravity="center"
+        android:paddingStart="15dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="4dp"
+        android:text="تابع القراءة"
+        android:textColor="#E6A34C"
+        android:textSize="@dimen/tv_normal_size"
+        app:drawableStartCompat="@drawable/ic_arrow_1" />
+
+
+</RelativeLayout>
+

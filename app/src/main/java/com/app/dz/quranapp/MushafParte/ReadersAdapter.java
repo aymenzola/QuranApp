@@ -13,16 +13,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemReaderBinding;
+import com.app.dz.quranapp.databinding.ItemReaderNewBinding;
 import com.bumptech.glide.Glide;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHolder_Reader> {
 
     private final Context mCtx;
-    private final List<ReaderAudio> arrayList;
+    private List<ReaderAudio> arrayList;
     private final OnAdapterClickListener listener;
     private int lastselcted = -1;
 
@@ -30,6 +32,12 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
         this.arrayList = arrayList;
         this.mCtx = mCtx;
         this.listener = listener1;
+    }
+
+    public void setNewList(List<ReaderAudio> list) {
+        arrayList.clear();
+        arrayList = new ArrayList<>(list);
+        notifyDataSetChanged();
     }
 
     public ReaderAudio getItem(int position) {
@@ -52,8 +60,8 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
 
     @NonNull
     public ViewHolder_Reader onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemReaderBinding item = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()), R.layout.item_reader, parent, false);
+        ItemReaderNewBinding item = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()), R.layout.item_reader_new, parent, false);
         return new ViewHolder_Reader(item);
     }
 
@@ -63,7 +71,7 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
 
         ReaderAudio reader = arrayList.get(position);
 
-        holder.binding.itemName.setText(reader.getName());
+        holder.binding.tvReaderName.setText(reader.getName());
 
         if (reader.isSelected()) {
             holder.binding.linearParent.setBackgroundColor(mCtx.getResources().getColor(R.color.selectitem_color));
@@ -72,13 +80,25 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
 
         Glide.with(mCtx).load(reader.getReaderImage()).into(holder.binding.readerImage);
 
-        holder.binding.viewId.setOnClickListener(v -> {
+        holder.binding.readerImage.setOnClickListener(v -> {
             selectItem(position);
             listener.onClick(reader, position);
         });
-        holder.binding.audioImage.setOnClickListener(v -> {
+
+        holder.binding.tvReaderName.setOnClickListener(v -> {
             selectItem(position);
-            listener.onAudioPlayClicked(reader, position);
+            listener.onClick(reader, position);
+        });
+
+
+        holder.binding.imgPlay.setOnClickListener(v -> {
+            selectItem(position);
+            listener.onAudioPlayClicked(reader,position);
+        });
+
+        holder.binding.tvPlay.setOnClickListener(v -> {
+            selectItem(position);
+            listener.onAudioPlayClicked(reader,position);
         });
     }
 
@@ -90,9 +110,8 @@ public class ReadersAdapter extends RecyclerView.Adapter<ReadersAdapter.ViewHold
 
 
     public static class ViewHolder_Reader extends RecyclerView.ViewHolder {
-        ItemReaderBinding binding;
-
-        public ViewHolder_Reader(ItemReaderBinding bindingg) {
+        ItemReaderNewBinding binding;
+        public ViewHolder_Reader(ItemReaderNewBinding bindingg) {
             super(bindingg.getRoot());
             binding = bindingg;
 

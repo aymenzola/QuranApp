@@ -25,5 +25,6 @@
     <!--    tablet 10-->
     <dimen name="img_location_image_width10">350dp</dimen>
     <dimen name="tv_normal_size_tablet10">23sp</dimen>
+    <dimen name="pageMargin">16dp</dimen>
 
 </resources>

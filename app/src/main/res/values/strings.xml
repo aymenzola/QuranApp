@@ -13,8 +13,8 @@
 
 
     <!--Qibla Menu Strings-->
-    <string name="gps_settings_title">GPS settings</string>
-    <string name="gps_settings_text">GPS is not enabled, you must activate it first from the settings to get the Qibla direction.</string>
+    <string name="gps_settings_title">GPS اعدادات</string>
+    <string name="gps_settings_text">نظام تحديد المواقع العالمي (GPS) غير مُفعّل، يجب عليك تفعيله أولاً من الإعدادات لتتمكن من تحديد اتجاه القبلة.</string>
     <string name="permission_not_garanted">Permissions are not activated</string>
     <string name="permissiongaranted">Permissions have been activated, please activate GPS and re-enter the list to renew the data</string>
     <string name="coord">Coordinates:</string>
@@ -22,12 +22,13 @@
     <string name="fromnorth">Degrees from the north</string>
     <string name="lastlocation">Data of the previous time</string>
     <string name="locationunready">Please check the GPS settings and try again</string>
-    <string name="gpsplz">Check the GPS settings to be able to determine the direction of the Qiblah</string>
+    <string name="gpsplz">تحقق من إعدادات نظام تحديد المواقع العالمي (GPS) لتتمكن من تحديد اتجاه القبلة</string>
     <string name="consignes">Instructions</string>
     <string name="qiblatips">To get accurate orientation, please place the phone on a flat surface, check the GPS settings, then re-enter this menu.</string>
     <string name="longitude">Longitude</string>
     <string name="latitude">Latitude</string>
     <string name="ok">حسنا</string>
+    <string name="about_text">تطبيق كنوز هو تطبيق شامل لموارد من الأجور و الحسنات فبه تضبط أوقات الصلاة في منطقتك فتصلي صلاتك في وقتها \n و لك فيه أن تحافظ على وردك القرآني و تتدبر معانيه بقراءة التفاسير المتوفرة، كذا أن تزيد رصيدك المعرفي في المكتبة المتوفرة على كتب قيمة، و تحافظ على أوراد الذكر اليومي و مختلف الأذكار \n راجين المولى أن يتقبل منا هذا العمل الصالح المبارك و يكتب لنا و لكم و لكل من شارك في نشر هذا الخير،.</string>
 
 
 </resources>

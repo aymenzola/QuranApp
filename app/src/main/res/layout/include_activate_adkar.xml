@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardview_library"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginEnd="15dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="6dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blan">
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_adkar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:minHeight="5dp"
+            android:maxHeight="10dp"
+            tools:checked="true"
+            />
+
+        <LinearLayout
+            android:id="@+id/top_linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:gravity="center|end"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="0dp">
+
+            <ImageView
+                android:id="@+id/tv_image"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:src="@drawable/ic_star2" />
+
+            <TextView
+                android:id="@+id/tv_library"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ffshamel_family_bold"
+                android:gravity="center_vertical|end"
+                android:paddingEnd="15dp"
+                android:text="عود لسانك ذكر الله"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="@dimen/tv_normal_size" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_destination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/top_linear"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center|start"
+            android:text="اختر مستوى عرض الأذكار يوميا"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="14sp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/tv_chapter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_destination"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:gravity="center|end"
+            android:orientation="horizontal"
+            >
+
+
+            <TextView
+                android:id="@+id/tv_level_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="1"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/shape_button_unselected"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="عالي"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="12sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_level_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="2"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/shape_button_unselected"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="عادي"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="12sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_level_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="3"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/shape_button_unselected"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="متوسط"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="12sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_level_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_button_unselected"
+                android:tag="4"
+                android:fontFamily="@font/ffshamel_book"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="منخفظ"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="12sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
