@@ -21,10 +21,13 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/progress_reading_linear"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <RelativeLayout
                     android:id="@+id/realative_play"
@@ -70,11 +73,11 @@
                     android:id="@+id/img_change_speed"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
                     android:layout_weight="0"
                     android:background="@drawable/shape_cercel"
-                    android:backgroundTint="#FCFCFD"
+                    android:backgroundTint="#ECECED"
                     android:fontFamily="@font/roboto_medium_numbers"
                     android:gravity="center"
                     android:text="x1"
@@ -119,17 +122,6 @@
 
                 </RelativeLayout>
 
-
-                <ImageView
-                    android:id="@+id/img_play1"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_centerInParent="true"
-                    android:background="@drawable/shape_cercel"
-                    android:backgroundTint="#FDF7F1"
-                    android:src="@drawable/ic_play"
-                    android:visibility="gone" />
-
                 <ImageView
                     android:id="@+id/img_previous_sura"
                     android:layout_width="45dp"
@@ -139,8 +131,7 @@
                     android:layout_toEndOf="@+id/img_play_relative"
                     android:padding="7dp"
                     android:src="@drawable/ic_next2"
-                    app:tint="#DFDEDE"
-                    />
+                    app:tint="#DFDEDE" />
 
                 <ImageView
                     android:id="@+id/img_next_sura"
@@ -151,8 +142,7 @@
                     android:layout_toStartOf="@+id/img_play_relative"
                     android:padding="7dp"
                     android:src="@drawable/ic_next33"
-                    app:tint="#DFDEDE"
-                    />
+                    app:tint="#DFDEDE" />
 
                 <ImageView
                     android:id="@+id/img_stop"
@@ -165,9 +155,23 @@
                     android:backgroundTint="#FCFCFD"
                     android:padding="12dp"
                     android:src="@drawable/ic_baseline_square_24"
-                    app:tint="#DFDEDE"
                     android:visibility="gone"
-                    />
+                    app:tint="#DFDEDE"
+                    tools:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/img_change_speed2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="15dp"
+                    android:background="@drawable/shape_cercel"
+                    android:backgroundTint="#ECECED"
+                    android:fontFamily="@font/roboto_medium_numbers"
+                    android:gravity="center"
+                    android:text="x1"
+                    android:textColor="#717171" />
 
                 <View
                     android:layout_width="5dp"

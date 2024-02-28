@@ -7,6 +7,7 @@ import static com.app.dz.quranapp.Communs.Statics.ACTION.SEEK_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.ACTION.STOP_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_ERROR_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_FINISHED_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_NOT_AVAILABLE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PAUSE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PLAYING_PROGRESS_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PREPARING_ACTION;
@@ -148,230 +149,23 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
         return binding.getRoot();
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        makeStutsBarColored();
-        viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
-        publicMethods = PublicMethods.getInstance();
-
-        if (getArguments() != null)
-            startPage = getArguments().getInt("page");
-        else startPage = 1;
-
-
-        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(requireActivity());
-        viewModel.setReaderWithId(sharedPreferenceManager.getSelectedReaderId());
-        viewModel.setReadersList();
-
-        selectedRiwaya = SharedPreferenceManager.getInstance(requireActivity()).getLastRiwaya();
-        binding.tvChangeRiwaya.setText(selectedRiwaya.name);
-
-        MushafDatabase database = MushafDatabase.getInstance(requireActivity());
-        dao = database.getAyaDao();
-
-        setListenrs();
-        setRiwayaListListeners();
-
-        setObservers();
-        PrepareAdapterPages(startPage);
-        handleSavedPageView();
-        manageAndUpdatePageInfo();
-        viewModel.setAllSuraList();
-
-
-        binding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-
-                Log.e("testtag", "onPageSelected " + position + " " + adapterPagerForSign.getCount());
-                if (LastPage == 604 && position == 0) return;
-                if (adapterPagerForSign.getCount() == position + 1 && MinPage == 1) return;
-
-                if (adapterPagerForSign.getCount() == position + 1) {
-                    Log.e("testtag", "1 onPageSelected we adding new items min " + MinPage);
-                    PrepareAdapterPages(MinPage);
-                }
-                if (position == 0) {
-                    Log.e("testtag", "0 onPageSelected we adding new items last " + LastPage);
-                    PrepareAdapterPages(LastPage);
-                }
-                Log.e("juza_tag", "manageAndUpdatePageInfo called from onPageSelected position " + position);
-                manageAndUpdatePageInfo();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        showReadersList();
-        AudioReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction() == null) return;
-                if (intent.getAction().equals("AUDIO_FINISHED")) {
-                    String action = intent.getStringExtra("action");
-                    if (action == null) return;
-
-                    switch (action) {
-                        case AUDIO_PROGRESS_ACTION -> {
-                            binding.includeAudioPlaying.pregress.setIndeterminate(true);
-                            binding.includeAudioPlaying.progressPreparingAudio.setVisibility(View.VISIBLE);
-                            Log.e(TAG, "we recieve PROGRESS");
-                        }
-                        case AUDIO_START_ACTION -> {
-                            binding.includeAudioPlaying.pregress.setIndeterminate(false);
-                            binding.includeAudioPlaying.progressPreparingAudio.setIndeterminate(false);
-                            binding.includeAudioPlaying.progressPreparingAudio.setVisibility(View.GONE);
-                            Log.e(TAG, "we recieve start");
-                            playingSura = currantSura;
-                            startIcons();
-                        }
-                        case AUDIO_PREPARING_ACTION -> {
-                            Log.e(TAG, "we recieve preparing");
-
-                        }
-                        case AUDIO_PAUSE_ACTION -> {
-                            Log.e(TAG, "we recieve pause");
-                            binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_play_arrow_24);
-                        }
-                        case AUDIO_RESUME_ACTION -> {
-                            Log.e(TAG, "we recieve resume");
-                            binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_pause_24);
-                        }
-                        case AUDIO_SELECT_AYA_ACTION -> {
-                            // select option avialable only in smart mode
-                            if (selectedRiwaya.tag.equals(RiwayaType.HAFS_SMART.name())) {
-                                Aya selectedaya = (Aya) intent.getSerializableExtra("selctedaya");
-                                if (selectedaya == null) return;
-
-                                Fragment f = getCurrentFragment();
-                                QuranPageFragment quranPageFragment = (QuranPageFragment) f;
-                                int currantPage = quranPageFragment.getCurrantPage();
-                                if (currantPage == selectedaya.getPage()) {
-                                    //requireActivity() is the fragment that we need
-                                    quranPageFragment.selectThisAya(selectedaya);
-                                } else if (currantPage + 1 == selectedaya.getPage()) {
-//                                    move to next fragment that we need
-                                    int o = binding.viewPager.getCurrentItem() - 1;
-                                    Log.e("lifecycle", "next fragment " + o);
-                                    if (o >= 0 && o < adapterPagerForSign.getCount()) {
-                                        Log.e("lifecycle", "here 2");
-                                        binding.viewPager.setCurrentItem(o);
-                                        Fragment nextFragement = getCurrentFragment();
-                                        QuranPageFragment quranPageNextFragment = (QuranPageFragment) nextFragement;
-                                        quranPageNextFragment.selectThisAya(selectedaya);
-                                    } else Log.e("lifecycle", "here 3");
-                                }
-                            }
-                        }
-
-                        case AUDIO_FINISHED_ACTION -> {
-                            //unSelectView();
-                            currantSura = null;
-                            playingSura = null;
-                            Audiofinished();
-                        }
-                        case AUDIO_STOP_ACTION -> {
-                            currantSura = null;
-                            playingSura = null;
-                            Log.e(TAG, "we receive stop");
-                            Audiofinished();
-                        }
-                        case AUDIO_ERROR_ACTION -> {
-                            Toast.makeText(context, "حدث خطأ ما", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "we receive error");
-                            currantSura = null;
-                            playingSura = null;
-                            Audiofinished();
-                        }
-                        case CHANGE_READER_ACTION -> {
-                            Log.e(TAG, "fragment  receive change reader so play audio again");
-                            playAudioButtonClicked();
-                        }
-                        case AUDIO_PLAYING_PROGRESS_ACTION -> {
-                            //Log.e(TAG, "we recieve audio playing progress");
-                            int max = intent.getIntExtra("maxProgress", 0);
-                            int progress = intent.getIntExtra("progress", 0);
-                            displayTime(max, progress);
-                            //check privious max
-                            if (max != binding.includeAudioPlaying.pregress.getMax())
-                                binding.includeAudioPlaying.pregress.setMax(max);
-                            binding.includeAudioPlaying.pregress.setProgress(progress);
-                        }
-                    }
-                }
-            }
-        };
-        DownloadReceiver = new BroadcastReceiver() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction() == null) return;
-                if (intent.getAction().equals("DOWNLOAD_FINISHED")) {
-                    String action = intent.getStringExtra("action");
-                    if (action == null) return;
-                    switch (action) {
-                        case PROGRESS_ACTION -> {
-                            int progress = intent.getIntExtra("progress", 0);
-                            binding.tvDownloadProgress.setText(String.valueOf(progress));
-                            binding.progressBar.setProgress(progress);
-                        }
-                        case DOWNLOAD_CANCEL_ACTION -> {
-                            Log.e(TAG, "we recieve " + DOWNLOAD_CANCEL_ACTION);
-                            HandleDownloadStopIcon();
-                        }
-                        case DOWNLOAD_ERROR_ACTION -> {
-                            Log.e(TAG, "we recieve " + DOWNLOAD_ERROR_ACTION);
-                            HandleDownloadStopIcon();
-                        }
-                        case DOWNLOAD_COMPLETE_ACTION -> {
-                            int downloadType = intent.getIntExtra("type", 0);
-                            binding.tvDownloadTitle.setText("اكتمل التحميل");
-
-                            //binding.downloadLinear.setVisibility(View.GONE);
-                            //binding.playLinear.setVisibility(View.VISIBLE);
-
-                            //if (downloadType == DOWNLOAD_TYPE_AUDIO) PreparAudio();
-                        }
-
-                        case DOWNLOAD_PREPAREING_FILES_ACTION -> {
-                            Log.e(TAG, "we set progress indeterminate ");
-                            binding.tvDownloadTitle.setText("جاري تحضير الملفات ...");
-                            binding.progressBar.setIndeterminate(true);
-                        }
-                    }
-
-                }
-            }
-        };
-
-
-    }
 
     @SuppressLint("SetTextI18n")
     private void manageAndUpdatePageInfo() {
         Log.e("juza_tag", "manageAndUpdatePageInfo called");
         PageInfo pageInfo = getCurrentPageInfo();
-        binding.tvPageNumber.setText("ص " + pageInfo.page);
+
+        /*binding.tvPageNumber.setText("ص " + pageInfo.page);
         binding.tvJuzNumber.setText(pageInfo.justName);
         binding.tvSuraName.setText(" " + pageInfo.suraName);
-
+*/
         if (readingPosition.page == pageInfo.page) {
             Glide.with(requireActivity()).load(R.drawable.ic_save).into(binding.imgSave);
         } else {
             Glide.with(requireActivity()).load(R.drawable.ic_save_new).into(binding.imgSave);
         }
+
+
     }
 
     private void displayTime(int maxMillis, int progressMillis) {
@@ -450,6 +244,13 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
     private void startIcons() {
         binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_pause_24);
 
+        //show reading progress linear layout
+        binding.includeAudioPlaying.progressReadingLinear.setVisibility(View.VISIBLE);
+
+        //hide speed icon at bottom and show stop icon in its place
+        binding.includeAudioPlaying.imgChangeSpeed2.setVisibility(View.GONE);
+        binding.includeAudioPlaying.imgStop.setVisibility(View.VISIBLE);
+
         /*if (selectedReader.isThereSelection()) {
             binding.imgNext.setImageResource(R.drawable.ic_next33);
             binding.imgBack.setImageResource(R.drawable.ic_next2);
@@ -458,9 +259,6 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
             binding.imgBack.setImageResource(R.drawable.ic_back);
         }*/
 
-        binding.includeAudioPlaying.imgStop.setVisibility(View.VISIBLE);
-        binding.includeAudioPlaying.imgPreviousSura.setVisibility(View.VISIBLE);
-        binding.includeAudioPlaying.imgNextSura.setVisibility(View.VISIBLE);
 
     }
 
@@ -542,7 +340,6 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
         binding.includeAudioPlaying.imgNextSura.setOnClickListener(v -> changeSura(NEXT_SURA_ACTION));
 
         binding.includeAudioPlaying.imgPreviousSura.setOnClickListener(v -> changeSura(BACK_SURA_ACTION));
-
         binding.includeAudioPlaying.pregress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -562,9 +359,7 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
 
         binding.includeAudioPlaying.imgStop.setOnClickListener(v -> changeAudioAction(STOP_ACTION));
 
-        binding.imgMenu.setOnClickListener(v -> {
-            binding.drawerLayout.openDrawer(GravityCompat.END); // Use GravityCompat.START for left-to-right locales
-        });
+        binding.imgMenu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.END));
 
         binding.imgTafsir.setOnClickListener(v -> changeRiwayaToTafsir());
 
@@ -581,18 +376,7 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
 
 
         binding.includeAudioPlaying.imgChangeSpeed.setOnClickListener(v -> changeSpeed());
-
-        binding.imgMoveback.setOnClickListener(v -> {
-            if (binding.viewPager.getCurrentItem() < adapterPagerForSign.getCount() - 1) {
-                binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() + 1);
-            }
-        });
-
-        binding.imgMovenext.setOnClickListener(v -> {
-            if (binding.viewPager.getCurrentItem() > 0) {
-                binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() - 1);
-            }
-        });
+        binding.includeAudioPlaying.imgChangeSpeed2.setOnClickListener(v -> changeSpeed());
 
         binding.imgCloseAudioLayout.setOnClickListener(v -> {
             /*if (binding.recyclerViewReaders.getVisibility() == View.VISIBLE) {
@@ -611,12 +395,17 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
         binding.imgOpenReaders.setOnClickListener(v -> {
             if (binding.linearReaders.getVisibility() == View.VISIBLE) {
 
+                binding.imgOpenReaders.setColorFilter(null);
+
                 Glide.with(requireActivity()).load(R.drawable.ic_navigat3).into(binding.imgExpand);
                 binding.linearReaders.setVisibility(View.GONE);
                 binding.imgExpand.setVisibility(View.GONE);
                 //binding.recyclerViewReaders.setVisibility(View.GONE);
                 binding.bottomLinear.setBackgroundResource(R.drawable.shape_card);
             } else {
+                //should change imgOpenReaders src tint
+                binding.imgOpenReaders.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.purple_500), android.graphics.PorterDuff.Mode.SRC_IN);
+
                 binding.bottomLinear.setBackgroundResource(R.drawable.shape_card_bottom);
                 Glide.with(requireActivity()).load(R.drawable.round_keyboard_arrow_down_24).into(binding.imgExpand);
 
@@ -646,7 +435,7 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
                 warshAudioList = getReaderAudioList(requireActivity(), RiwayaType.HAFS.name());
 
             setCorrectTextColor(RiwayaType.HAFS.name());
-            binding.btnHafsReaders.setText("حفص ( " + warshAudioList.size() + " )");
+            binding.btnHafsReaders.setText("حفص ( " + hafsAudioList.size() + " )");
             adapter_Readers.setNewList(hafsAudioList);
         });
 
@@ -668,15 +457,13 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
                 if (hafsAudioList.size() == 0)
                     hafsAudioList = getReaderAudioList1(requireActivity());
 
-                binding.btnWarshReaders.setText("حفص ( " + warshAudioList.size() + " )");
+                binding.btnHafsReaders.setText("حفص ( " + hafsAudioList.size() + " )");
                 adapter_Readers.setNewList(hafsAudioList);
             }
         });
 
         binding.btnDismis.setOnClickListener(v -> {
-            //binding.includeAudioPlaying.getRoot().setVisibility(View.GONE);
             binding.relativeReaderList.setVisibility(View.GONE);
-            //binding.imgCloseAudioLayout.setVisibility(View.VISIBLE);
         });
 
         binding.imgExpand.setOnClickListener(v -> {
@@ -694,26 +481,11 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
             }
         });
 
-        binding.imgFullScreen.setOnClickListener(v -> {
-            makeItFullScreen();
-        });
-
-
-        /* binding.tvShare.setOnClickListener(v -> {
-            if (selectedAya != null)
-                shareAyaTafsir(selectedAya.getText() + " \n " + " التفسير " + "\n" + selectedAya.getTafseer(), "مشاركة");
-        }); */
+        binding.imgFullScreen.setOnClickListener(v -> makeItFullScreen());
 
         binding.imgSave.setOnClickListener(v -> saveAyaOrPage());
 
-        /*binding.tvTafsir.setOnClickListener(v -> {
-            if (selectedAya != null) dialog_tafsir();
-        });*/
-
         binding.includeAudioPlaying.imgPlay.setOnClickListener(v -> playAudioButtonClicked());
-
-        //binding.imgNext.setOnClickListener(v -> changeAudioAction(Statics.ACTION.NEXT_AYA_ACTION));
-        //binding.imgBack.setOnClickListener(v -> changeAudioAction(Statics.ACTION.BACK_AYA_ACTION));
 
         binding.imgCancelDownload.setOnClickListener(v -> StopTheDownload());
 
@@ -723,8 +495,12 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
         if (currantSura == null) {
             // change only sura page
             int page = getCurrentPageNumber();
-            Log.e(TAG,"moving to page "+page);
-            moveTpage(page);
+            Log.e(TAG, "we are moving current page is : " + page);
+
+            if (page < 604 && page > 0)
+                getAndMoveToNextSuraPage(page, action.equals(NEXT_SURA_ACTION) ? +1 : -1);
+
+
         } else {
             //change sura page and audio
             int suraId = currantSura.getId();
@@ -749,15 +525,20 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
         if (audioPlayingSpeed == speedValues[0]) {
             audioPlayingSpeed = speedValues[1];
             binding.includeAudioPlaying.imgChangeSpeed.setText("x" + speedValues[1]);
+            binding.includeAudioPlaying.imgChangeSpeed2.setText("x" + speedValues[1]);
+
         } else if (audioPlayingSpeed == speedValues[1]) {
             audioPlayingSpeed = speedValues[2];
             binding.includeAudioPlaying.imgChangeSpeed.setText("x" + speedValues[2]);
+            binding.includeAudioPlaying.imgChangeSpeed2.setText("x" + speedValues[2]);
         } else if (audioPlayingSpeed == speedValues[2]) {
             audioPlayingSpeed = speedValues[3];
             binding.includeAudioPlaying.imgChangeSpeed.setText("x" + speedValues[3]);
+            binding.includeAudioPlaying.imgChangeSpeed2.setText("x" + speedValues[3]);
         } else {
             audioPlayingSpeed = speedValues[0];
             binding.includeAudioPlaying.imgChangeSpeed.setText("x" + speedValues[0]);
+            binding.includeAudioPlaying.imgChangeSpeed2.setText("x" + speedValues[0]);
         }
 
         ChangePlayingAudioSpeed();
@@ -809,11 +590,20 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
     }
 
     private void Audiofinished() {
+
+        binding.includeAudioPlaying.pregress.setIndeterminate(false);
+        binding.includeAudioPlaying.progressPreparingAudio.setIndeterminate(false);
+        binding.includeAudioPlaying.progressPreparingAudio.setVisibility(View.GONE);
+
         binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_play_arrow_24);
 
         binding.includeAudioPlaying.imgStop.setVisibility(View.GONE);
-        binding.includeAudioPlaying.imgPreviousSura.setVisibility(View.GONE);
-        binding.includeAudioPlaying.imgNextSura.setVisibility(View.GONE);
+
+        //hide reading progress
+        binding.includeAudioPlaying.progressReadingLinear.setVisibility(View.GONE);
+
+        //show speed icon at bottom
+        binding.includeAudioPlaying.imgChangeSpeed2.setVisibility(View.VISIBLE);
 
         binding.includeAudioPlaying.itemCurrentTime.setText("");
         binding.includeAudioPlaying.itemAudioTime.setText("");
@@ -841,6 +631,14 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
 
 
     private void PreparAudio() {
+
+        boolean isAvailable = PublicMethods.getInstance().isAvailableFile(currantSura.getId(), selectedReader.getReaderTag());
+        Log.e(TAG, "is file available " + isAvailable + " Tag " + selectedReader.getReaderTag() + " sura " + currantSura.getId());
+        if (!isAvailable) {
+            Toast.makeText(requireActivity(), "الملف غير متاح", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         File file = publicMethods.getFile(requireActivity(), selectedReader.getReaderTag(), currantSura.getId());
         Log.e(TAG, "is file exist " + file.exists() + " path " + file.getPath());
         if (file.exists() && file.canRead()) lunchAudio();
@@ -1047,7 +845,8 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
     @SuppressLint("SetTextI18n")
     @Override
     public void onPageChanged(int page) {
-        binding.tvPageNumber.setText("ص " + page);
+        //binding.tvPageNumber.setText("ص " + page);
+
     }
 
 
@@ -1209,13 +1008,11 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
         adapter_Readers = new ReadersAdapter(getReaderAudioList1(requireActivity()), requireActivity(), new ReadersAdapter.OnAdapterClickListener() {
             @Override
             public void onClick(ReaderAudio reader, int position) {
-
             }
 
             @Override
             public void onAudioPlayClicked(ReaderAudio reader, int position) {
                 //reader audio play changed
-
                 selectedReader = reader;
                 SharedPreferenceManager.getInstance(requireActivity()).saveSelectedReaderId(reader.getId());
                 manageReaderImage(selectedReader.getReaderImage());
@@ -1305,25 +1102,28 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
 
     private void changeRiwayaToTafsir() {
         if (selectedRiwaya.tag.equals(RiwayaType.TAFSIR_QURAN.name()) && previousRiwaya != null) {
+            binding.imgTafsir.setColorFilter(null);
             selectedRiwaya = previousRiwaya;
         } else {
+            binding.imgTafsir.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.purple_500), android.graphics.PorterDuff.Mode.SRC_IN);
             previousRiwaya = selectedRiwaya;
             //this is tafsir riwaya
             selectedRiwaya = SharedPreferenceManager.getInstance(requireActivity()).getAllRiwayaList().get(6);
         }
-        updateRiwaya();
+        updateRiwaya(true);
     }
 
     private void riwayaChanged(Riwaya riwaya) {
         selectedRiwaya = riwaya;
-        updateRiwaya();
+        updateRiwaya(false);
     }
 
-    private void updateRiwaya() {
+    private void updateRiwaya(boolean isTafsir) {
         binding.tvChangeRiwaya.setText(selectedRiwaya.name);
         adapter_Readers.setNewList(getReaderAudioList1(requireActivity()));
         createNewFragments();
-        SharedPreferenceManager.getInstance(requireActivity()).saveLastRiwaya(selectedRiwaya);
+        if (!isTafsir)
+            SharedPreferenceManager.getInstance(requireActivity()).saveLastRiwaya(selectedRiwaya);
         binding.linearRiwayaList.setVisibility(View.GONE);
     }
 
@@ -1421,6 +1221,43 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
                 }));
 
         //compositeDisposable.clear();
+    }
+
+    public void getAndMoveToNextSuraPage(int page, int direction) {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        MushafDatabase database = MushafDatabase.getInstance(requireActivity());
+        AyaDao dao = database.getAyaDao();
+
+        compositeDisposable.add(dao.getLastAyaInPage(page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aya -> {
+                    Log.e(TAG, "we find the current sura is " + aya.getSura());
+
+                    if (aya.getSura() < 114 && aya.getSura() > 0) {
+                        int nextOrBackSura = aya.getSura() + direction;
+                        Log.e(TAG, "asking for sura number "+aya.getSura()+" page ?");
+                        getNextBackSuraPage(nextOrBackSura);
+                    } else {
+                        Log.e(TAG, "we are in the last or first sura");
+                    }
+
+                }, e -> {
+                    Log.e(TAG, "1 data error   " + e.getMessage());
+                }));
+    }
+
+    public void getNextBackSuraPage(int sura) {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(dao.getFirstAyaInSuraObservable(sura)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aya -> {
+                    Log.e(TAG, "we find the page of "+sura+" its : " + aya.getPage()+ " we are moving to it ...");
+                    moveTpage(aya.getPage());
+                }, e -> {
+                    Log.e(TAG, "new page data error   " + e.getMessage());
+                }));
     }
 
     private void moveTpage(int page) {
@@ -1556,5 +1393,218 @@ public class QuranFragmentDev extends Fragment implements OnFragmentListeners,
             binding.btnHafsReaders.setTextColor(requireActivity().getResources().getColor(R.color.purple_500));
         }
     }
+
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        makeStutsBarColored();
+        viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
+        publicMethods = PublicMethods.getInstance();
+
+        if (getArguments() != null)
+            startPage = getArguments().getInt("page");
+        else startPage = 1;
+
+
+        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(requireActivity());
+        viewModel.setReaderWithId(sharedPreferenceManager.getSelectedReaderId());
+        viewModel.setReadersList();
+
+        selectedRiwaya = SharedPreferenceManager.getInstance(requireActivity()).getLastRiwaya();
+        binding.tvChangeRiwaya.setText(selectedRiwaya.name);
+
+        MushafDatabase database = MushafDatabase.getInstance(requireActivity());
+        dao = database.getAyaDao();
+
+        setListenrs();
+        setRiwayaListListeners();
+
+        setObservers();
+        PrepareAdapterPages(startPage);
+        handleSavedPageView();
+        manageAndUpdatePageInfo();
+        viewModel.setAllSuraList();
+
+
+        binding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+
+                Log.e("testtag", "onPageSelected " + position + " " + adapterPagerForSign.getCount());
+                if (LastPage == 604 && position == 0) return;
+                if (adapterPagerForSign.getCount() == position + 1 && MinPage == 1) return;
+
+                if (adapterPagerForSign.getCount() == position + 1) {
+                    Log.e("testtag", "1 onPageSelected we adding new items min " + MinPage);
+                    PrepareAdapterPages(MinPage);
+                }
+                if (position == 0) {
+                    Log.e("testtag", "0 onPageSelected we adding new items last " + LastPage);
+                    PrepareAdapterPages(LastPage);
+                }
+                Log.e("juza_tag", "manageAndUpdatePageInfo called from onPageSelected position " + position);
+                manageAndUpdatePageInfo();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        showReadersList();
+        AudioReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction() == null) return;
+                if (intent.getAction().equals("AUDIO_FINISHED")) {
+                    String action = intent.getStringExtra("action");
+                    if (action == null) return;
+
+                    switch (action) {
+                        case AUDIO_PROGRESS_ACTION -> {
+                            binding.includeAudioPlaying.pregress.setIndeterminate(true);
+                            binding.includeAudioPlaying.progressPreparingAudio.setVisibility(View.VISIBLE);
+                            Log.e(TAG, "we recieve PROGRESS");
+                        }
+                        case AUDIO_START_ACTION -> {
+                            binding.includeAudioPlaying.pregress.setIndeterminate(false);
+                            binding.includeAudioPlaying.progressPreparingAudio.setIndeterminate(false);
+                            binding.includeAudioPlaying.progressPreparingAudio.setVisibility(View.GONE);
+                            Log.e(TAG, "we recieve start");
+                            playingSura = currantSura;
+                            startIcons();
+                        }
+                        case AUDIO_PREPARING_ACTION -> {
+                            Log.e(TAG, "we recieve preparing");
+
+                        }
+                        case AUDIO_PAUSE_ACTION -> {
+                            Log.e(TAG, "we recieve pause");
+                            binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                        }
+                        case AUDIO_RESUME_ACTION -> {
+                            Log.e(TAG, "we recieve resume");
+                            binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_pause_24);
+                        }
+                        case AUDIO_SELECT_AYA_ACTION -> {
+                            // select option avialable only in smart mode
+                            if (selectedRiwaya.tag.equals(RiwayaType.HAFS_SMART.name())) {
+                                Aya selectedaya = (Aya) intent.getSerializableExtra("selctedaya");
+                                if (selectedaya == null) return;
+
+                                Fragment f = getCurrentFragment();
+                                QuranPageFragment quranPageFragment = (QuranPageFragment) f;
+                                int currantPage = quranPageFragment.getCurrantPage();
+                                if (currantPage == selectedaya.getPage()) {
+                                    //requireActivity() is the fragment that we need
+                                    quranPageFragment.selectThisAya(selectedaya);
+                                } else if (currantPage + 1 == selectedaya.getPage()) {
+//                                    move to next fragment that we need
+                                    int o = binding.viewPager.getCurrentItem() - 1;
+                                    Log.e("lifecycle", "next fragment " + o);
+                                    if (o >= 0 && o < adapterPagerForSign.getCount()) {
+                                        Log.e("lifecycle", "here 2");
+                                        binding.viewPager.setCurrentItem(o);
+                                        Fragment nextFragement = getCurrentFragment();
+                                        QuranPageFragment quranPageNextFragment = (QuranPageFragment) nextFragement;
+                                        quranPageNextFragment.selectThisAya(selectedaya);
+                                    } else Log.e("lifecycle", "here 3");
+                                }
+                            }
+                        }
+
+                        case AUDIO_FINISHED_ACTION, AUDIO_STOP_ACTION -> {
+                            resetViewsState();
+                        }
+                        case AUDIO_ERROR_ACTION -> {
+
+                            String message = intent.getStringExtra("message");
+                            if (message != null) {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, "we receive error" + message);
+                            }
+                            resetViewsState();
+                        }
+                        case CHANGE_READER_ACTION -> {
+                            Log.e(TAG, "fragment  receive change reader so play audio again");
+                            playAudioButtonClicked();
+                        }
+                        case AUDIO_PLAYING_PROGRESS_ACTION -> {
+                            //Log.e(TAG, "we recieve audio playing progress");
+                            int max = intent.getIntExtra("maxProgress", 0);
+                            int progress = intent.getIntExtra("progress", 0);
+                            displayTime(max, progress);
+                            //check privious max
+                            if (max != binding.includeAudioPlaying.pregress.getMax())
+                                binding.includeAudioPlaying.pregress.setMax(max);
+                            binding.includeAudioPlaying.pregress.setProgress(progress);
+                        }
+                    }
+                }
+            }
+        };
+        DownloadReceiver = new BroadcastReceiver() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction() == null) return;
+                if (intent.getAction().equals("DOWNLOAD_FINISHED")) {
+                    String action = intent.getStringExtra("action");
+                    if (action == null) return;
+                    switch (action) {
+                        case PROGRESS_ACTION -> {
+                            int progress = intent.getIntExtra("progress", 0);
+                            binding.tvDownloadProgress.setText(String.valueOf(progress));
+                            binding.progressBar.setProgress(progress);
+                        }
+                        case DOWNLOAD_CANCEL_ACTION -> {
+                            Log.e(TAG, "we recieve " + DOWNLOAD_CANCEL_ACTION);
+                            HandleDownloadStopIcon();
+                        }
+                        case DOWNLOAD_ERROR_ACTION -> {
+                            Log.e(TAG, "we recieve " + DOWNLOAD_ERROR_ACTION);
+                            HandleDownloadStopIcon();
+                        }
+                        case DOWNLOAD_COMPLETE_ACTION -> {
+                            int downloadType = intent.getIntExtra("type", 0);
+                            binding.tvDownloadTitle.setText("اكتمل التحميل");
+
+                            //binding.downloadLinear.setVisibility(View.GONE);
+                            //binding.playLinear.setVisibility(View.VISIBLE);
+
+                            //if (downloadType == DOWNLOAD_TYPE_AUDIO) PreparAudio();
+                        }
+
+                        case DOWNLOAD_PREPAREING_FILES_ACTION -> {
+                            Log.e(TAG, "we set progress indeterminate ");
+                            binding.tvDownloadTitle.setText("جاري تحضير الملفات ...");
+                            binding.progressBar.setIndeterminate(true);
+                        }
+                    }
+
+                }
+            }
+        };
+
+
+    }
+
+    private void resetViewsState() {
+        currantSura = null;
+        playingSura = null;
+        Audiofinished();
+
+    }
+
 
 }

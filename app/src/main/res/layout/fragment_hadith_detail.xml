@@ -153,8 +153,8 @@
                     android:layout_alignParentTop="true"
                     android:gravity="center"
                     android:padding="15dp"
-                    android:src="@drawable/ic_konouz"
-                    />
+                    android:src="@drawable/ic_search_24px"
+                    app:tint="@color/text_color" />
 
                 <TextView
                     android:id="@+id/tv_change_riwaya"
@@ -176,6 +176,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            app:drawerLayoutCornerSize="0dp"
             app:headerLayout="@layout/drawer_header">
 
             <androidx.appcompat.widget.LinearLayoutCompat

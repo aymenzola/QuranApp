@@ -56,6 +56,7 @@
             android:layout_width="320dp"
             android:layout_height="320dp"
             android:layout_centerInParent="true"
+            android:layout_marginTop="-40dp"
             android:src="@drawable/ic_qubla_background2" />
 
         <ImageView
@@ -63,6 +64,7 @@
             android:layout_width="320dp"
             android:layout_height="320dp"
             android:layout_centerInParent="true"
+            android:layout_marginTop="-40dp"
             android:src="@drawable/ic_qubla_forground" />
 
 
@@ -103,6 +105,7 @@
             android:layout_alignStart="@+id/btn_moaayara"
             android:layout_marginBottom="10dp"
             android:textColor="@color/text_color"
+            android:textSize="13sp"
             android:visibility="visible"
             />
 
@@ -112,9 +115,11 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/shape_button"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="30dp"
             android:text="منح الصلاحيات"
             android:textColor="@color/white"
             android:fontFamily="@font/ffshamel_family_bold"

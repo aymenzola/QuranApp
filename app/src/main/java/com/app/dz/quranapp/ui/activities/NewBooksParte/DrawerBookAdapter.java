@@ -22,10 +22,10 @@ public class DrawerBookAdapter extends RecyclerView.Adapter<DrawerBookAdapter.Pa
     private boolean isInSearchMode;
     private static ChapterClickListener listener;
 
-    public DrawerBookAdapter(List<BookWithCount> parentItemList, ChapterClickListener listener) {
+    public DrawerBookAdapter(List<BookWithCount> parentItemList,ChapterClickListener listener) {
         this.parentItemList = parentItemList;
         this.isInSearchMode = false;
-        this.listener = listener;
+        DrawerBookAdapter.listener = listener;
     }
 
     public void filterList(List<BookWithCount> filteredList) {
@@ -68,13 +68,15 @@ public class DrawerBookAdapter extends RecyclerView.Adapter<DrawerBookAdapter.Pa
     }
 
     static class ParentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView parentTextView;
-        private RecyclerView childRecyclerView;
+        private final TextView parentTextView;
+        private final TextView tvChapterCount;
+        private final RecyclerView childRecyclerView;
         private boolean isExpanded;
         private boolean isInSearchMode;
 
         ParentViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvChapterCount = itemView.findViewById(R.id.tv_book_number);
             parentTextView = itemView.findViewById(R.id.parent_item_text);
             childRecyclerView = itemView.findViewById(R.id.child_recycler_view);
             isExpanded = false;
@@ -85,6 +87,8 @@ public class DrawerBookAdapter extends RecyclerView.Adapter<DrawerBookAdapter.Pa
         void bind(BookWithCount parentItem, boolean isInSearchMode) {
             this.isInSearchMode = isInSearchMode;
             parentTextView.setText(parentItem.bookName);
+            tvChapterCount.setText(String.valueOf(parentItem.chaptersCount));
+
             if (isExpanded || isInSearchMode) {
                 childRecyclerView.setVisibility(View.VISIBLE);
             } else {

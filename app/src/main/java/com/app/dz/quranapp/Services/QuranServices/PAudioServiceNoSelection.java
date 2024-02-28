@@ -8,6 +8,7 @@ import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_P
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_RESUME_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_START_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_STOP_ACTION;
+import static com.app.dz.quranapp.Services.QuranServices.NotifyBroadcastHelper.sendErrorMessage;
 import static com.app.dz.quranapp.Services.QuranServices.NotifyBroadcastHelper.sendPreparingStateToFragment;
 
 import android.app.Notification;
@@ -173,7 +174,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
             case Statics.ACTION.STOP_ACTION -> {
                 Log.i(TAG, "Received Nosele Stop Intent");
                 if (this.suraAudio != null)
-                    sendPreparingStateToFragment(getBaseContext(),AUDIO_STOP_ACTION);
+                    sendPreparingStateToFragment(getBaseContext(), AUDIO_STOP_ACTION);
 
                 destroyPlayer();
                 stopForeground(true);
@@ -259,7 +260,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
         suraAudiolocal.readerName = suraAudio.readerName;
         suraAudiolocal.isThereSelection = selectedReader.isThereSelection();
         suraArabicName = quranInfoManager.getSuraName(suraAudiolocal.SuraNumber - 1);
-        File file = publicMethods.getFile(this,selectedReader.getReaderTag(), suraAudiolocal.SuraNumber);
+        File file = publicMethods.getFile(this, selectedReader.getReaderTag(), suraAudiolocal.SuraNumber);
         Log.e(TAG, "is file exist " + file.exists());
         suraAudiolocal.isFromLocal = file.exists() && file.canRead();
 
@@ -284,13 +285,14 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
     }
 
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d(TAG, "Player onError() what:" + getErrorMessage(what));
+        String message = getErrorMessage(what);
+        Log.e(TAG, "Player onError() what:" + message);
         destroyPlayer();
         mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
         mStateService = Statics.STATE_SERVICE.NOT_INIT;
         stopForeground(true);
         stopSelf();
-        sendPreparingStateToFragment(getBaseContext(),AUDIO_ERROR_ACTION);
+        sendErrorMessage(getBaseContext(),message);
         return false;
     }
 
@@ -326,7 +328,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
                 mPlayer.reset();
                 mPlayer.setVolume(1.0f, 1.0f);
 
-                Log.d(TAG, "player getting url or path for tag "+selectedReader.getReaderTag()+" id "+selectedReader.getId()+" is from local "+suraAudio.isFromLocal);
+                Log.d(TAG, "player getting url or path for tag " + selectedReader.getReaderTag() + " id " + selectedReader.getId() + " is from local " + suraAudio.isFromLocal);
                 String urlOrPath = publicMethods.getCorrectUrlOrPath(selectedReader.getId(), suraAudio.SuraNumber, suraAudio.isFromLocal, this);
                 Log.d(TAG, "the started Url is " + urlOrPath);
                 mPlayer.setDataSource(this, Uri.parse(urlOrPath));
@@ -347,7 +349,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
     public void onPrepared(MediaPlayer mp) {
         Log.d(TAG, "Player onPrepared()");
         mStateService = Statics.STATE_SERVICE.PLAY;
-        mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE,prepareNotification());
+        mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
         try {
             mPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
         } catch (Exception e) {
@@ -356,14 +358,14 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             setPlaybackSpeed(audioReadingSpeed);
         }
-        Log.e(TAG, "Duration current "+currentAudioPosition);
+        Log.e(TAG, "Duration current " + currentAudioPosition);
 
         mPlayer.seekTo(currentAudioPosition);
         mPlayer.start();
 
         if (mPlayer != null && (mStateService == Statics.STATE_SERVICE.PLAY || mStateService == Statics.STATE_SERVICE.PREPARE)) {
             handlerAudioProgress.postDelayed(runnableAudioProgress, 500);
-            NotifyBroadcastHelper.sendAudioProgress(getBaseContext(),0, mPlayer.getDuration());
+            NotifyBroadcastHelper.sendAudioProgress(getBaseContext(), 0, mPlayer.getDuration());
             Log.e(TAG, "send current minute and max minute to fragment");
         } else
             Log.e(TAG, "we dont send current minute and max minute to fragment");
@@ -473,7 +475,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
             mNotificationManager.createNotificationChannel(mChannel);
         }
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.putExtra("page",suraAudio.SuraPage);
+        notificationIntent.putExtra("page", suraAudio.SuraPage);
 
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
@@ -547,8 +549,8 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
 
     }
 
-    public boolean getErrorMessage(int what) {
-        String errorMessage = switch (what) {
+    public String getErrorMessage(int what) {
+        return switch (what) {
             case MediaPlayer.MEDIA_ERROR_UNKNOWN -> "Unknown media playback error";
             case MediaPlayer.MEDIA_ERROR_SERVER_DIED -> "Media server died";
             case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> "Media not valid for progressive playback";
@@ -558,12 +560,10 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
             case MediaPlayer.MEDIA_ERROR_TIMED_OUT -> "Media timed out";
             default -> "Unknown error";
         };
-
-        Log.e(TAG, "Error occurred: " + errorMessage + " "+ what);
-        return false;
     }
+
     private void seekPlayer(Intent intent) {
-        int seek = intent.getIntExtra("seek",0);
+        int seek = intent.getIntExtra("seek", 0);
         if (mPlayer != null && mPlayer.isPlaying()) mPlayer.seekTo(seek);
     }
 

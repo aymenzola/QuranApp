@@ -112,7 +112,6 @@
             android:visibility="gone"
             tools:text="عدد النتائج : 404"
             tools:visibility="visible"
-
             />
 
         <androidx.recyclerview.widget.RecyclerView

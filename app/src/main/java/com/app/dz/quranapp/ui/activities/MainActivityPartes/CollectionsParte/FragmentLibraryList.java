@@ -25,7 +25,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +35,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -43,24 +43,31 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
 
+import com.app.dz.quranapp.Communs.Statics;
+import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.Services.ForegroundDownloadBookService;
+import com.app.dz.quranapp.Util.CsvReader;
+import com.app.dz.quranapp.Util.PublicMethods;
+import com.app.dz.quranapp.data.room.Entities.BookCollection;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
+import com.app.dz.quranapp.data.room.Entities.Chapter;
+import com.app.dz.quranapp.databinding.DialogDownloadProgressBinding;
 import com.app.dz.quranapp.databinding.FragmentLibrary1Binding;
-import com.app.dz.quranapp.databinding.FragmentLibraryBinding;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarDetailsParte.ActivityDikrDetailsList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.ActivityBooksList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.BooksUtils;
 import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
-import com.app.dz.quranapp.data.room.Entities.BookCollection;
-import com.app.dz.quranapp.data.room.Entities.Chapter;
-import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarCategoryAdapter;
-import com.app.dz.quranapp.Communs.Statics;
-import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.Services.ForegroundDownloadBookService;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnList;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.MotonAdapter;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.HomeFragment;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +78,7 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
 
 
     public final static String TAG = FragmentLibraryList.class.getSimpleName();
-    private static final int WRITE_REQUEST_CODE = 12;
+    private static final int COLLECTION_WRITE_REQUEST_CODE = 12;
     private static Dialog dialog;
     private CollectionsAdapter adapter;
     private FragmentLibrary1Binding binding;
@@ -83,7 +90,6 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
     private int type = HomeFragment.BOOKS_TYPE;
     private boolean isDkarAvilaible = false;
     private boolean isBooksDownloadType = true;
-
 
     public FragmentLibraryList() {
         // Required empty public constructor
@@ -134,6 +140,8 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         }
 
 
+        initializeMotonAdapter();
+
         DownloadReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -154,7 +162,7 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
                                 } else {
                                     //we ask FOr permission
                                     Log.e(TAG, "we ask For permission");
-                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, WRITE_REQUEST_CODE);
+                                    askForPermission(COLLECTION_WRITE_REQUEST_CODE);
                                 }
                             } else {
                                 Log.e(TAG, "we dont need permission");
@@ -180,6 +188,15 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         };
     }
 
+    private List<Matn> getListMatn() {
+
+        List<Matn> allList = CsvReader.readMotonListFromCsv(requireActivity(), "moton_items.csv",null);
+        List<Matn> parentList = new ArrayList<>();
+        for (Matn matn:allList) if (matn.isParent()) parentList.add(matn);
+        return parentList;
+
+    }
+
     @SuppressLint("SetTextI18n")
     private void manageSavedBook() {
         List<BookWithCount> list = BooksUtils.getSavedBooksList(requireActivity());
@@ -189,15 +206,15 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
             binding.includeSavedBook.tvBookTitle.setText(lastBook.bookName);
             binding.includeSavedBook.tvChaptersNumber.setText(lastBook.firstChapterTitle);
             binding.includeSavedBook.imgSave.setVisibility(View.GONE);
-            binding.includeSavedBook.tvMoveLibrary.setOnClickListener(v-> moveToBookChapters(lastBook));
+            binding.includeSavedBook.tvMoveLibrary.setOnClickListener(v -> moveToBookChapters(lastBook));
         } else {
             binding.includeSavedBook.getRoot().setVisibility(View.GONE);
         }
     }
 
     private void moveToBookChapters(BookWithCount book) {
-        Intent intent = new Intent(requireActivity(),ActivityChapterList.class);
-        intent.putExtra("collectionName",book.bookCollection);
+        Intent intent = new Intent(requireActivity(), ActivityChapterList.class);
+        intent.putExtra("collectionName", book.bookCollection);
         intent.putExtra("bookNumber", book.bookNumber);
         intent.putExtra("bookName", book.bookName);
         startActivity(intent);
@@ -242,9 +259,6 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
 
     private void setObservers() {
 
-        viewModel.getchaptersObject().observe(getViewLifecycleOwner(), chapterList -> {
-            if (chapterList != null && chapterList.size() > 0) initializeAdkarAdapter(chapterList);
-        });
 
         viewModel.getBooksList().observe(getViewLifecycleOwner(), booksAvailableList -> {
             List<BookCollection> booksList = new ArrayList<>();
@@ -282,29 +296,40 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         binding.recyclerview.setAdapter(adapter);
     }
 
-    public void initializeAdkarAdapter(List<Chapter> items) {
-        AdkarCategoryAdapter adapter_adkar = new AdkarCategoryAdapter(items, getActivity(), this::moveToAdkarDetails);
-        binding.recyclerviewAdkar.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
-        binding.recyclerviewAdkar.setHasFixedSize(true);
-        binding.recyclerviewAdkar.setAdapter(adapter_adkar);
+    private List<Matn> checkBooksExistence(List<Matn> books) {
+        PublicMethods publicMethods = PublicMethods.getInstance();
+        for (Matn book : books) {
+            File file = publicMethods.getFile(book.fileName);
+            if (file.exists()) {
+                book.isDownloaded = true;
+            }
+        }
+        return books;
+    }
+
+    private boolean havePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (EasyPermissions.hasPermissions(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                //we have permission
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void DownloadTheBook(BookCollection model) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (EasyPermissions.hasPermissions(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                //we have permission
-                prepareDownload(model);
-            } else {
-                globalModel = model;
-                //we ask FOr permission
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, WRITE_REQUEST_CODE);
-            }
-        } else {
+        if (havePermissions())
             prepareDownload(model);
-            //we do not need permission
+        else {
+            globalModel = model;
+            askForPermission(COLLECTION_WRITE_REQUEST_CODE);
         }
+    }
 
+    private void askForPermission(int requestCode) {
+        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);
     }
 
     private void prepareDownload(BookCollection model) {
@@ -371,17 +396,15 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Log.e("checkpermision", "onPermission resule   requestCode " + requestCode);
 
-        if (requestCode == WRITE_REQUEST_CODE) {
+        if (requestCode == COLLECTION_WRITE_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //we have access
+                //complete download collection
                 if (globalModel != null)
                     prepareDownload(globalModel);
             } else {
                 // we do not have access
-
+                Toast.makeText(requireActivity(), "لا يمكن التحميل من غير الادن بالتخزين", Toast.LENGTH_SHORT).show();
             }
-
-
         }
 
 
@@ -459,6 +482,20 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         binding.tvChapter.setText("" + Html.fromHtml(chapterName));
 
         */
+    }
+
+    private void initializeMotonAdapter() {
+        List<Matn> books = new ArrayList<>();
+        books = getListMatn();
+        MotonAdapter motonAdapter = new MotonAdapter(books, getActivity(), (model, position) -> {
+            startActivity(new Intent(requireActivity(), ActivityMatnList.class).putExtra("matn", model));
+        });
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireActivity(), 2, LinearLayoutManager.VERTICAL, false);
+        binding.recyclerviewAdkar.setHasFixedSize(true);
+        binding.recyclerviewAdkar.setLayoutManager(gridLayoutManager);
+        binding.recyclerviewAdkar.setAdapter(motonAdapter);
+
     }
 
 }

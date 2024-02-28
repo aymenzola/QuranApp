@@ -3,6 +3,7 @@ package com.app.dz.quranapp.Services.QuranServices;
 import static com.app.dz.quranapp.Communs.Statics.ACTION.CHANGE_READER_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_ERROR_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_FINISHED_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_NOT_AVAILABLE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PAUSE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PLAYING_PROGRESS_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PREPARING_ACTION;
@@ -161,9 +162,9 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
         @Override
         public void run() {
             if (mPlayer != null) {
-                sendAudioProgress(mPlayer.getCurrentPosition(),mPlayer.getDuration());
+                sendAudioProgress(mPlayer.getCurrentPosition(), mPlayer.getDuration());
                 // Run this every 500 milliseconds.
-                handlerAudioProgress.postDelayed(this,500);
+                handlerAudioProgress.postDelayed(this, 500);
             }
         }
     };
@@ -190,17 +191,25 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
                 this.selectedReader = (ReaderAudio) intent.getSerializableExtra("selectedReader");
                 this.audioReadingSpeed = intent.getFloatExtra("speed", 1f);
 
-                Log.e(TAG, "Received start Intent "+selectedReader);
+                if (!PublicMethods.getInstance().isAvailableFile(suraAudio.SuraNumber, selectedReader.getReaderTag())) {
+                    //send to fragment that the sura is not available
+                    if (this.suraAudio != null) sendPreparingStateToFragment(AUDIO_NOT_AVAILABLE_ACTION);
+                    destroyPlayer();
+                    stopForeground(true);
+                    stopSelf();
 
+                } else {
+                    //avialbe reader and suran file
+                    Log.e(TAG, "Received start Intent " + selectedReader);
 
-                //getting sura arabic name and reader image
-                suraArabicName = quranInfoManager.getSuraName(suraAudio.SuraNumber - 1);
-                new Thread(() -> bitmapIcon = getReaderBitmap()).start();
-                toldTheActivty(AUDIO_PROGRESS_ACTION,currantAudio);
-                sendPreparingStateToFragment(AUDIO_PREPARING_ACTION);
+                    //getting sura arabic name and reader image
+                    suraArabicName = quranInfoManager.getSuraName(suraAudio.SuraNumber - 1);
+                    new Thread(() -> bitmapIcon = getReaderBitmap()).start();
+                    toldTheActivty(AUDIO_PROGRESS_ACTION, currantAudio);
+                    sendPreparingStateToFragment(AUDIO_PREPARING_ACTION);
 
-                getSuraFromId(suraAudio);
-
+                    getSuraFromId(suraAudio);
+                }
             }
             case Statics.ACTION.PAUSE_ACTION -> {
                 toldTheActivty(AUDIO_PAUSE_ACTION, currantAudio);
@@ -236,7 +245,7 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
             }
             case Statics.ACTION.CHANGE_SPEED_ACTION -> {
                 Log.i(TAG, "Received change speed Intent");
-                this.audioReadingSpeed = intent.getFloatExtra("speed",1f);
+                this.audioReadingSpeed = intent.getFloatExtra("speed", 1f);
                 PausePlayer();
                 initPlayer();
                 play();
@@ -256,11 +265,11 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
         return START_NOT_STICKY;
     }
 
+
     private void seekPlayer(Intent intent) {
-        int seek = intent.getIntExtra("seek",0);
+        int seek = intent.getIntExtra("seek", 0);
         if (mPlayer != null && mPlayer.isPlaying()) mPlayer.seekTo(seek);
     }
-
 
 
     @SuppressLint("CheckResult")
@@ -380,7 +389,7 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
         suraAudiolocal.readerName = suraAudio.readerName;
         suraAudiolocal.isThereSelection = selectedReader.isThereSelection();
         suraArabicName = quranInfoManager.getSuraName(suraAudiolocal.SuraNumber - 1);
-        File file = publicMethods.getFile(this,selectedReader.getReaderTag(), suraAudiolocal.SuraNumber);
+        File file = publicMethods.getFile(this, selectedReader.getReaderTag(), suraAudiolocal.SuraNumber);
         Log.e(TAG, "is file exist " + file.exists() + " path " + file.getPath());
         suraAudiolocal.isFromLocal = file.exists() && file.canRead();
 
@@ -553,8 +562,8 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
 
         Log.e(TAG, "call sendAudioProgress in onPrepared");
 
-        sendAudioProgress(0,mp.getDuration());
-        handlerAudioProgress.postDelayed(runnableAudioProgress,500);
+        sendAudioProgress(0, mp.getDuration());
+        handlerAudioProgress.postDelayed(runnableAudioProgress, 500);
 
         Log.e(TAG, "currant position : " + currentAudioPosition);
         mTimerUpdateHandler.postDelayed(mTimerUpdateRunnable, 0);
@@ -562,7 +571,6 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
             toldTheActivty(AUDIO_START_ACTION, currantAudio);
             return;
         }
-
 
 
         if (!isResume) {
@@ -612,18 +620,18 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
         }
     }
 
-    private void sendAudioProgress(int progress,int maxProgress) {
+    private void sendAudioProgress(int progress, int maxProgress) {
         Intent intent2 = new Intent("AUDIO_FINISHED");
-        intent2.putExtra("action",AUDIO_PLAYING_PROGRESS_ACTION);
-        intent2.putExtra("progress",progress);
-        intent2.putExtra("maxProgress",maxProgress);
+        intent2.putExtra("action", AUDIO_PLAYING_PROGRESS_ACTION);
+        intent2.putExtra("progress", progress);
+        intent2.putExtra("maxProgress", maxProgress);
         sendBroadcast(intent2);
     }
 
     private void sendPreparingStateToFragment(String state) {
-        Log.i(TAG, "tell the fragemnt that service is "+state);
+        Log.i(TAG, "tell the fragemnt that service is " + state);
         Intent intent = new Intent("AUDIO_FINISHED");
-        intent.putExtra("action",state);
+        intent.putExtra("action", state);
         sendBroadcast(intent);
     }
 
@@ -774,7 +782,7 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
             mNotificationManager.createNotificationChannel(mChannel);
         }
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.putExtra("page",suraAudio.SuraPage);
+        notificationIntent.putExtra("page", suraAudio.SuraPage);
 
         /*
         notificationIntent.setAction(Statics.ACTION.MAIN_ACTION);

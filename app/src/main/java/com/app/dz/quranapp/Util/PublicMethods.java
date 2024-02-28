@@ -19,19 +19,31 @@ import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayaType;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.shockwave.pdfium.PdfDocument;
 
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PublicMethods {
     private static PublicMethods instance;
     DecimalFormat decimalFormat = new DecimalFormat("000");
+    private Map<String, List<Integer>> readerAvialableSuraNumbers;
+
 
     private PublicMethods() {
         // Private constructor to prevent external instantiation
+        // Private constructor to prevent external instantiation
+        readerAvialableSuraNumbers = new HashMap<>();
+        readerAvialableSuraNumbers.put("abdAzizSahim", Arrays.asList(1, 18, 31, 50, 56, 57, 67, 72, 75, 112));
+        readerAvialableSuraNumbers.put("rasheed_ifrad_warch", Arrays.asList(1, 18, 25, 26, 27, 28, 29, 31, 33, 35, 37, 38, 41, 42, 71));
+
     }
 
     public static synchronized PublicMethods getInstance() {
@@ -118,7 +130,7 @@ public class PublicMethods {
 
 
         if (isFromLocal)
-            return getFile(context,selectedReader.getReaderTag(),suraIndex).getPath();
+            return getFile(context, selectedReader.getReaderTag(), suraIndex).getPath();
         else {
             if (selectedReader.getAudioType() == 3) {
                 return selectedReader.getUrl() + suraIndex + ".mp3";
@@ -128,10 +140,10 @@ public class PublicMethods {
         }
     }
 
-    public String getCorrectUrlOrPath(ReaderAudio selectedReader,int suraIndex,boolean isFromLocal,Context context) {
+    public String getCorrectUrlOrPath(ReaderAudio selectedReader, int suraIndex, boolean isFromLocal, Context context) {
 
         if (isFromLocal)
-            return getFile(context,selectedReader.getReaderTag(),suraIndex).getPath();
+            return getFile(context, selectedReader.getReaderTag(), suraIndex).getPath();
         else {
             if (selectedReader.getAudioType() == 3) {
                 return selectedReader.getUrl() + suraIndex + ".mp3";
@@ -141,9 +153,13 @@ public class PublicMethods {
         }
     }
 
-    public File getFile(Context context,String readerTag,int suraIndex) {
+    public File getFile(Context context, String readerTag, int suraIndex) {
         String filename = readerTag + "_" + suraIndex + ".mp3";
         return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + readerTag + "/" + filename);
+    }
+
+    public File getFile(String filename) {
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + filename);
     }
 
 
@@ -162,7 +178,6 @@ public class PublicMethods {
           } else {
               return new File(Environment.getExternalStorageDirectory().getPath() + "/" + AppfolderName + "/" + filename);
           }*/
-
 
 
     public String getLocalFileName(String readerTag, int suraIndex) {
@@ -223,5 +238,40 @@ public class PublicMethods {
                 activeNetwork.isConnectedOrConnecting();
     }
 
+    public List<Matn> checkBooksExistence(List<Matn> books) {
+        PublicMethods publicMethods = PublicMethods.getInstance();
+        for (Matn book : books) {
+            File file = publicMethods.getFile(book.fileName);
+            if (file.exists()) {
+                book.isDownloaded = true;
+            }
+        }
+        return books;
+    }
+
+    public PdfDocument.Bookmark findBookmarkByPage(List<PdfDocument.Bookmark> bookmarks, int pageNumber) {
+        for (PdfDocument.Bookmark bookmark : bookmarks) {
+            if (bookmark.getPageIdx() == pageNumber) {
+                return bookmark;
+            }
+
+            if (bookmark.hasChildren()) {
+                PdfDocument.Bookmark found = findBookmarkByPage(bookmark.getChildren(), pageNumber);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean isAvailableFile(int suraNumber, String readerTag) {
+        List<Integer> availableSuraNumbers = readerAvialableSuraNumbers.get(readerTag);
+        if (availableSuraNumbers != null) {
+            return availableSuraNumbers.contains(suraNumber);
+        } else {
+            return true;
+        }
+    }
 
 }

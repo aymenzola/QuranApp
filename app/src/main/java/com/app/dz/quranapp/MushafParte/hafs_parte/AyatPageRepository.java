@@ -41,7 +41,7 @@ public class AyatPageRepository {
     }
 
     public void setAyatList(int page_number) {
-        Log.e("checkdata","we are getting data");
+        Log.e("checkdata","we are getting data setAyatList");
         compositeDisposable.add(dao.getAllInPage(page_number)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -56,13 +56,13 @@ public class AyatPageRepository {
 
     public void setLastAyaInPage(int page_number) {
 
-        Log.e("checkdata","we are getting data");
+        Log.e("checkdata","we are getting data last aya in page ");
         compositeDisposable.add(dao.getLastAyaInPage(page_number-1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(suraList1 -> {
-                    Log.e("checkdata","1 data coming  "+suraList1.size()+" "+suraList1.get(0).getText());
-                    PrevAyatList.setValue(suraList1.get(0));
+                    Log.e("checkdata","1 data coming  "+suraList1.getText());
+                    PrevAyatList.setValue(suraList1);
                     },e->{
                     Log.e("checkdata","1 data error   "+e.getMessage());
                 }));

@@ -14,6 +14,7 @@ import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.databinding.ItemSavedDikrBinding;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.SavedMatnPage;
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,7 +23,7 @@ import java.util.List;
 
 public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdapter.ViewHolder> {
 
-    private List<Object> dataList = new ArrayList<>();
+    private final List<Object> dataList = new ArrayList<>();
     private final ClickListener clickListener;
 
     public ChaptersSavedAdapter(ClickListener clickListener) {
@@ -33,6 +34,10 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         this.dataList.addAll(bookWithCountList);
     }
 
+    public void addMoton(List<SavedMatnPage> savedMatnPageList) {
+        this.dataList.addAll(savedMatnPageList);
+    }
+
     public void addChapters(List<Chapter> chapterList) {
         this.dataList.addAll(chapterList);
     }
@@ -40,7 +45,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemSavedDikrBinding item = DataBindingUtil.inflate(
-                LayoutInflater.from(parent.getContext()),R.layout.item_saved_dikr, parent, false);
+                LayoutInflater.from(parent.getContext()), R.layout.item_saved_dikr, parent, false);
         return new ViewHolder(item);
     }
 
@@ -50,16 +55,54 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         Object data = dataList.get(position);
 
         if (data instanceof Chapter chapter) {
-            bindChapter(holder,chapter,position);
+            bindChapter(holder, chapter, position);
         } else if (data instanceof BookWithCount book) {
-            bindBooks(holder,book,position);
+            bindBooks(holder, book, position);
+        } else if (data instanceof SavedMatnPage savedMatnPage) {
+            bindMatn(holder, savedMatnPage, position);
         }
 
 
     }
 
-    private void bindChapter(ViewHolder holder, Chapter chapter,int position) {
-        holder.binding.tvDikrTitle.setText("عدد الابواب "+chapter.bookNumber);
+    private void bindMatn(ViewHolder holder, SavedMatnPage savedMatnPage, int position) {
+        holder.binding.tvDikrCategory.setText(savedMatnPage.bookTitle);
+        holder.binding.tvDikrTitle.setText(savedMatnPage.pageTitle);
+
+        holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenMatnClicked(savedMatnPage));
+
+        Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
+
+        holder.binding.imgSave.setOnClickListener(v -> {
+            Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
+            clickListener.onMatnSaveClick(savedMatnPage, position);
+        });
+
+        holder.binding.imgSave.setOnClickListener(v -> {
+            // Create a new Handler
+            Handler handler = new Handler();
+
+            // Show the Snackbar with the cancel button
+            Snackbar snackbar = Snackbar.make(v, "الحدف من المحوظات بعد 4 ثواني", Snackbar.LENGTH_LONG);
+            snackbar.setAction("Cancel", v1 -> {
+                // If the user presses cancel, remove the callbacks from the handler
+                handler.removeCallbacksAndMessages(null);
+                Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
+            });
+            snackbar.show();
+
+            // Post a delayed Runnable to the handler
+            handler.postDelayed(() -> {
+                // This code will be executed after 4 seconds unless the user presses cancel
+                Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
+                clickListener.onMatnSaveClick(savedMatnPage, position);
+            }, 4000); // 4 seconds delay
+
+        });
+    }
+
+    private void bindChapter(ViewHolder holder, Chapter chapter, int position) {
+        holder.binding.tvDikrTitle.setText("عدد الابواب " + chapter.bookNumber);
         holder.binding.tvDikrCategory.setText(chapter.chapterTitle);
 
         holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenChapterClicked(chapter));
@@ -74,11 +117,11 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
             if (!chapter.isSaved) {
                 Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
                 chapter.isSaved = true;
-                clickListener.onChapterSaveClick(chapter, true,position);
+                clickListener.onChapterSaveClick(chapter, true, position);
             } else {
                 Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
                 chapter.isSaved = false;
-                clickListener.onChapterSaveClick(chapter, false,position);
+                clickListener.onChapterSaveClick(chapter, false, position);
             }
         });
 
@@ -101,14 +144,14 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
                     // This code will be executed after 4 seconds unless the user presses cancel
                     Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
                     chapter.isSaved = false;
-                    clickListener.onChapterSaveClick(chapter, false,position);
+                    clickListener.onChapterSaveClick(chapter, false, position);
                 }, 4000); // 4 seconds delay
             }
         });
     }
 
     @SuppressLint("SetTextI18n")
-    private void bindBooks(ViewHolder holder,BookWithCount bookWithCount, int position) {
+    private void bindBooks(ViewHolder holder, BookWithCount bookWithCount, int position) {
         holder.binding.tvDikrCategory.setText(bookWithCount.bookName);
         holder.binding.tvDikrTitle.setText(bookWithCount.firstChapterTitle);
 
@@ -124,11 +167,11 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
             if (!bookWithCount.isSaved) {
                 Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
                 bookWithCount.isSaved = true;
-                clickListener.onBookSaveClick(bookWithCount, true,position);
+                clickListener.onBookSaveClick(bookWithCount, true, position);
             } else {
                 Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
                 bookWithCount.isSaved = false;
-                clickListener.onBookSaveClick(bookWithCount, false,position);
+                clickListener.onBookSaveClick(bookWithCount, false, position);
             }
         });
 
@@ -151,7 +194,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
                     // This code will be executed after 4 seconds unless the user presses cancel
                     Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
                     bookWithCount.isSaved = false;
-                    clickListener.onBookSaveClick(bookWithCount, false,position);
+                    clickListener.onBookSaveClick(bookWithCount, false, position);
                 }, 4000); // 4 seconds delay
             }
         });
@@ -181,8 +224,12 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
         void onOpenBookClicked(BookWithCount bookWithCount);
 
-        void onChapterSaveClick(Chapter chapter, boolean isSaved,int position);
+        void onOpenMatnClicked(SavedMatnPage savedMatnPage);
 
-        void onBookSaveClick(BookWithCount bookWithCount, boolean isSaved,int position);
+        void onChapterSaveClick(Chapter chapter, boolean isSaved, int position);
+
+        void onBookSaveClick(BookWithCount bookWithCount, boolean isSaved, int position);
+
+        void onMatnSaveClick(SavedMatnPage savedMatnPage, int position);
     }
 }

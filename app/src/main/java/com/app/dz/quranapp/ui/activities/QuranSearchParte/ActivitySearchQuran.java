@@ -3,7 +3,11 @@ package com.app.dz.quranapp.ui.activities.QuranSearchParte;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.pdf.PdfDocument;
+import android.graphics.pdf.PdfRenderer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,8 +21,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,8 +35,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.dz.quranapp.MainActivity;
 import com.app.dz.quranapp.data.room.Entities.AyaWithSura;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.databinding.FragmentQuranSearch1Binding;
 import com.app.dz.quranapp.databinding.FragmentQuranSearchBinding;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -54,7 +62,7 @@ public class ActivitySearchQuran extends AppCompatActivity {
     public int currentPage = 0; // Index of the current page
 
 
-    private FragmentQuranSearchBinding binding;
+    private FragmentQuranSearch1Binding binding;
     private QuranSearchAdapter adapter;
     private QuranSearchViewModel searchViewModel;
 
@@ -63,11 +71,12 @@ public class ActivitySearchQuran extends AppCompatActivity {
     private Handler handler = new Handler();
     private String searchedText;
     private boolean isLastData = false;
+    private OnBackPressedDispatcher dispatcher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = FragmentQuranSearchBinding.inflate(getLayoutInflater());
+        binding = FragmentQuranSearch1Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -82,6 +91,10 @@ public class ActivitySearchQuran extends AppCompatActivity {
         setObservers();
 
         setListeners();
+        
+
+        dispatcher = this.getOnBackPressedDispatcher();
+
 
         executor.execute(() -> {
             while (true) {
@@ -136,6 +149,10 @@ public class ActivitySearchQuran extends AppCompatActivity {
     };
 
     private void setListeners() {
+
+        binding.imgBack.setOnClickListener(v->dispatcher.onBackPressed());
+
+
         binding.editSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

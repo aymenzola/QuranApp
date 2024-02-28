@@ -44,28 +44,28 @@ public class SuraRepository {
 
 
     public void setSuraList(int startId, int pageSize){
-        Log.e("checkdata","we are getting data");
+        Log.e("checkdata","we are getting data startId "+startId+ " pageSize "+pageSize);
         compositeDisposable.add(dao.getSuraList(startId,pageSize)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(suraList1 -> {
-                    Log.e("checkdata","1 data coming  "+suraList1.size());
+                    Log.e("checkdata","setSuraList data coming  "+suraList1.size());
                     suraList.setValue(suraList1);
                 },e->{
-                    Log.e("checkdata","1 data error   "+e.getMessage());
+                    Log.e("checkdata","setSuraList data error   "+e.getMessage());
                 }));
     }
 
     public void setAllSuraList(){
-        Log.e("checkdata","we are getting data");
+        Log.e("checkdata","we are getting data setAllSuraList");
         compositeDisposable.add(dao.getAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(suraList1 -> {
-                    Log.e("checkdata","1 data coming  "+suraList1.size());
+                    Log.e("checkdata","setAllSuraList data coming  "+suraList1.size());
                     suraList.setValue(suraList1);
                 },e->{
-                    Log.e("checkdata","1 data error   "+e.getMessage());
+                    Log.e("checkdata","setAllSuraList data error   "+e.getMessage());
                 }));
     }
 
@@ -78,7 +78,7 @@ public class SuraRepository {
                     Log.e("checkdata","juz data coming  "+suraList1.size());
                     juzaList.setValue(suraList1);
                 },e->{
-                    Log.e("checkdata","1 data error   "+e.getMessage());
+                    Log.e("checkdata","juz data error   "+e.getMessage());
                 }));
     }
 

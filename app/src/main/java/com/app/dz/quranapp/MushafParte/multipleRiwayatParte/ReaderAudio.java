@@ -1,9 +1,13 @@
 package com.app.dz.quranapp.MushafParte.multipleRiwayatParte;
 
+import static com.app.dz.quranapp.Communs.Constants.reader_main_link;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.app.dz.quranapp.Communs.Constants;
 
 import java.io.Serializable;
 
@@ -110,7 +114,7 @@ public class ReaderAudio implements Serializable {
     }
 
     public String getReaderImage() {
-        return readerImage;
+        return reader_main_link+readerImage+".jpg";
     }
 
     public void setReaderImage(String readerImage) {

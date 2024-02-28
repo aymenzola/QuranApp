@@ -2,6 +2,8 @@ package com.app.dz.quranapp.MushafParte.TafsirParte;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.app.dz.quranapp.Util.QuranInfoManager.getPageSurasNames;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -126,9 +128,14 @@ public class QuranPageTafsirFragment extends Fragment {
 
 
 
-
     }
 
+
+    private void displayPageInfo(int pageNumber) {
+        binding.tvPageNumber.setText(String.valueOf(pageNumber));
+        binding.tvJuzNumber.setText(getJuzaName());
+        binding.tvSuraName.setText(getSuraName(pageNumber));
+    }
 
     private void setObservers() {
         StateViewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
@@ -192,10 +199,17 @@ public class QuranPageTafsirFragment extends Fragment {
         return QuranInfoManager.getInstance().getSuraName(globalItems.get(0).getSura() - 1);
     }
 
+    public String getSuraName(int pageNumber) {
+        String suranName = getPageSurasNames(pageNumber);
+        Log.e("juza_tag", "asking fro page ayat list " + pageNumber + " sura name " + suranName);
+        return suranName;
+    }
 
     @SuppressLint("SetTextI18n")
     private void displayData(List<Aya> items) {
         globalItems = items;
+        displayPageInfo(pageNumber);
+
         //binding.tvSura.setText("سورة ");
         //binding.tvJuza.setText("" + QuranInfoManager.getInstance().getJuzaName(items.get(0).getJuz()));
 

@@ -437,9 +437,10 @@
                 android:gravity="center"
                 android:paddingTop="8dp"
                 android:text="حول تطبيق كنوز"
-                android:textColor="#424242"
+                android:textColor="@color/purple_500"
                 android:textSize="@dimen/tv_normal_size"
-                app:drawableStartCompat="@drawable/ic_about" />
+                app:drawableStartCompat="@drawable/ic_about"
+                app:drawableTint="@color/purple_500" />
 
 
         </LinearLayout>

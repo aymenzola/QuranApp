@@ -56,6 +56,7 @@ public class Statics {
         public static final String AUDIO_PREPARING_ACTION = "audio_preparing";
         public static final String AUDIO_ERROR_ACTION = "audio_error";
         public static final String AUDIO_PLAYING_PROGRESS_ACTION = "audio_playing_progress";
+        public static final String AUDIO_NOT_AVAILABLE_ACTION = "audio_file_not_available";
     }
 
     public static class STATE_SERVICE {

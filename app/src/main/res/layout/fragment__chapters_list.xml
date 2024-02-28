@@ -40,10 +40,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="كتب و متون"
                 android:fontFamily="@font/ffshamel_family_bold"
-                />
+                android:gravity="center"
+                android:text="كتب و متون" />
 
             <ImageView
                 android:id="@+id/img_back"

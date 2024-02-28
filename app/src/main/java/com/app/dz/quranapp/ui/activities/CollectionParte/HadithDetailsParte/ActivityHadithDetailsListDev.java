@@ -25,6 +25,7 @@ import com.app.dz.quranapp.databinding.FragmentHadithDetailBinding;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
 import com.app.dz.quranapp.ui.activities.NewBooksParte.BooksNewActivity;
 import com.app.dz.quranapp.ui.activities.NewBooksParte.DrawerBookAdapter;
+import com.app.dz.quranapp.ui.activities.searchParte.SearchActivity;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
@@ -45,7 +46,6 @@ public class ActivityHadithDetailsListDev extends AppCompatActivity {
     String collectionName = "";
     String bookNumber = "";
     private String bookName = "";
-    private String destination = "";
     private DrawerBookAdapter adapterDrawer;
     private List<Chapter> chaptersList = new ArrayList<>();
     private ArrayList<BookWithCount> originalBooksList;
@@ -131,6 +131,10 @@ public class ActivityHadithDetailsListDev extends AppCompatActivity {
 
 
     private void setListeners() {
+
+        binding.imgSearch.setOnClickListener(v->{
+            startActivity(new Intent(ActivityHadithDetailsListDev.this,SearchActivity.class));
+        });
 
         binding.includeDrawer.imgClose.setOnClickListener(v->{
             binding.includeDrawer.searchEditText.setText("");
@@ -232,7 +236,7 @@ public class ActivityHadithDetailsListDev extends AppCompatActivity {
                 bookWithCountList = bookList;
                 this.originalBooksList = new ArrayList<>(bookList);
 
-                adapterDrawer = new DrawerBookAdapter(bookList, (chapter, position, chapterListCurrent) -> {
+                adapterDrawer = new DrawerBookAdapter(bookList,(chapter,position,chapterListCurrent) -> {
 
                     //hide drawer
                     binding.drawerLayout.closeDrawer(GravityCompat.END);
@@ -326,7 +330,7 @@ public class ActivityHadithDetailsListDev extends AppCompatActivity {
 
 
     private void initializeAdapter() {
-        destination = getCollectionArabicName(collectionName) + " > " + bookName + " > ";
+        String destination = getCollectionArabicName(collectionName) + " > " + bookName + " > ";
         Log.e("quran_tag", "destination " + destination);
 
         adapter = new HadithsAdapter(destination, ActivityHadithDetailsListDev.this, model -> {

@@ -32,10 +32,10 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="5dp"
                 android:layout_weight="0"
-                android:textSize="12sp"
                 android:background="@drawable/ic_sura_number_holder"
                 android:gravity="center"
-                android:text="100" />
+                tools:text="100"
+                android:textSize="12sp" />
 
             <View
                 android:layout_width="wrap_content"
@@ -51,7 +51,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_weight="0"
                 android:gravity="center"
-                android:text="( اياتها 7 ) "
+                tools:text="( اياتها 7 ) "
                 android:textColor="@color/text_color_dark"
                 android:textSize="@dimen/tv_small_size" />
 
@@ -65,8 +65,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_weight="0"
                 android:fontFamily="@font/ffshamel_family_bold"
-                android:text="سورة الفاتحة"
-                android:textColor="@color/black"
+                tools:text="سورة الفاتحة"
                 android:textSize="@dimen/tv_normal_size" />
 
             <ImageView

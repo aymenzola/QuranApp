@@ -17,9 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.dz.quranapp.MainActivity;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.data.room.AppDatabase;
+import com.app.dz.quranapp.data.room.Daos.MotonDao;
+import com.app.dz.quranapp.data.room.DatabaseClient;
 import com.app.dz.quranapp.data.room.Entities.BookCollection;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
+import com.app.dz.quranapp.data.room.MushafDatabase;
 import com.app.dz.quranapp.databinding.ActivityMahfodatBinding;
 import com.app.dz.quranapp.databinding.FragmentMahfodat1Binding;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
@@ -29,6 +33,9 @@ import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.BooksUtils;
 import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnViewer;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
+import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.SavedMatnPage;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -41,6 +48,7 @@ public class ActivityMahfodatList extends AppCompatActivity {
     private FragmentMahfodat1Binding binding;
     private MahfodatViewModel viewModel;
     private ChaptersSavedAdapter adapter;
+    private MotonDao motonDao;
 
 
     public ActivityMahfodatList() {
@@ -67,6 +75,9 @@ public class ActivityMahfodatList extends AppCompatActivity {
             getWindow().setStatusBarColor(getColor(R.color.blan));
         }
 
+        AppDatabase db = DatabaseClient.getInstance(ActivityMahfodatList.this).getAppDatabase();
+        motonDao = db.getMotonDao();
+
         viewModel = new ViewModelProvider(this).get(MahfodatViewModel.class);
 
         setObservers();
@@ -76,6 +87,7 @@ public class ActivityMahfodatList extends AppCompatActivity {
 
         viewModel.askForSavedAdkar();
 
+        getSavedMotonPages();
         getSavedChapters();
         getSavedBooks();
 
@@ -84,6 +96,13 @@ public class ActivityMahfodatList extends AppCompatActivity {
     private void getSavedChapters() {
         List<Chapter> chapters = ChapterUtils.getSavedChapters(this);
         if (chapters != null && chapters.size() > 0) adapter.addChapters(chapters);
+    }
+
+    private void getSavedMotonPages() {
+        motonDao.getSavedPagesList().observe(this, savedMatnPageList -> {
+            if (savedMatnPageList != null && savedMatnPageList.size() > 0)
+                adapter.addMoton(savedMatnPageList);
+        });
     }
 
     private void getSavedBooks() {
@@ -140,7 +159,7 @@ public class ActivityMahfodatList extends AppCompatActivity {
 
             @Override
             public void onOpenClicked(AdkarModel adkarModel) {
-                Intent intent = new Intent(ActivityMahfodatList.this,MainActivity.class);
+                Intent intent = new Intent(ActivityMahfodatList.this, MainActivity.class);
                 intent.putExtra("adkarModel", adkarModel);
                 startActivity(intent);
             }
@@ -171,7 +190,7 @@ public class ActivityMahfodatList extends AppCompatActivity {
 
             @Override
             public void onOpenChapterClicked(Chapter chapter) {
-                ChapterUtils.moveToChapterDetails(ActivityMahfodatList.this,chapter);
+                ChapterUtils.moveToChapterDetails(ActivityMahfodatList.this, chapter);
             }
 
             @Override
@@ -180,15 +199,26 @@ public class ActivityMahfodatList extends AppCompatActivity {
             }
 
             @Override
-            public void onChapterSaveClick(Chapter chapter,boolean isSaved,int position) {
-                ChapterUtils.updateChapter(ActivityMahfodatList.this,chapter);
+            public void onOpenMatnClicked(SavedMatnPage savedMatnPage) {
+                moveToMatnView(savedMatnPage);
+            }
+
+            @Override
+            public void onChapterSaveClick(Chapter chapter, boolean isSaved, int position) {
+                ChapterUtils.updateChapter(ActivityMahfodatList.this, chapter);
                 if (!isSaved) adapter.removeItem(position);
             }
 
             @Override
-            public void onBookSaveClick(BookWithCount bookWithCount, boolean isSaved,int position) {
-                BooksUtils.updateBook(ActivityMahfodatList.this,bookWithCount);
+            public void onBookSaveClick(BookWithCount bookWithCount, boolean isSaved, int position) {
+                BooksUtils.updateBook(ActivityMahfodatList.this, bookWithCount);
                 if (!isSaved) adapter.removeItem(position);
+            }
+
+            @Override
+            public void onMatnSaveClick(SavedMatnPage savedMatnPage, int position) {
+                new Thread(() -> motonDao.deleteMatnPage(savedMatnPage));
+                adapter.removeItem(position);
             }
         });
 
@@ -197,9 +227,15 @@ public class ActivityMahfodatList extends AppCompatActivity {
         binding.recyclerview.setAdapter(adapter);
     }
 
+    private void moveToMatnView(SavedMatnPage savedMatnPage) {
+        Intent intent = new Intent(this, ActivityMatnViewer.class);
+        intent.putExtra("saved_matn", savedMatnPage);
+        startActivity(intent);
+    }
+
     private void moveToChapters(BookWithCount book) {
         Intent intent = new Intent(this, ActivityChapterList.class);
-        intent.putExtra("collectionName",book.bookCollection);
+        intent.putExtra("collectionName", book.bookCollection);
         intent.putExtra("bookNumber", book.bookNumber);
         intent.putExtra("bookName", book.bookName);
         startActivity(intent);

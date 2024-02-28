@@ -12,10 +12,52 @@
         android:background="@color/blan"
         >
 
+        <LinearLayout
+            android:id="@+id/linear_pages"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/tv_sura_name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                tools:text="سورة النمل" />
+
+            <TextView
+                android:id="@+id/tv_page_number"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/white"
+                android:gravity="center"
+                tools:text="ص 20" />
+
+            <TextView
+                android:id="@+id/tv_juz_number"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                tools:text="الجزء 2" />
+
+        </LinearLayout>
+
+
         <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/imageview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/linear_pages"
             android:layout_centerInParent="true"
             />
 

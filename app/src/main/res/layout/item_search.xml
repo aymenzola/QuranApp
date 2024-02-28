@@ -7,20 +7,16 @@
 
     </data>
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="10dp"
-        app:cardCornerRadius="7dp"
-        tools:context=".FirstFragment">
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".FirstFragment">
+            android:background="@drawable/shape_card"
+            tools:context=".FirstFragment"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="5dp"
+            >
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linear"
@@ -37,36 +33,37 @@
                     android:id="@+id/tv_sura_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/ffshamel_family_bold"
+                    android:fontFamily="@font/ffshamel_book"
                     android:text="نص الحديث"
+                    android:paddingStart="10dp"
+                    android:layout_marginBottom="5dp"
                     android:textColor="@color/tv_gri_color"
-                    android:textSize="@dimen/tv_normal_size" />
+                    android:textSize="@dimen/tv_small_size" />
 
                 <TextView
                     android:id="@+id/tv_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/ffshamel_book"
+                    android:fontFamily="@font/ffshamel_family_bold"
                     android:text="صحيح البخاري / رقم الكتاب 10"
                     android:textColor="@color/tv_gri_color"
-                    android:textSize="@dimen/tv_normal_size" />
+                    android:textSize="@dimen/tv_small_size" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <TextView
                 android:id="@+id/tv_count"
-                android:layout_width="@dimen/count_image_size"
-                android:layout_height="@dimen/count_image_size"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/ic_star"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/ic_sura_number_holder"
                 android:gravity="center"
-                android:padding="10dp"
-                android:text="1"
-                android:textSize="@dimen/tv_small_size"
-                android:textStyle="bold" />
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="100" />
 
 
             <View
@@ -80,6 +77,4 @@
                 android:background="?selectableItemBackground" />
 
         </RelativeLayout>
-
-    </androidx.cardview.widget.CardView>
 </layout>

@@ -17,6 +17,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,6 +63,7 @@ public class SearchActivity extends AppCompatActivity {
     private Chapter clickedChapter;
     private Hadith clickedHadith;
     private String clickedBookName;
+    private OnBackPressedDispatcher dispatcher;
 
     @Override
     public void onStart() {
@@ -101,12 +104,17 @@ public class SearchActivity extends AppCompatActivity {
         setObservers();
 
         setListeners();
+        dispatcher = this.getOnBackPressedDispatcher();
 
     }
 
     private final Runnable searchRunnable = this::runTheSearch;
 
     private void setListeners() {
+
+
+
+        binding.imgBack.setOnClickListener(v->dispatcher.onBackPressed());
         binding.editSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

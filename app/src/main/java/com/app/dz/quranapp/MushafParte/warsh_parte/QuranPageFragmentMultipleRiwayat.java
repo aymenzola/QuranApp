@@ -124,6 +124,13 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
         displayMushafImage(pageNumber);
 
 
+
+    }
+
+    private void displayPageInfo(int pageNumber) {
+        binding.tvPageNumber.setText(String.valueOf(pageNumber));
+        binding.tvJuzNumber.setText(getJuzaName());
+        binding.tvSuraName.setText(getSuraName(pageNumber));
     }
 
     private void setListeners() {
@@ -161,16 +168,13 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
         if (riwaya.quran_page_image_url.contains("qurancomplex.gov.sa/issues/hafs")) {
             int pageNumberCorrectInUrl = pageNumber + 3;
             url = riwaya.quran_page_image_url + pageNumberCorrectInUrl + ".jpg";
-        } else if (riwaya.quran_page_image_url.contains("qurancomplex")
-                || riwaya.quran_page_image_url.contains("QuranHub")
-                || riwaya.quran_page_image_url.contains("hafs-tajweed"))
+        } else if (riwaya.quran_page_image_url.contains("qurancomplex") || riwaya.quran_page_image_url.contains("QuranHub") || riwaya.quran_page_image_url.contains("hafs-tajweed"))
 
             url = riwaya.quran_page_image_url + pageNumber + ".jpg";
 
         else if (riwaya.quran_page_image_url.contains("GovarJabbar"))
 
             url = riwaya.quran_page_image_url + format.format(pageNumber) + ".png";
-
         else
             url = riwaya.quran_page_image_url + pageNumber + ".png";
 
@@ -178,19 +182,20 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
         // For additional configurations, you can use RequestOptions
         RequestOptions options = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.DATA)
-                .placeholder(R.drawable.ic_quran_place_holder)
+                .placeholder(R.drawable.ic_kounoz)
                 .override(Target.SIZE_ORIGINAL); // Load the original size for max quality
         Glide.with(this).load(url).apply(options).into(binding.imageview);
     }
 
     private void setObservers() {
-        StateViewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
+        StateViewModel.getData().observe(getViewLifecycleOwner(),isfullModeActive -> {
             isfullModeActiveGlobal = isfullModeActive;
         });
 
-        StateViewModel.getPageAyatList().observe(getViewLifecycleOwner(), ayatList -> {
+        StateViewModel.getPageAyatList().observe(getViewLifecycleOwner(),ayatList -> {
             if (ayatList != null && ayatList.size() > 0) {
                 globalAyatList = ayatList;
+                displayPageInfo(pageNumber);
             }
         });
     }
@@ -209,8 +214,6 @@ public class QuranPageFragmentMultipleRiwayat extends Fragment {
     }
 
     public String getSuraName(int pageNumber) {
-        //if (globalAyatList == null) return "";
-        //return QuranInfoManager.getInstance().getSuraName(globalAyatList.get(0).getSura() - 1);
         String suranName = getPageSurasNames(pageNumber);
         Log.e("juza_tag", "asking fro page ayat list " + pageNumber + " sura name " + suranName);
         return suranName;

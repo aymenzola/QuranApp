@@ -48,15 +48,17 @@
                     android:layout_marginEnd="10dp"
                     android:layout_centerHorizontal="true"
                     />
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/tv_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ffshamel_book"
                     android:padding="10dp"
-                    android:text="@string/about_text"
+                    android:text="@string/my_string"
                     android:textColor="#424242"
-                    android:textSize="@dimen/tv_normal_size" />
+                    android:textSize="@dimen/tv_normal_size"
+                    android:layout_marginBottom="70dp"
+                    />
 
                 <include
                     android:id="@+id/include_social_media"
@@ -67,7 +69,6 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginStart="10dp"
-                    tools:visibility="visible"
                     android:visibility="gone"
                     />
 

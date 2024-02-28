@@ -92,6 +92,9 @@
         <activity android:name="com.app.dz.quranapp.ui.activities.NewBooksParte.BooksNewActivity" />
         <activity android:name="com.app.dz.quranapp.ui.activities.subha.SubhaActivity" />
         <activity android:name="com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList" />
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnViewer" />
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.PdfViewer" />
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnList" />
 
         <service
             android:name=".Services.QuranServices.PAudioServiceSelection"

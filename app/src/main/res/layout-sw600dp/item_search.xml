@@ -7,79 +7,74 @@
 
     </data>
 
-    <androidx.cardview.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginBottom="10dp"
-        app:cardCornerRadius="7dp"
-        tools:context=".FirstFragment">
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/shape_card">
 
-        <RelativeLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".FirstFragment">
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/linear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:layout_toStartOf="@+id/tv_count"
-                android:gravity="center_vertical|end"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_sura_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/ffshamel_family_bold"
-                    android:text="نص الحديث"
-                    android:textColor="@color/tv_gri_color"
-                    android:textSize="@dimen/tv_normal_size_tablet" />
-
-                <TextView
-                    android:id="@+id/tv_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/ffshamel_book"
-                    android:text="صحيح البخاري / رقم الكتاب 10"
-                    android:textColor="@color/tv_gri_color"
-                    android:textSize="@dimen/tv_normal_size_tablet" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            android:layout_centerVertical="true"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:layout_toStartOf="@+id/tv_count"
+            android:gravity="center_vertical|end"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_count"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/ic_star"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="1"
-                android:textSize="@dimen/tv_small_size_tablet"
-                android:textStyle="bold" />
-
-
-            <View
-                android:id="@+id/click_view"
-                android:layout_width="match_parent"
+                android:id="@+id/tv_sura_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/linear"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="-30dp"
-                android:background="?selectableItemBackground" />
+                android:fontFamily="@font/ffshamel_book"
+                android:text="نص الحديث"
+                android:paddingStart="10dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="@dimen/tv_normal_size_tablet" />
 
-        </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ffshamel_family_bold"
+                android:text="صحيح البخاري / رقم الكتاب 10"
+                android:textColor="@color/tv_gri_color"
+                android:textSize="@dimen/tv_normal_size_tablet" />
 
-    </androidx.cardview.widget.CardView>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/ic_sura_number_holder"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="@dimen/tv_small_size_tablet"
+            android:textStyle="bold"
+            tools:text="100" />
+
+
+        <View
+            android:id="@+id/click_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/linear"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="-30dp"
+            android:background="?selectableItemBackground" />
+
+    </RelativeLayout>
+
 </layout>
