@@ -41,7 +41,7 @@ public class NotificationHelper extends ContextWrapper {
 
 
     Intent intent= new Intent(this, MainActivity.class);
-    PendingIntent contentIntent = PendingIntent.getActivity(this,0,intent,0);
+    PendingIntent contentIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_IMMUTABLE);
     @TargetApi(Build.VERSION_CODES.O)
     private void createChannel() {
         NotificationChannel channel = new NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH);

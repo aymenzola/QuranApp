@@ -1,5 +1,6 @@
 package com.app.dz.quranapp.ui.activities.CollectionParte.motonParte;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +17,6 @@ import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.MotonDao;
 import com.app.dz.quranapp.data.room.DatabaseClient;
-import com.app.dz.quranapp.data.room.MushafDatabase;
 import com.app.dz.quranapp.databinding.ActivityPdfBinding;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
@@ -53,16 +53,21 @@ public class ActivityMatnViewer extends AppCompatActivity implements OnPageChang
         motonDao = db.getMotonDao();
         matn = (Matn) getIntent().getSerializableExtra("matn");
 
+        binding.imgSave.setOnLongClickListener(v->{
+            startActivity(new Intent(ActivityMatnViewer.this,ActivityMatnOnlineViewer.class));
+            return true;
+        });
+
         if (matn != null) {
             Log.e(TAG, "onCreate: " + matn.getFileUrl());
-            showPdfFile();
+            showPdfFile(0);
         } else {
-            //it is saved book
+            //it is a saved book
 
             SavedMatnPage savedMatnPage = (SavedMatnPage) getIntent().getSerializableExtra("saved_matn");
             if (savedMatnPage != null) {
                 matn = getMatnById(savedMatnPage.matnId);
-                showPdfFile();
+                showPdfFile(savedMatnPage.pageNumber);
             } else {
                 Log.e(TAG, "onCreate: matn is null");
             }
@@ -77,11 +82,12 @@ public class ActivityMatnViewer extends AppCompatActivity implements OnPageChang
         return CsvReader.readMotonListFromCsv(this, "moton_items.csv", matnId).get(0);
     }
 
-    private void showPdfFile() {
+    private void showPdfFile(int pageNumber) {
         binding.pdfView.fromFile(PublicMethods.getInstance().getFile(matn.fileName))
                 .onPageChange(this)
                 .onLoad(this)
                 .pageSnap(true)
+                .defaultPage(pageNumber)
                 .onError(t -> Log.e(TAG, "onError: " + t.getMessage()))
                 .scrollHandle(new DefaultScrollHandle(this)).load();
     }

@@ -53,7 +53,8 @@ public class HadithsAdapter extends RecyclerView.Adapter<HadithsAdapter.ViewHold
     public void onBindViewHolder(@NonNull @NotNull ViewHolder_ holder, int position) {
 
         Hadith hadith = arrayList.get(position);
-        holder.binding.tvHadith.setText(Html.fromHtml(hadith.body));
+        String myData = "<html><body style='text-align:right;'>" + hadith.body + "</body></html>";
+        holder.binding.webView.loadData(myData, "text/html", "UTF-8");
 
         holder.binding.tvDestination.setText(destination);
         holder.binding.tvChapter.setText(hadith.chapterTitle);

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">كنوز</string>
+    <string name="msg_cannot_play_audio">لا يمكن تشغيل القران في هده الرواية</string>
 </resources>

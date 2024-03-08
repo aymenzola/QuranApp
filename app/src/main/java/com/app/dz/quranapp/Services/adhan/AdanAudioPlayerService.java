@@ -23,7 +23,7 @@ public class AdanAudioPlayerService extends Service {
 
         if (intent != null && ACTION_PLAY.equals(intent.getAction())) {
             mediaPlayer = new MediaPlayer();
-            mediaPlayer = MediaPlayer.create(this,R.raw.adan1);
+            mediaPlayer = MediaPlayer.create(this,R.raw.adhan1);
             mediaPlayer.start();
         }
 

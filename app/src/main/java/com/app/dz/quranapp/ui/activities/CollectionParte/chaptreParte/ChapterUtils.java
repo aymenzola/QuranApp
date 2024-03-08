@@ -3,11 +3,10 @@ package com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.app.dz.quranapp.data.room.Entities.Chapter;
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
+import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -97,7 +96,7 @@ public class ChapterUtils {
 
 
     public static void moveToChapterDetails(Context context, Chapter chapter) {
-        Intent intent = new Intent(context, ActivityHadithDetailsListDev.class);
+        Intent intent = new Intent(context, ActivityHadithDetailsList.class);
         intent.putExtra("chapter", new Gson().toJson(chapter, Chapter.class));
         context.startActivity(intent);
     }

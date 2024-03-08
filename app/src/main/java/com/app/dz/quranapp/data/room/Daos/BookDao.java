@@ -84,7 +84,7 @@ public interface BookDao {
     Observable<List<Book>> searchInBooks(String query, int searchPageSize, int offset);
 
     //search in chapters
-    @Query("SELECT * FROM hadithstable  where chapterTitle_no_tachkil LIKE '%' || :query || '%' LIMIT :searchPageSize OFFSET :offset")
+    @Query("SELECT * FROM hadithstable  where chapterTitle_no_tachkil LIKE '%' || :query || '%' GROUP BY chapterTitle_no_tachkil LIMIT :searchPageSize  OFFSET :offset")
     Observable<List<Hadith>> searchInChapter(String query, int searchPageSize, int offset);
 
 
@@ -93,6 +93,9 @@ public interface BookDao {
 
     @Query("SELECT * FROM hadithstable where collection=:collectionName and bookNumber=:bookNumber")
     Observable<List<Hadith>> getSpecificHadith(String collectionName, String bookNumber);
+
+    @Query("SELECT * FROM hadithstable where collection=:collectionName and bookNumber=:bookNumber and chapterId=:chapterId ORDER BY chapterId ASC")
+    Observable<List<Hadith>> getHadithList(String collectionName, String bookNumber,String chapterId);
 
     @Query("SELECT * FROM hadithstable where collection=:collectionName and chapterTitle=:chapterName")
     Observable<List<Hadith>> getHadithWithChapterName(String collectionName, String chapterName);

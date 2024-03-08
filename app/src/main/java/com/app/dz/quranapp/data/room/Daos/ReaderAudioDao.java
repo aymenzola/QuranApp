@@ -3,7 +3,7 @@ package com.app.dz.quranapp.data.room.Daos;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 
 import java.util.List;
 

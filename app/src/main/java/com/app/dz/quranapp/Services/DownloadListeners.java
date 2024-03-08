@@ -7,5 +7,6 @@ public interface DownloadListeners {
 
     void onDownloadComplete(File outputFile);
 
-    void onDownloadCacled(String reasen);
+    void onDownloadCanceled(String reasen);
+    void onDownloadError(String error);
 }

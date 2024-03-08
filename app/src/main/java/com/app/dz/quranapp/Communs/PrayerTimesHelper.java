@@ -1,11 +1,14 @@
 package com.app.dz.quranapp.Communs;
 
+import static com.app.dz.quranapp.Communs.PrayerTimesPreference.getDayPrayersConfig;
 import static com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker.convertMillisToTime;
+import static com.app.dz.quranapp.ui.activities.adhan.BootReceiver.TAG_BROAD_CAST;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
@@ -15,15 +18,16 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import com.app.dz.quranapp.data.room.Entities.DayPrayerTimes;
-import com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.PrayerTimes;
+import com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver;
 import com.app.dz.quranapp.Services.adhan.PrayerForegroundService;
 import com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker;
-import com.app.dz.quranapp.ui.models.adhan.DayPrayersConfig;
-import com.app.dz.quranapp.ui.models.adhan.PrayerConfig;
 import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.DayPrayerTimesDao;
 import com.app.dz.quranapp.data.room.DatabaseClient;
+import com.app.dz.quranapp.data.room.Entities.DayPrayerTimes;
+import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarCountsHelper;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.PrayerTimes;
+import com.app.dz.quranapp.ui.models.adhan.DayPrayersConfig;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.Gson;
 
@@ -43,9 +47,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class PrayerTimesHelper {
 
-    private final SharedPreferences sharedPreferences;
-    private final SharedPreferences.Editor editor;
-    private static final String SHARED_PREF_NAME = "my_shared_pref";
+
     private TimesListener listener;
     private final DayPrayerTimesDao dao;
     private final Map<String, DayPrayerTimes> resultsMap = new HashMap<>();
@@ -63,12 +65,10 @@ public class PrayerTimesHelper {
     public PrayerTimesHelper(Context context) {
         AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
         dao = db.getDayPrayerTimesDao();
-        sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
         compositeDisposable = new CompositeDisposable();
     }
 
-    public void setListener(TimesListener timesListener){
+    public void setListener(TimesListener timesListener) {
         this.listener = timesListener;
     }
 
@@ -115,7 +115,7 @@ public class PrayerTimesHelper {
         PrayerTimes prayerTimesToday = getConvertTimeMilliSeconds(todayPrayerTimes);
 
         long tomorrowFajr = getTomorrowFajr(tomorrowPrayerTimes, todayPrayerTimes);
-        PrayerInfo prayerInfo = getTheNextPrayer(prayerTimesToday, tomorrowFajr);
+        PrayerTimesPreference.PrayerInfo prayerInfo = getTheNextPrayer(prayerTimesToday, tomorrowFajr);
         listener.onNextPrayerNameAndTimeResult(prayerInfo);
     }
 
@@ -176,7 +176,7 @@ public class PrayerTimesHelper {
         return calendar.getTimeInMillis();
     }
 
-    public static PrayerInfo getTheNextPrayer(PrayerTimes PrayerTimesToday, long FajrTimeTommorow) {
+    public static PrayerTimesPreference.PrayerInfo getTheNextPrayer(PrayerTimes PrayerTimesToday, long FajrTimeTommorow) {
         long Nextmillseconds;
         Calendar currant = Calendar.getInstance();
         long MidnightTimeInMillis_NextDAY = getMidnightTimeInMillisNextDAY();
@@ -196,33 +196,33 @@ public class PrayerTimesHelper {
         if (currantMilliseconds > PrayerTimesToday.ishaa && currantMilliseconds < MidnightTimeInMillis_NextDAY) {
             Nextmillseconds = FajrTimeTommorow;
             nextSalatName = "الفجر";
-            nextEnglsihSalatName = PrayerNames.FAJR.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.FAJR.name();
         } else if (currantMilliseconds > MidnightTimeInMillis_Today && currantMilliseconds < PrayerTimesToday.fajr) {
             Nextmillseconds = PrayerTimesToday.fajr;
             nextSalatName = "الفجر";
-            nextEnglsihSalatName = PrayerNames.FAJR.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.FAJR.name();
         } else if (currantMilliseconds > PrayerTimesToday.fajr && currantMilliseconds < PrayerTimesToday.sunrise) {
             Nextmillseconds = PrayerTimesToday.sunrise;
             nextSalatName = "الشروق";
-            nextEnglsihSalatName = PrayerNames.SHOUROK.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.SHOUROK.name();
         } else if (currantMilliseconds > PrayerTimesToday.sunrise && currantMilliseconds < PrayerTimesToday.duhr) {
             Nextmillseconds = PrayerTimesToday.duhr;
             nextSalatName = "الظهر";
-            nextEnglsihSalatName = PrayerNames.DUHR.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.DUHR.name();
         } else if (currantMilliseconds > PrayerTimesToday.duhr && currantMilliseconds < PrayerTimesToday.assr) {
             Nextmillseconds = PrayerTimesToday.assr;
             nextSalatName = "العصر";
-            nextEnglsihSalatName = PrayerNames.ASR.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.ASR.name();
         } else if (currantMilliseconds > PrayerTimesToday.assr && currantMilliseconds < PrayerTimesToday.maghrib) {
             Nextmillseconds = PrayerTimesToday.maghrib;
             nextSalatName = "المغرب";
-            nextEnglsihSalatName = PrayerNames.MAGHRIB.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.MAGHRIB.name();
         } else {
             Nextmillseconds = PrayerTimesToday.ishaa;
             nextSalatName = "العشاء";
-            nextEnglsihSalatName = PrayerNames.ISHA.name();
+            nextEnglsihSalatName = PrayerTimesPreference.PrayerNames.ISHA.name();
         }
-        return new PrayerInfo(nextSalatName, nextEnglsihSalatName,Nextmillseconds);
+        return new PrayerTimesPreference.PrayerInfo(nextSalatName, nextEnglsihSalatName, Nextmillseconds);
     }
 
     private static long getTomorrowFajr(DayPrayerTimes nextDayPrayerTimes, DayPrayerTimes todayDayPrayerTimes) {
@@ -304,11 +304,19 @@ public class PrayerTimesHelper {
             }
 
             @Override
-            public void onNextPrayerNameAndTimeResult(PrayerInfo prayerInfo) {
+            public void onNextPrayerNameAndTimeResult(PrayerTimesPreference.PrayerInfo prayerInfo) {
+                //should check if equal the next prayer time the save one
+                PrayerTimesPreference.PrayerInfo p = PrayerTimesPreference.getInstance(context).getNextScheduleNotification();
+                if (p!=null && p.prayer_time == prayerInfo.prayer_time) {
+                    Log.e("testLog", "---->this is the second call  for the same prayer time "+prayerInfo.prayer_arabic);
+                    return;
+                }
+
+
                 long nextPrayerDelay = prayerInfo.prayer_time - System.currentTimeMillis();
 
                 Data inputData = new Data.Builder()
-                        .putString("prayerInfo",new Gson().toJson(prayerInfo,PrayerInfo.class))
+                        .putString("prayerInfo", new Gson().toJson(prayerInfo, PrayerTimesPreference.PrayerInfo.class))
                         .build();
 
                 OneTimeWorkRequest nextPrayerWork = new OneTimeWorkRequest.Builder(PrayerNotificationWorker.class)
@@ -318,11 +326,16 @@ public class PrayerTimesHelper {
 
                 Log.e("testLog", "---->reschedule next one on " + convertMillisToTime(System.currentTimeMillis() + nextPrayerDelay));
                 WorkManager.getInstance(context).enqueue(nextPrayerWork);
+                scheduleNextAlarm(context, nextPrayerDelay, prayerInfo);
+                PrayerTimesPreference.getInstance(context).saveNextScheduleNotification(prayerInfo);
+
+                //schedule the next adkar
+                AdkarCountsHelper.getInstance(context).scheduleDikrAlarm(context);
 
                 //tell the shared preference that there is a scheduled work
                 UUID workId = nextPrayerWork.getId();
-                PrayerTimesHelper.getInstance(context).setIsThereOnSchedule(true,context);
-                PrayerTimesHelper.getInstance(context).setNextScheduledWorkId(workId,context);
+                PrayerTimesPreference.getInstance(context).setIsThereOnSchedule(true, context);
+                PrayerTimesPreference.getInstance(context).setNextScheduledWorkId(workId, context);
 
 
                 //update the fixed notification title and time for next prayer
@@ -353,60 +366,18 @@ public class PrayerTimesHelper {
     }
 
 
-    public void saveDayPrayersConfig(DayPrayersConfig dayPrayersConfig, Context context) {
-        editor.putString("dayPrayersConfig", new Gson().toJson(dayPrayersConfig, DayPrayersConfig.class));
-        editor.apply();
-    }
-
-    public void setIsThereOnSchedule(boolean isThereOnSchedule, Context context) {
-        DayPrayersConfig dayPrayersConfig = getDayPrayersConfig(context);
-        dayPrayersConfig.isThereOnSchedule = isThereOnSchedule;
-        saveDayPrayersConfig(dayPrayersConfig, context);
-    }
-
-    public void setNextScheduledWorkId(UUID newWorkId, Context context) {
-        DayPrayersConfig dayPrayersConfig = getDayPrayersConfig(context);
-        dayPrayersConfig.newWorkId = newWorkId;
-        saveDayPrayersConfig(dayPrayersConfig, context);
-    }
-
-    public static DayPrayersConfig getDayPrayersConfig(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        String dayString = sharedPreferences.getString("dayPrayersConfig","no");
-        if (dayString.equals("no")) {
-            return getDefaultPrayersConfig();
-        } else {
-            return new Gson().fromJson(dayString,DayPrayersConfig.class);
-        }
-    }
 
 
-    public PrayerConfig getPrayerConfigWithName(Context context, String name) {
-        DayPrayersConfig dayPrayersConfig = getDayPrayersConfig(context);
-        return switch (name) {
-            case "FAJR" -> dayPrayersConfig.FajrConfig;
-            case "DUHR" -> dayPrayersConfig.DuhrConfig;
-            case "ASR" -> dayPrayersConfig.AsrConfig;
-            case "MAGHRIB" -> dayPrayersConfig.MaghribConfig;
-            case "ISHA" -> dayPrayersConfig.IchaaConfig;
-            default -> null;
-        };
-    }
 
-    @NonNull
-    private static DayPrayersConfig getDefaultPrayersConfig() {
-        PrayerConfig pCFajr = new PrayerConfig(PrayerNames.FAJR.name(), AdhanSound.NORMAL.name(), false);
-        PrayerConfig pCShourok = new PrayerConfig(PrayerNames.SHOUROK.name(), AdhanSound.SILENT.name(), false);
-        PrayerConfig pCDuhr = new PrayerConfig(PrayerNames.DUHR.name(), AdhanSound.NORMAL.name(), false);
-        PrayerConfig pCAsr = new PrayerConfig(PrayerNames.ASR.name(), AdhanSound.NORMAL.name(), false);
-        PrayerConfig pCMaghrib = new PrayerConfig(PrayerNames.MAGHRIB.name(), AdhanSound.NORMAL.name(), false);
-        PrayerConfig pCIchaa = new PrayerConfig(PrayerNames.ISHA.name(), AdhanSound.NORMAL.name(), false);
-        return new DayPrayersConfig(pCFajr,pCShourok,pCDuhr,pCAsr,pCMaghrib,pCIchaa,false);
-    }
+
+
+
 
     public void checkIfTheWorkIsScheduler(Context context) {
+        Log.e(TAG_BROAD_CAST, "checkIfTheWorkIsScheduler called ");
         DayPrayersConfig dayPrayersConfig = getDayPrayersConfig(context);
         if (dayPrayersConfig.newWorkId == null) {
+            Log.e(TAG_BROAD_CAST, "checkIfTheWorkIsScheduler dayPrayersConfig.newWorkId is null so return ");
             return;
         }
 
@@ -416,16 +387,17 @@ public class PrayerTimesHelper {
                 WorkInfo workInfo = future.get();
                 if (workInfo != null) {
                     WorkInfo.State state = workInfo.getState();
-                    if (state == WorkInfo.State.CANCELLED) {
-                        Log.e("quran_tag", "Work is cancelled");
-                        PrayerTimesHelper.getInstance(context).setIsThereOnSchedule(false,context);
+                    if (isFinished(state)) {
+                        Log.e(TAG_BROAD_CAST, "Work is finished");
+                        PrayerTimesPreference.getInstance(context).setIsThereOnSchedule(false, context);
                         PrayerTimesHelper.scheduleNextPrayerJob(context);
                     } else {
-                        Log.e("quran_tag", "Work is not cancelled");
+                        Log.e(TAG_BROAD_CAST, "Work is not finished");
                     }
-                    Log.e("quran_tag", "Work state: " + state.name());
+                    Log.e(TAG_BROAD_CAST, "Work state: " + state.name());
                 } else {
-                    Log.e("quran_tag", "WorkInfo is null");
+                    PrayerTimesPreference.getInstance(context).setIsThereOnSchedule(false, context);
+                    PrayerTimesHelper.scheduleNextPrayerJob(context);
                 }
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
@@ -434,48 +406,46 @@ public class PrayerTimesHelper {
 
     }
 
+    public boolean isFinished(WorkInfo.State state) {
+        return (state == WorkInfo.State.SUCCEEDED || state == WorkInfo.State.FAILED || state == WorkInfo.State.CANCELLED);
+    }
 
     public void clearDesposite() {
         compositeDisposable.clear();
     }
 
-    interface TimesListener {
+
+    public static void scheduleNextAlarm(Context context,long nextPrayerDelay, PrayerTimesPreference.PrayerInfo prayerInfo) {
+
+        // Create an intent that points to the BroadcastReceiver that you want to trigger
+        Intent intent = new Intent(context,AlarmBroadcastReceiver.class);
+        intent.putExtra("prayerInfo", new Gson().toJson(prayerInfo,PrayerTimesPreference.PrayerInfo.class));
+        // Create a PendingIntent with that intent
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextPrayerDelay, pendingIntent);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextPrayerDelay, pendingIntent);
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextPrayerDelay, pendingIntent);
+            }
+        }
+    }
+
+
+    public interface TimesListener {
         void onPrayerTimesResult(Map<String, DayPrayerTimes> TimesMap);
 
-        void onNextPrayerNameAndTimeResult(PrayerInfo prayerInfo);
+        void onNextPrayerNameAndTimeResult(PrayerTimesPreference.PrayerInfo prayerInfo);
 
         void onError(String error);
     }
 
-    public static class PrayerInfo {
-        public String prayer_arabic;
-        public String prayer_english_name;
-        long prayer_time;
-
-        public PrayerInfo(String prayer_arabic, String prayer_english_name, long prayer_time) {
-            this.prayer_arabic = prayer_arabic;
-            this.prayer_english_name = prayer_english_name;
-            this.prayer_time = prayer_time;
-        }
-    }
-
-    public static String getPrayerArabicName(String prayerName) {
-        return switch (prayerName) {
-            case "FAJR" -> "الفجر";
-            case "SHOUROK" -> "الشروق";
-            case "DUHR" -> "الظهر";
-            case "ASR" -> "العصر";
-            case "MAGHRIB" -> "المغرب";
-            case "ISHA" -> "العشاء";
-            default -> "";
-        };
-    }
-
-
-    public enum PrayerNames {
-        FAJR,SHOUROK,DUHR,ASR,MAGHRIB,ISHA;
-    }
-    public enum AdhanSound {
-        VIBRATION,SILENT,NORMAL
-    }
 }

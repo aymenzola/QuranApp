@@ -17,7 +17,6 @@ import com.app.dz.quranapp.MainActivity;
 import com.app.dz.quranapp.ui.activities.OnBoardingParte.StartActivityPager;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
-import com.app.dz.quranapp.fix_new_futers.ai_commands.AudioForegroundService;
 import com.app.dz.quranapp.databinding.ActivitySplashBinding;
 
 @SuppressLint("CustomSplashScreen")
@@ -36,9 +35,6 @@ public class SplashScreenActivity extends AppCompatActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             getWindow().setStatusBarColor(getColor(R.color.white));
         }
-        //Glide.with(this).load(R.drawable.splash_logo).into(binding.rounded);
-
-        startService(new Intent(this,AudioForegroundService.class));
 
     }
 
@@ -46,31 +42,6 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-
-        /*
-        Thread th = new Thread() {
-            public void run() {
-                try {
-                    sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } finally {
-                    Intent intent;
-                    if (SharedPreferenceManager.getInstance(SplashScreenActivity.this).iSFirstTime()){
-                        intent = new Intent(SplashScreenActivity.this,StartActivityPager.class);
-                    }else {
-                        intent = new Intent(SplashScreenActivity.this,MainActivity.class);
-                    }
-                    startActivity(intent);
-                    finish();
-
-
-                }
-            }
-        };
-        th.start();
-*/
-        // Define a Handler
         Handler handler = new Handler(Looper.getMainLooper());
 
 // Create a Runnable to run on the background thread
@@ -81,10 +52,6 @@ public class SplashScreenActivity extends AppCompatActivity {
                 iSFirstTime = SharedPreferenceManager.getInstance(SplashScreenActivity.this).iSFirstTime();
                 binding.lottieAnimationView.setAnimation(R.raw.logojson);
                 binding.lottieAnimationView.playAnimation();
-
-                //long duration = binding.lottieAnimationView.getAnimation().getDuration();
-                //Log.e("duration","duration "+duration );
-
 
                 binding.lottieAnimationView.addAnimatorListener(new AnimatorListenerAdapter() {
 

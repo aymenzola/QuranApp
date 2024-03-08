@@ -2,11 +2,17 @@ package com.app.dz.quranapp.ui.activities.AdkarParte;
 
 import static com.app.dz.quranapp.Util.SharedPreferenceManager.SHARED_PREF_NAME;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.work.WorkManager;
+
+import com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver;
 
 import java.util.Calendar;
 import java.util.UUID;
@@ -15,6 +21,7 @@ public class AdkarCountsHelper {
 
     private static final String AL_READY_APPEARED_NOTIFICATION_COUNT_KEY = "notificationCount";
     private static final String SCHEDULED_NOTIFICATION_COUNT_KEY = "scheduledNotificationCount";
+    private static final int ADKAR_ALARM_REQUEST_CODE = 88;
     private final SharedPreferences sharedPreferences;
     private final SharedPreferences.Editor editor;
     private static AdkarCountsHelper mInstance;
@@ -137,5 +144,93 @@ public class AdkarCountsHelper {
 
     public boolean getIsFirstNotification() {
         return sharedPreferences.getBoolean("isFirstNotification", true);
+    }
+
+    public void scheduleDikrAlarm(Context context) {
+        //cancel previous alarm if exists
+        cancelPrevDikrAlarm(context);
+        int level = AdkarCountsHelper.getInstance(context).getAdkarLevel();
+
+        // Get the current hour and minute
+        int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+        int safePeriod = 22 - level;
+        if (currentHour >= 8 && currentHour < safePeriod) {
+            scheduleNextAlarm(context, level);
+        } else {
+            //should schedule the next alarm tomorrow at 8:00 am
+            scheduleTomorrowAlarm(context);
+        }
+    }
+
+    private void scheduleTomorrowAlarm(Context context) {
+
+        long timeTo8Am = getMissingTimeTo8Am(context);
+
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ADKAR_ALARM_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeTo8Am, pendingIntent);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeTo8Am, pendingIntent);
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + timeTo8Am, pendingIntent);
+            }
+        }
+    }
+
+    private long getMissingTimeTo8Am(Context context) {
+        Calendar now = Calendar.getInstance();
+        long currentTimeMillis = now.getTimeInMillis();
+
+      //Set the calendar instance to 8 AM tomorrow
+        now.add(Calendar.DAY_OF_YEAR, 1); // Move to tomorrow
+        now.set(Calendar.HOUR_OF_DAY, 8); // Set hour to 8 AM
+        now.set(Calendar.MINUTE, 0); // Set minute to 0
+        now.set(Calendar.SECOND, 0); // Set second to 0
+        now.set(Calendar.MILLISECOND, 0); // Set millisecond to 0
+
+        long eightAmTomorrowMillis = now.getTimeInMillis();
+
+        return eightAmTomorrowMillis - currentTimeMillis;
+    }
+
+    private static void scheduleNextAlarm(Context context, int level) {
+        long nextDikrDelay = (long) level * 60 * 60 * 1000;
+
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ADKAR_ALARM_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextDikrDelay, pendingIntent);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextDikrDelay, pendingIntent);
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextDikrDelay, pendingIntent);
+            }
+        }
+    }
+
+
+    public static void cancelPrevDikrAlarm(Context context) {
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ADKAR_ALARM_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
     }
 }

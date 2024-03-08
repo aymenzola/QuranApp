@@ -64,6 +64,15 @@ public class MotonAdapter extends RecyclerView.Adapter<MotonAdapter.ViewHolder_>
             holder.binding.getRoot().setOnClickListener(v -> listener.onItemClick(model, position));
         } else {
             holder.binding.btnRead.setOnClickListener(v -> listener.onItemClick(model, position));
+
+            if (model.isDownloaded) {
+                holder.binding.btnRead.setText("قراءة");
+                holder.binding.btnRead.setBackgroundResource(R.drawable.shape_button_selected);
+                holder.binding.getRoot().setOnClickListener(v -> listener.onItemClick(model,position));
+            } else {
+                holder.binding.btnRead.setText("تحميل");
+                holder.binding.btnRead.setBackgroundResource(R.drawable.shape_button_download);
+            }
         }
     }
 

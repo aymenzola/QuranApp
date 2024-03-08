@@ -2,7 +2,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
     app:startDestination="@+id/fragment_home">
 
     <fragment
@@ -111,7 +110,7 @@
 
     <fragment
         android:id="@+id/quranFragmentDev"
-        android:name="com.app.dz.quranapp.ui.activities.quran.QuranFragmentDev"
+        android:name="com.app.dz.quranapp.quran.mainQuranFragment.QuranMainFragment"
         android:label="QuranFragmentDev"
         tools:layout="@layout/quran_activity"
         >

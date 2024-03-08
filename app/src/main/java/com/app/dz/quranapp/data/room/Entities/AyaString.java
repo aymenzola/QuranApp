@@ -2,7 +2,7 @@ package com.app.dz.quranapp.data.room.Entities;
 
 import android.text.SpannableStringBuilder;
 
-import com.app.dz.quranapp.quran.QuranReadParte.AyaTextLimits;
+import com.app.dz.quranapp.quran.models.AyaTextLimits;
 
 import java.io.Serializable;
 import java.util.ArrayList;

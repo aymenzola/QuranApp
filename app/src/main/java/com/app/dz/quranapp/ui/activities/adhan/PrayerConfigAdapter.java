@@ -11,9 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Communs.PrayerTimesHelper;
+import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.ItemPrayerConfigBinding;
+import com.app.dz.quranapp.databinding.IncludePrayerTimeBinding;
 import com.app.dz.quranapp.ui.models.adhan.DayPrayersConfig;
 import com.app.dz.quranapp.ui.models.adhan.PrayerConfig;
 
@@ -33,8 +33,8 @@ public class PrayerConfigAdapter extends RecyclerView.Adapter<PrayerConfigAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemPrayerConfigBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.item_prayer_config, parent, false);
+        IncludePrayerTimeBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                R.layout.include_prayer_time, parent, false);
         return new ViewHolder(binding);
     }
 
@@ -50,9 +50,9 @@ public class PrayerConfigAdapter extends RecyclerView.Adapter<PrayerConfigAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final ItemPrayerConfigBinding binding;
+        private final IncludePrayerTimeBinding binding;
 
-        public ViewHolder(@NonNull ItemPrayerConfigBinding binding) {
+        public ViewHolder(@NonNull IncludePrayerTimeBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
@@ -72,7 +72,7 @@ public class PrayerConfigAdapter extends RecyclerView.Adapter<PrayerConfigAdapte
 
             //setting the default values
             binding.checkbox.setChecked(config.isNotifyOnSilentMode);
-            binding.tvPrayerNameTime.setText(PrayerTimesHelper.getPrayerArabicName(config.name));
+            binding.tvPrayerNameTime.setText(PrayerTimesPreference.getPrayerArabicName(config.name));
             updateView(config);
 
 
@@ -84,42 +84,42 @@ public class PrayerConfigAdapter extends RecyclerView.Adapter<PrayerConfigAdapte
             });
 
             binding.imageNormal.setOnClickListener(v -> {
-                config.soundType = PrayerTimesHelper.AdhanSound.NORMAL.name();
+                config.soundType = PrayerTimesPreference.AdhanSound.NORMAL.name();
                 updateView(config);
                 saveDayPrayersConfig(getBindingAdapterPosition(), config);
                 listener.onItemChanged(getBindingAdapterPosition());
             });
 
             binding.tvNormal.setOnClickListener(v -> {
-                config.soundType = PrayerTimesHelper.AdhanSound.NORMAL.name();
+                config.soundType = PrayerTimesPreference.AdhanSound.NORMAL.name();
                 updateView(config);
                 saveDayPrayersConfig(getBindingAdapterPosition(), config);
                 listener.onItemChanged(getBindingAdapterPosition());
             });
 
             binding.imageSilent.setOnClickListener(v -> {
-                config.soundType = PrayerTimesHelper.AdhanSound.SILENT.name();
+                config.soundType = PrayerTimesPreference.AdhanSound.SILENT.name();
                 updateView(config);
                 saveDayPrayersConfig(getBindingAdapterPosition(),config);
                 listener.onItemChanged(getBindingAdapterPosition());
             });
 
             binding.tvSilent.setOnClickListener(v -> {
-                config.soundType = PrayerTimesHelper.AdhanSound.SILENT.name();
+                config.soundType = PrayerTimesPreference.AdhanSound.SILENT.name();
                 updateView(config);
                 saveDayPrayersConfig(getBindingAdapterPosition(), config);
                 listener.onItemChanged(getBindingAdapterPosition());
             });
 
             binding.imageVibration.setOnClickListener(v -> {
-                config.soundType = PrayerTimesHelper.AdhanSound.VIBRATION.name();
+                config.soundType = PrayerTimesPreference.AdhanSound.VIBRATION.name();
                 updateView(config);
                 saveDayPrayersConfig(getBindingAdapterPosition(), config);
                 listener.onItemChanged(getBindingAdapterPosition());
             });
 
             binding.tvVibration.setOnClickListener(v -> {
-                config.soundType = PrayerTimesHelper.AdhanSound.VIBRATION.name();
+                config.soundType = PrayerTimesPreference.AdhanSound.VIBRATION.name();
                 updateView(config);
                 saveDayPrayersConfig(getBindingAdapterPosition(), config);
                 listener.onItemChanged(getBindingAdapterPosition());
@@ -127,16 +127,16 @@ public class PrayerConfigAdapter extends RecyclerView.Adapter<PrayerConfigAdapte
         }
 
         private void updateView(PrayerConfig config) {
-            setImageViewTint(binding.tvNormal,binding.imageNormal, config.soundType.equals(PrayerTimesHelper.AdhanSound.NORMAL.name()) ? R.color.purple_500 : R.color.tv_gri_color);
-            setImageViewTint(binding.tvSilent,binding.imageSilent, config.soundType.equals(PrayerTimesHelper.AdhanSound.SILENT.name()) ? R.color.purple_500 : R.color.tv_gri_color);
-            setImageViewTint(binding.tvVibration,binding.imageVibration, config.soundType.equals(PrayerTimesHelper.AdhanSound.VIBRATION.name()) ? R.color.purple_500 : R.color.tv_gri_color);
+            setImageViewTint(binding.tvNormal,binding.imageNormal, config.soundType.equals(PrayerTimesPreference.AdhanSound.NORMAL.name()) ? R.color.purple_500 : R.color.tv_gri_color);
+            setImageViewTint(binding.tvSilent,binding.imageSilent, config.soundType.equals(PrayerTimesPreference.AdhanSound.SILENT.name()) ? R.color.purple_500 : R.color.tv_gri_color);
+            setImageViewTint(binding.tvVibration,binding.imageVibration, config.soundType.equals(PrayerTimesPreference.AdhanSound.VIBRATION.name()) ? R.color.purple_500 : R.color.tv_gri_color);
         }
 
         public void saveDayPrayersConfig(int position, PrayerConfig prayerConfig) {
-            DayPrayersConfig currentDayPrayersConfig = PrayerTimesHelper.getDayPrayersConfig(binding.getRoot().getContext());
+            DayPrayersConfig currentDayPrayersConfig = PrayerTimesPreference.getDayPrayersConfig(binding.getRoot().getContext());
             currentDayPrayersConfig.updatePrayerConfigAtPosition(prayerConfig,position);
             Log.e("logtag", "saveDayPrayersConfig: " + currentDayPrayersConfig.toString());
-            PrayerTimesHelper.getInstance(itemView.getContext()).saveDayPrayersConfig(currentDayPrayersConfig, binding.getRoot().getContext());
+            PrayerTimesPreference.getInstance(itemView.getContext()).saveDayPrayersConfig(currentDayPrayersConfig, binding.getRoot().getContext());
         }
 
         private void setImageViewTint(TextView tvMode, ImageView imageView,int colorRes) {

@@ -1,21 +1,13 @@
 package com.app.dz.quranapp.fix_new_futers.aManageNewSources;
 
-import static com.app.dz.quranapp.fix_new_futers.ai_commands.WitAiRequest.BEARER_TOKEN;
-import static com.app.dz.quranapp.fix_new_futers.ai_commands.WitAiRequest.WIT_AI_API_URL;
-import static com.app.dz.quranapp.fix_new_futers.ai_commands.WitAiRequest.WIT_AI_API_URL1;
-import static com.app.dz.quranapp.fix_new_futers.ai_commands.WitAiRequest.formatCurrentDate;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -29,15 +21,10 @@ import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.data.room.Entities.AyaAudioLimitsFirebase;
 import com.app.dz.quranapp.data.room.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.databinding.TestActivityBinding;
-import com.app.dz.quranapp.fix_new_futers.ai_commands.MyHttpURLConnection;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,27 +37,11 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Query;
-
 public class TestQuranAudioAyaLimitsActivity extends AppCompatActivity {
-
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-
     private TestActivityBinding binding;
     private List<Sura> suraList = new ArrayList<>();
 
-    private SpeechRecognizer speechRecognizer;
-    private Intent recognizerIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,91 +108,6 @@ public class TestQuranAudioAyaLimitsActivity extends AppCompatActivity {
             }).start();
         });
 
-        binding.btnSpeech.setOnClickListener(v -> {
-
-            String formattedCurrentDate = formatCurrentDate();
-            String apiUrl = WIT_AI_API_URL + "?v=" + formattedCurrentDate + "&q=" + binding.editText.getText().toString();
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String response = MyHttpURLConnection.sendGetRequest(apiUrl);
-                    Log.e("steptag", " self response 1 "+decodeArabicCharacters(response));
-
-
-                    try {
-                        JSONObject jsonObject = new JSONObject(response);
-
-                        // Access values in the JSONObject
-                        String text = jsonObject.optString("text", "");
-                        JSONArray intents = jsonObject.optJSONArray("intents");
-                        JSONObject entities = jsonObject.optJSONObject("entities");
-                        JSONObject traits = jsonObject.optJSONObject("traits");
-
-                        // Access specific values within entities if they exist
-                        JSONArray suraNameEntities = entities != null ? entities.optJSONArray("sura_name:sura_name") : null;
-                        if (suraNameEntities != null && suraNameEntities.length() > 0) {
-                            JSONObject suraNameEntity = suraNameEntities.getJSONObject(0);
-                            String body = suraNameEntity.optString("body", "");
-                            double confidence = suraNameEntity.optDouble("confidence", 0.0);
-                            Log.e("steptag", "json self response " + body + " " + confidence);
-                        } else {
-                            Log.e("steptag", "No sura_name:sura_name object in entities");
-                        }
-
-                        JSONArray readerNameEntities = entities != null ? entities.optJSONArray("readerName:readerName") : null;
-                        if (readerNameEntities != null && readerNameEntities.length() > 0) {
-                            JSONObject readerNameEntity = readerNameEntities.getJSONObject(0);
-                            String body_reader = readerNameEntity.optString("body", "");
-                            double confidence_reader = readerNameEntity.optDouble("confidence", 0.0);
-                            Log.e("steptag", "json self response " + body_reader + " " + confidence_reader);
-                        } else {
-                            Log.e("steptag", "No readerName:readerName object in entities");
-                        }
-
-
-
-
-                    } catch (JSONException e) {
-                        Log.e("steptag", "error self response " + e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-
-                }
-            }).start();
-
-            // Handle the response
-
-            /*
-            WitAiRequest witAiRequest = new WitAiRequest();
-            witAiRequest.makeWitAiRequest(TestQuranAudioAyaLimitsActivity.this, binding.editText.getText().toString(), new WitAiRequest.ListenersAudio() {
-                @Override
-                public void prepareCall() {
-                    binding.tvResult.setText("making call ... البرج");
-                }
-
-                @Override
-                public void getResult(String suraName,String readerName) {
-                    // Convert Unicode escaped string to Arabic text
-
-                    ;
-
-                    String val = convertUnicodeToArabic(suraName);
-                    Log.e("steptag","result value : "+val);
-                    binding.tvResult.setText(""+val);
-
-
-                    //binding.tvResult.setText(""+suraName);
-                }
-
-                @Override
-                public void getError(String errorBody) {
-                    binding.tvResult.setText("" + errorBody);
-                }
-            });
-            */
-        });
-
 
 
 /*        binding.btnSpeech.setOnClickListener(v -> {
@@ -230,13 +116,8 @@ public class TestQuranAudioAyaLimitsActivity extends AppCompatActivity {
         });*/
 
         // Initialize SpeechRecognizer
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        speechRecognizer.setRecognitionListener(new MyRecognitionListener());
 
         // Initialize RecognizerIntent
-        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar");
 
     }
 
@@ -306,8 +187,6 @@ public class TestQuranAudioAyaLimitsActivity extends AppCompatActivity {
 
         return convertToAyaAudioLimitsList(ayaAudioLimitsJsonList);
     }
-
-
     private static List<AyaAudioLimitsFirebase> readJsonFromUrl(String url) throws IOException {
         // Open a connection to the URL
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -372,124 +251,9 @@ public class TestQuranAudioAyaLimitsActivity extends AppCompatActivity {
 
     private void startVoiceRecognition() {
         binding.tvResult.setText("speak now ...");
-        speechRecognizer.startListening(recognizerIntent);
     }
 
-    private class MyRecognitionListener implements RecognitionListener {
-        @Override
-        public void onReadyForSpeech(Bundle params) {
-        }
 
-        @Override
-        public void onBeginningOfSpeech() {
-        }
-
-        @Override
-        public void onRmsChanged(float rmsdB) {
-        }
-
-        @Override
-        public void onBufferReceived(byte[] buffer) {
-        }
-
-        @Override
-        public void onEndOfSpeech() {
-        }
-
-        @Override
-        public void onError(int error) {
-            Log.e("steptag", "Error in speech recognition " + error);
-        }
-
-        @Override
-        public void onResults(Bundle results) {
-            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            if (matches != null && !matches.isEmpty()) {
-                String command = matches.get(0).toLowerCase();
-                processVoiceCommand(command);
-            }
-        }
-
-        @Override
-        public void onPartialResults(Bundle partialResults) {
-        }
-
-        @Override
-        public void onEvent(int eventType, Bundle params) {
-        }
-    }
-
-    private void makeRetrofitCall(String inputWord) {
-
-        String formattedCurrentDate = formatCurrentDate();
-
-
-        // Create an OkHttpClient with an Interceptor to add the Authorization header
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    Request originalRequest = chain.request();
-                    Request newRequest = originalRequest.newBuilder()
-                            .header("Authorization", BEARER_TOKEN)
-                            .build();
-                    return chain.proceed(newRequest);
-                }).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .build();
-
-        // Create a Retrofit instance with the customized OkHttpClient
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(WIT_AI_API_URL1)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-
-        // Create an instance of the ApiService interface
-        ApiService apiService = retrofit.create(ApiService.class);
-
-        // Make the network request
-        Call<Object> call = apiService.fetchData(BEARER_TOKEN, inputWord, formattedCurrentDate);
-
-        call.enqueue(new Callback<Object>() {
-
-            @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
-                if (response.isSuccessful()) {
-                    // Handle the successful response
-                    Object responseString = response.body();
-                    if (responseString != null) {
-                        Log.e("steptag", "retrofit response " + responseString.toString());
-                        String val1 = responseString.toString().replace(":", "_");
-                        String val2 = responseString.toString().replace("=", ":");
-
-                        binding.tvResult.setText("" + val2);
-                    } else {
-                        Log.e("steptag", "retrofit Error null");
-                    }
-                    // Process the response as needed
-
-                } else {
-                    Log.e("steptag", "retrofit unsuccessful response ");
-                    // Handle unsuccessful response
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Object> call, Throwable t) {
-                // Handle network failure
-            }
-        });
-    }
-
-    public interface ApiService {
-        @GET("message/")
-        Call<Object> fetchData(@Header("Authorization") String authorizationHeader, @Query("q") String query, @Query("v") String date);
-    }
-
-    private void processVoiceCommand(String command) {
-        Log.e("steptag", " voice command is " + command);
-        binding.tvResult.setText("searching ...");
-        binding.editText.setText("" + command);
-        makeRetrofitCall(command);
-    }
 
     private void checkRecordAudioPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -518,23 +282,4 @@ public class TestQuranAudioAyaLimitsActivity extends AppCompatActivity {
         }
     }
 
-    private static String convertUnicodeToArabic(String mixedString) {
-        StringBuilder result = new StringBuilder();
-        String[] tokens = mixedString.split("(?<=\\\\u)|(?=\\\\u)");
-        for (String token : tokens) {
-            if (token.startsWith("\\u")) {
-                try {
-                    int codePoint = Integer.parseInt(token.substring(2), 16);
-                    result.appendCodePoint(codePoint);
-                } catch (NumberFormatException e) {
-                    // Handle invalid Unicode token or log the error
-                    System.err.println("Invalid Unicode token: " + token);
-                    result.append(token); // Keep the original token if it's invalid
-                }
-            } else {
-                result.append(token); // Keep non-Unicode parts as they are
-            }
-        }
-        return result.toString();
-    }
 }

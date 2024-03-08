@@ -38,15 +38,16 @@
             android:text="بتفعيلك خاصية الاشعارات في الوضع العادي ستصلك 7 إشعارات في اليوم!"
             android:textSize="@dimen/tv_small_size" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <TextView
             android:id="@+id/btn_done"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_button"
             android:fontFamily="@font/ffshamel_family_bold"
             android:text="تمام"
+            android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/tv_normal_size" />
+            android:textSize="@dimen/tv_small_size" />
 
     </LinearLayout>
 </layout>

@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.data.room.Entities.Chapter;
-import com.app.dz.quranapp.ui.activities.NewBooksParte.DrawerBookAdapter;
 import com.shockwave.pdfium.PdfDocument;
 
 import java.util.List;

@@ -14,7 +14,6 @@
     <color name="text_color_dark">#9DA3AA</color>
  <color name="communBrown">#E6A34C</color>
  <color name="selectitem_color">#59EDD3A3</color>
-    <color name="transparent_more">#00232120</color>
     <color name="text_color">#424141</color>
 
     <color name="purple_700">#E6A34C</color>
@@ -22,12 +21,13 @@
  <color name="brown">#B75F08</color>
     <color name="tv_color">#424242</color>
     <color name="button_color">#E6A34C</color>
- <color name="tv_gri_color">#424242</color>
-    <color name="blue_clear">#FAFBFD</color>
-    <color name="brown_color">#4E261E</color><![CDATA[-->
+ <color name="tv_gri_color">#424242</color><![CDATA[
 
-    ]]>
- <color name="background_color">#FAFBFD</color>
+    -->
+
+
+ ]]>
+    <color name="background_color">#FAFBFD</color>
     <color name="item_count_color">#724A30</color>
 
 

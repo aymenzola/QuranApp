@@ -5,7 +5,7 @@ import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWN
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_ERROR_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_PREPAREING_FILES_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.PROGRESS_ACTION;
-import static com.app.dz.quranapp.ui.activities.quran.QuranFragmentDev.DOWNLOAD_TYPE_AUDIO;
+import static com.app.dz.quranapp.quran.mainQuranFragment.QuranMainFragment.DOWNLOAD_TYPE_AUDIO;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -28,7 +28,7 @@ import android.widget.RemoteViews;
 
 import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.MainActivity;
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Services.DownloadListeners;
 import com.app.dz.quranapp.Services.DownloadTask;
@@ -415,8 +415,14 @@ public class ForegroundDownloadAudioService extends Service {
                 else DownloadFinished();
             }
 
+
             @Override
-            public void onDownloadCacled(String reason) {
+            public void onDownloadError(String error) {
+
+            }
+
+            @Override
+            public void onDownloadCanceled(String reason) {
                 Log.e(TAG, "download canceled "+reason);
                 if (isCanceled) return;
                 toldTheActivty(DOWNLOAD_ERROR_ACTION, 0);

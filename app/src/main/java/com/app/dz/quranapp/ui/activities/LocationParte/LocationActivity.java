@@ -1,7 +1,11 @@
 package com.app.dz.quranapp.ui.activities.LocationParte;
 
+import static com.app.dz.quranapp.Communs.PrayerTimesPreference.turnOffAllPrayersConfig;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,14 +16,18 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -43,10 +51,12 @@ import com.app.dz.quranapp.data.room.DatabaseClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
@@ -98,7 +108,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
             getWindow().setStatusBarColor(getColor(R.color.white));
         }
 
-        binding.imgCloseLocation.setOnClickListener(v -> moveToMainAtivty());
+        binding.imgCloseLocation.setOnClickListener(v -> moveToMainActivity());
 
 
         alreadyExist = SharedPreferenceManager.getInstance(this).iSLocationAvialable();
@@ -155,17 +165,14 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
     private void setNextAlarm() {
         PrayerTimesHelper.scheduleNextPrayerJob(LocationActivity.this);
-        Toast.makeText(LocationActivity.this, "next prayer adan scheduled", Toast.LENGTH_SHORT).show();
+        moveToMainActivitySaveLocation();
     }
+
     private void setObservers() {
         viewModel.getResult().observe(LocationActivity.this, s -> {
             Log.e(TAG, "result : " + s);
             if (s.equals("Finished")) {
-                setNextAlarm();
-                // Save data to shared preferences
-                SharedPreferenceManager.getInstance(LocationActivity.this).saveLocation(newUserLocation);
-                moveToMainAtivty();
-
+                showAskToEnablePrayerNotifications();
             } else if (s.equals("error")) {
                 handleErrorCase();
             }
@@ -173,7 +180,12 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
         });
     }
 
-    private void moveToMainAtivty() {
+    private void moveToMainActivity() {
+        startActivity(new Intent(LocationActivity.this, MainActivity.class));
+    }
+
+    private void moveToMainActivitySaveLocation() {
+        SharedPreferenceManager.getInstance(LocationActivity.this).saveLocation(newUserLocation);
         startActivity(new Intent(LocationActivity.this, MainActivity.class));
     }
 
@@ -203,7 +215,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
             public void onAnimationEnd(Animation animation) {
                 binding.tvLocationResult.setVisibility(View.VISIBLE);
                 binding.tvPrevious.setVisibility(View.VISIBLE);
-                requestNewLocation();
+                getLastLocation();
             }
 
             @Override
@@ -323,6 +335,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
         LocationCallback locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
+                Log.e(TAG, "onLocationResult ");
                 if (locationResult == null) {
                     Log.e(TAG, "location result failure");
                     binding.btnGetLocation.setText("اعادة المحاولة");
@@ -343,6 +356,12 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                     }
                 }
             }
+
+            @Override
+            public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
+                super.onLocationAvailability(locationAvailability);
+                Log.e(TAG, "onLocationAvailability ");
+            }
         };
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -358,6 +377,33 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
     }
 
+    @SuppressLint("MissingPermission")
+    private void getLastLocation() {
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    if (location == null) {
+                        Log.e(TAG, "location result failure");
+                        binding.btnGetLocation.setText("اعادة المحاولة");
+                        binding.btnGetLocation.setEnabled(true);
+                        binding.progressBar.setVisibility(View.GONE);
+
+                        // Handle failure
+                        return;
+                    }
+                    Log.e(TAG, "we recieve new location");
+                    binding.progressBar.setVisibility(View.GONE);
+                    ManageTheRecievedLocation(location);
+                    //fusedLocationProviderClient.removeLocationUpdates();
+
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Error while getting last location " + e.getMessage());
+                        requestNewLocation();
+                    }
+                });
+    }
+
 
     private void checkPermissionsAndGetUserLoaction() {
         if (publicMethods.checkNetworkConnection(this)) {
@@ -366,8 +412,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                 AnimationAction();
                 return;
             }
-            requestNewLocation();
-
+            getLastLocation();
         } else {
             publicMethods.showNoInternetDialog(LocationActivity.this, getString(R.string.check_internet));
         }
@@ -558,6 +603,69 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
             }
         }
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void showAskToEnablePrayerNotifications() {
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(LocationActivity.this);
+        dialogBuilder.setTitle("تنبيهات الصلاة");
+        dialogBuilder.setCancelable(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dialogBuilder.setMessage("اذا كنت تريد تفعيل اشعارات الاذان الخاص بأوقات الصلاة يجب تفعيل التنبيهات الخاصة بالتطبيق");
+        } else {
+            dialogBuilder.setMessage("هل تريد تفعيل اشعارات الاذان الخاص بأوقات الصلاة؟");
+        }
+
+        dialogBuilder.setPositiveButton("تفعيل", (dialog, which) -> {
+            dialog.dismiss();
+            checkConditionsAndEnablePrayerNotify();
+        });
+        dialogBuilder.setNegativeButton("لا", (dialog, which) -> {
+            turnOffAllPrayersConfig(LocationActivity.this);
+            moveToMainActivitySaveLocation();
+            dialog.dismiss();
+        });
+        dialogBuilder.show();
+    }
+
+
+    private void checkConditionsAndEnablePrayerNotify() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null && alarmManager.canScheduleExactAlarms()) {
+                setNextAlarm();
+            } else askForExactAlarmPermission();
+
+        } else {
+            setNextAlarm();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    private void askForExactAlarmPermission() {
+        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE,getPackageName());
+        resultLauncher.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        if (alarmManager != null && alarmManager.canScheduleExactAlarms()) {
+                            setNextAlarm();
+                        } else {
+                            turnOffAllPrayersConfig(LocationActivity.this);
+                            moveToMainActivitySaveLocation();
+                        }
+                    }
+                } else {
+                    turnOffAllPrayersConfig(LocationActivity.this);
+                    moveToMainActivitySaveLocation();
+                }
+            }
+    );
 
 
 }

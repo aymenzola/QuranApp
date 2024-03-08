@@ -38,6 +38,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
+            android:maxLines="2"
             android:fontFamily="@font/ffshamel_family_bold"
             android:text="صحيح البخاري"
             android:textColor="@color/tv_gri_color"
@@ -52,31 +53,31 @@
             android:layout_marginEnd="10dp"
             android:fontFamily="@font/ffshamel_book"
             android:maxLines="2"
-            android:lines="2"
             android:layout_marginBottom="10dp"
-            android:text="أبو عبد الله محمد بن إسماعيل الجعفي البخاري"
+            tools:text="أبو عبد الله محمد بن إسماعيل الجعفي البخاري"
             android:textColor="@color/tv_gri_color"
-            android:textSize="13sp"
+            android:textSize="@dimen/tv_small_size"
             android:textStyle="normal" />
 
 
         <TextView
             android:id="@+id/btn_read"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_button_selected"
+            android:gravity="center"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:paddingEnd="15dp"
             android:paddingStart="15dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="50dp"
             android:layout_marginEnd="10dp"
             android:fontFamily="@font/ffshamel_family_bold"
             android:maxLines="2"
             android:layout_marginBottom="10dp"
             android:text="قراءة"
             android:textColor="@color/white"
-            android:textSize="13sp"
+            android:textSize="@dimen/tv_small_size"
             android:textStyle="normal" />
 
     </LinearLayout>

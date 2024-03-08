@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.OutOfQuotaPolicy;
 import androidx.work.WorkManager;
 
 import com.app.dz.quranapp.R;
@@ -66,7 +67,11 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
         matn = (Matn) getIntent().getSerializableExtra("matn");
         //should use matn id to get the list of matn childrens
 
+        binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText(matn.matnTitle);
+
         initializeMotonAdapter();
+
+        binding.imgBack.setOnClickListener(v->onBackPressed());
 
     }
 
@@ -97,7 +102,7 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
             }
         });
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(ActivityMatnList.this,1, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(ActivityMatnList.this,2,LinearLayoutManager.VERTICAL, false);
         binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setHasFixedSize(true);
         binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setLayoutManager(gridLayoutManager);
         binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setAdapter(motonAdapter);
@@ -126,8 +131,10 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
         showDownloadProgress();
         // Start the Worker to download the book.
         downloadRequest = new OneTimeWorkRequest.Builder(DownloadWorker.class)
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setInputData(new Data.Builder()
                         .putString("fileUrl", model.getFileUrl())
+                        .putString("fileTitle", model.matnTitle)
                         .putString("fileName", model.fileName).build())
                 .build();
         WorkManager.getInstance(ActivityMatnList.this).enqueue(downloadRequest);
@@ -145,6 +152,7 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
                                 if (dialog_download_matn != null)
                                     dialog_download_matn.dismiss();
                                 Toast.makeText(ActivityMatnList.this, "تم التحميل ", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(ActivityMatnList.this, ActivityMatnViewer.class).putExtra("matn", model));
                                 //should notify or update the adapter
                                 model.isDownloaded = true;
                                 if (motonAdapter != null)
@@ -177,15 +185,22 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
         if (dialog_download_matn.getWindow() != null)
             dialog_download_matn.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
-        dialog_download_matn.setCancelable(true);
+        dialog_download_matn.setCancelable(false);
         dialog_download_matn.show();
 
         binding_dialog.progressDownload.setProgress(0);
 
+        binding_dialog.btnDone.setText("الغاء التحميل");
         binding_dialog.btnDone.setOnClickListener(v -> {
             WorkManager.getInstance(ActivityMatnList.this).cancelWorkById(downloadRequest.getId());
             dialog_download_matn.dismiss();
         });
+
+        binding_dialog.btnCancel.setVisibility(View.GONE);
+        /*binding_dialog.btnCancel.setOnClickListener(v -> {
+            WorkManager.getInstance(ActivityMatnList.this).cancelWorkById(downloadRequest.getId());
+            dialog_download_matn.dismiss();
+        });*/
     }
 
 

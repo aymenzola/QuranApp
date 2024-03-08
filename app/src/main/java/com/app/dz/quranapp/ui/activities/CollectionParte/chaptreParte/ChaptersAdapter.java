@@ -2,7 +2,6 @@ package com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte;
 
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,10 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.ItemAdkarBinding;
-import com.app.dz.quranapp.databinding.ItemChapterBinding;
+import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.databinding.ItemChaptersBinding;
 import com.bumptech.glide.Glide;
 

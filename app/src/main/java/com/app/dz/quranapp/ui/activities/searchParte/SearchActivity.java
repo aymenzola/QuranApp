@@ -17,7 +17,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,13 +25,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
+import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsList;
 import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.data.room.Entities.Hadith;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.FragmentSearchBinding;
+import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithSearchDetailsList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,37 +48,24 @@ public class SearchActivity extends AppCompatActivity {
     public static final int searchPageSize = 10; // Maximum number of items to return in each page
     public int currentPage = 0; // Index of the current page
 
-    private boolean areWeAskForBookName = false;
     private com.app.dz.quranapp.databinding.FragmentSearchBinding binding;
     private SearchAdapter adapter;
     private SearchViewModel searchViewModel;
     private int selectedType = SEARCH_TYPE_BOOK;
 
 
-    private OnFragmentInteractionListener mListener;
-    private List<String> suggestionList = new ArrayList<>();
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private String searchedText;
     private boolean isLastData = false;
-    private String clickedCollection;
-    private Chapter clickedChapter;
-    private Hadith clickedHadith;
-    private String clickedBookName;
     private OnBackPressedDispatcher dispatcher;
 
     @Override
     public void onStart() {
         super.onStart();
         switch (selectedType) {
-            case SEARCH_TYPE_BOOK:
-                selecteBookType();
-                break;
-            case SEARCH_TYPE_HADITH:
-                selecteHadithType();
-                break;
-            case SEARCH_TYPE_CHAPTER:
-                selecteChapterType();
-                break;
+            case SEARCH_TYPE_BOOK -> selecteBookType();
+            case SEARCH_TYPE_HADITH -> selecteHadithType();
+            case SEARCH_TYPE_CHAPTER -> selecteChapterType();
         }
 
     }
@@ -196,7 +184,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void runTheSearch() {
         switch (selectedType) {
-            case SEARCH_TYPE_BOOK:
+            case SEARCH_TYPE_BOOK -> {
                 if (currentPage == 0) {
                     Log.e("search", "currant page 0");
                     currentPage++;
@@ -206,8 +194,8 @@ public class SearchActivity extends AppCompatActivity {
                     Log.e("search", "books currant page " + i + " query : " + binding.editSearch.getText().toString());
                     searchViewModel.searchInBook(binding.editSearch.getText().toString(), i);
                 }
-                break;
-            case SEARCH_TYPE_HADITH:
+            }
+            case SEARCH_TYPE_HADITH -> {
                 if (currentPage == 0) {
                     currentPage++;
                     searchViewModel.searchInHadith(binding.editSearch.getText().toString(), 0);
@@ -216,9 +204,8 @@ public class SearchActivity extends AppCompatActivity {
                     Log.e("search", "hadith currant page " + i + " query : " + binding.editSearch.getText().toString());
                     searchViewModel.searchInHadith(binding.editSearch.getText().toString(), i);
                 }
-                break;
-            case SEARCH_TYPE_CHAPTER:
-
+            }
+            case SEARCH_TYPE_CHAPTER -> {
                 if (currentPage == 0) {
                     currentPage++;
                     searchViewModel.searchInChapter(binding.editSearch.getText().toString(), 0);
@@ -228,7 +215,7 @@ public class SearchActivity extends AppCompatActivity {
                     searchViewModel.searchInChapter(binding.editSearch.getText().toString(), i);
 
                 }
-                break;
+            }
         }
     }
 
@@ -272,91 +259,71 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setObservers() {
 
+        searchViewModel.getSearchInHadith().observe(SearchActivity.this, this::handleSearchedHadithsResult);
 
-        searchViewModel.getBookName().observe(SearchActivity.this,bookName->{
-            if (bookName!=null){
-                if (areWeAskForBookName){
-                    clickedBookName = bookName;
-                    searchViewModel.setHadithRank(clickedHadith.id,clickedHadith.bookNumber,clickedHadith.collection);
-                }
-            }
-        });
+        searchViewModel.getSearchInHadithChapter().observe(SearchActivity.this, this::handleSearchedInHadithChapter);
 
-        searchViewModel.getHadithRank().observe(SearchActivity.this,rank->{
-            if (areWeAskForBookName) {
-                areWeAskForBookName = false;
-                moveToHadithFragment(clickedChapter, clickedCollection, clickedBookName,rank);
-            }
-            });
-        searchViewModel.getSearchInHadith().observe(SearchActivity.this, hadithList -> {
+        searchViewModel.getSearchInBooks().observe(SearchActivity.this, this::handleSearchedInBooks);
+    }
 
-            if (hadithList.size() > 0 & binding.editSearch.getText().toString().length() >= 3)
-                manageStateView(View.VISIBLE, View.GONE, View.GONE);
-            else manageStateView(View.GONE, View.GONE, View.VISIBLE);
+    private void handleSearchedInBooks(List<Book> bookList) {
+        if (bookList.size() > 0 & binding.editSearch.getText().toString().length() >= 3)
+            manageStateView(View.VISIBLE, View.GONE, View.GONE);
+        else manageStateView(View.GONE, View.GONE, View.VISIBLE);
 
-            for (Hadith hadith : hadithList) {
-                hadith.body_no_tachkil = hadith.body_no_tachkil.replaceAll("[a-zA-Z]", "");
+        if (bookList.size() < searchPageSize) isLastData = true;
+        Log.e("search", "books size " + bookList.size());
+        adapter.addBooks(bookList);
+    }
+    private void handleSearchedInHadithChapter(List<Hadith> hadithList) {
+        if (hadithList.size() > 0 & binding.editSearch.getText().toString().length() >= 3)
+            manageStateView(View.VISIBLE, View.GONE, View.GONE);
+        else manageStateView(View.GONE, View.GONE, View.VISIBLE);
 
-                int start = hadith.body_no_tachkil.indexOf(searchedText);
-                int end = start + searchedText.length();
+        for (Hadith hadith : hadithList) hadith.type = SEARCH_TYPE_CHAPTER;
 
+        if (hadithList.size() < searchPageSize) isLastData = true;
+        Log.e("search", "chapters size " + hadithList.size());
+        adapter.addHadiths(hadithList);
+    }
+    private void handleSearchedHadithsResult(List<Hadith> hadithList) {
+        if (hadithList.size() > 0 & binding.editSearch.getText().toString().length() >= 3)
+            manageStateView(View.VISIBLE, View.GONE, View.GONE);
+        else manageStateView(View.GONE, View.GONE, View.VISIBLE);
 
-                /*String html = "<span style='background-color: yellow'>"+searchedText+"</span>";
-                hadith.body_no_tachkil = hadith.body_no_tachkil.replaceFirst(searchedText,html);
+        for (Hadith hadith : hadithList) {
+            hadith.body_no_tachkil = hadith.body_no_tachkil.replaceAll("[a-zA-Z]", "");
 
-                int start = hadith.body_no_tachkil.indexOf(html);
-                int end  = start+html.length();
-*/
-                int subStart;
-                int subEnd;
-                if ((start) >= 120) subStart = start - 120;
-                else subStart = 0;
-                if ((hadith.body_no_tachkil.length() - end) >= 120) subEnd = end + 120;
-                else subEnd = hadith.body_no_tachkil.length();
+            int start = hadith.body_no_tachkil.indexOf(searchedText);
+            int end = start + searchedText.length();
 
-                String newString = hadith.body_no_tachkil.substring(subStart, subEnd);
+            int subStart;
+            int subEnd;
+            if ((start) >= 120) subStart = start - 120;
+            else subStart = 0;
+            if ((hadith.body_no_tachkil.length() - end) >= 120) subEnd = end + 120;
+            else subEnd = hadith.body_no_tachkil.length();
 
-
-                int newStart = newString.indexOf(searchedText);
-                int newEnd = newStart + searchedText.length();
+            String newString = hadith.body_no_tachkil.substring(subStart, subEnd);
 
 
-                SpannableStringBuilder builder = new SpannableStringBuilder(newString);
+            int newStart = newString.indexOf(searchedText);
+            int newEnd = newStart + searchedText.length();
 
-                BackgroundColorSpan backgroundSpan = new BackgroundColorSpan(Color.YELLOW);
-                builder.setSpan(backgroundSpan, newStart, newEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                hadith.stringBuilder = builder;
+            SpannableStringBuilder builder = new SpannableStringBuilder(newString);
 
-                //hadith.body_no_tachkil=hadith.body_no_tachkil.substring(subStart,subEnd);
-                hadith.type = SEARCH_TYPE_HADITH;
-            }
-            Log.e("search", "hadiths size " + hadithList.size());
-            if (hadithList.size() < searchPageSize) isLastData = true;
-            adapter.addHadiths(hadithList);
-            //
-        });
-        searchViewModel.getSearchInHadithChapter().observe(SearchActivity.this, hadithList -> {
-            if (hadithList.size() > 0 & binding.editSearch.getText().toString().length() >= 3)
-                manageStateView(View.VISIBLE, View.GONE, View.GONE);
-            else manageStateView(View.GONE, View.GONE, View.VISIBLE);
+            BackgroundColorSpan backgroundSpan = new BackgroundColorSpan(Color.YELLOW);
+            builder.setSpan(backgroundSpan, newStart, newEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-            for (Hadith hadith : hadithList) hadith.type = SEARCH_TYPE_CHAPTER;
+            hadith.stringBuilder = builder;
 
-            if (hadithList.size() < searchPageSize) isLastData = true;
-            Log.e("search", "chapters size " + hadithList.size());
-            adapter.addHadiths(hadithList);
-            //
-        });
-        searchViewModel.getSearchInBooks().observe(SearchActivity.this, bookList -> {
-            if (bookList.size() > 0 & binding.editSearch.getText().toString().length() >= 3)
-                manageStateView(View.VISIBLE, View.GONE, View.GONE);
-            else manageStateView(View.GONE, View.GONE, View.VISIBLE);
-
-            if (bookList.size() < searchPageSize) isLastData = true;
-            Log.e("search", "books size " + bookList.size());
-            adapter.addBooks(bookList);
-        });
+            //hadith.body_no_tachkil=hadith.body_no_tachkil.substring(subStart,subEnd);
+            hadith.type = SEARCH_TYPE_HADITH;
+        }
+        Log.e("search", "hadiths size " + hadithList.size());
+        if (hadithList.size() < searchPageSize) isLastData = true;
+        adapter.addHadiths(hadithList);
     }
 
     private void manageStateView(int value_recyclerview, int value_progressBar, int value_tvNoResult) {
@@ -365,28 +332,21 @@ public class SearchActivity extends AppCompatActivity {
         binding.tvNoResult.setVisibility(value_tvNoResult);
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onSearchBarClicked(String word, boolean isSuggestion);
-    }
-
-
     public void initializeArticlesAdapter() {
         adapter = new SearchAdapter(SearchActivity.this, new SearchAdapter.OnAdapterClickListener() {
             @Override
             public void onHadithClick(Hadith hadith) {
-                clickedHadith =hadith;
-                clickedCollection = hadith.collection;
-                clickedChapter =new Chapter(hadith.chapterId, hadith.chapterTitle,hadith.bookNumber,hadith.chapterTitle_no_tachkil);
-                getBookNameToMove(clickedChapter,clickedCollection);
+                Chapter chapter = new Chapter(hadith.chapterId, hadith.chapterTitle,hadith.bookNumber,hadith.chapterTitle_no_tachkil);
+                chapter.collectionName = hadith.collection;
+                moveToHadithDetails(chapter);
+
             }
 
             @Override
             public void onChapterClick(Hadith hadith) {
-                clickedHadith =hadith;
-                clickedCollection = hadith.collection;
-                clickedChapter =new Chapter(hadith.chapterId, hadith.chapterTitle,hadith.bookNumber,hadith.chapterTitle_no_tachkil);
-                getBookNameToMove(clickedChapter,clickedCollection);
+                Chapter chapter = new Chapter(hadith.chapterId, hadith.chapterTitle,hadith.bookNumber,hadith.chapterTitle_no_tachkil);
+                chapter.collectionName = hadith.collection;
+                moveToHadithDetails(chapter);
             }
 
             @Override
@@ -421,21 +381,9 @@ public class SearchActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void getBookNameToMove(Chapter chapter, String collectionName) {
-        areWeAskForBookName = true;
-        searchViewModel.setBookName(chapter.bookNumber,collectionName);
-    }
-
-    private void moveToHadithFragment(Chapter chapter, String collectionName, String bookName, Integer rank) {
-        Log.e("lifecycle", "moveToHadithFragment data recieved data b number :"+chapter.bookNumber+" collection "+collectionName+ ""+bookName);
-
-        Bundle bundle = new Bundle();
-        Intent intent = new Intent(SearchActivity.this, ActivityHadithDetailsListDev.class);
-        bundle.putString("collectionName", collectionName);
-        bundle.putString("bookNumber", chapter.bookNumber);
-        bundle.putString("bookName",bookName);
-        bundle.putInt("position",rank);
-        intent.putExtra("bundle",bundle);
+    private void moveToHadithDetails(Chapter chapter) {
+        Intent intent = new Intent(SearchActivity.this, ActivityHadithSearchDetailsList.class);
+        intent.putExtra("chapter", new Gson().toJson(chapter,Chapter.class));
         startActivity(intent);
     }
 

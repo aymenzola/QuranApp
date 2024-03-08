@@ -72,6 +72,7 @@
                             android:layout_marginTop="10dp"
                             android:fontFamily="@font/ffshamel_book"
                             android:gravity="center|start"
+                            android:lines="1"
                             android:paddingEnd="15dp"
                             android:text="بقي على أذان الظهر"
                             android:textColor="@color/blan"
@@ -86,6 +87,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginEnd="15dp"
                             android:fontFamily="@font/ffshamel_family_bold"
+                            android:lines="1"
                             android:gravity="center"
                             android:textColor="@color/blan"
                             android:textSize="@dimen/tv_time_size"
@@ -101,6 +103,7 @@
                             android:layout_marginTop="-10dp"
                             android:layout_marginEnd="20dp"
                             android:layout_marginBottom="20dp"
+                            android:lines="1"
                             android:drawableEnd="@drawable/ic_location_icon_blan"
                             android:drawablePadding="5dp"
                             android:fontFamily="@font/ffshamel_book"
@@ -170,7 +173,7 @@
                                 android:fontFamily="@font/ffshamel_family_bold"
                                 android:gravity="center"
                                 android:lines="1"
-                                android:textSize="15sp"
+                                android:textSize="@dimen/tv_small_size"
                                 tools:text="الأحد 21 رمضان 1444"
                                 />
 
@@ -180,8 +183,9 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
                                 android:lines="1"
-                                android:textSize="12sp"
+                                android:textSize="@dimen/tv_mini_size"
                                 android:visibility="visible"
+                                android:textColor="@color/tv_color"
                                 tools:text="الموافق ل 05-01-2024"
                                 />
 

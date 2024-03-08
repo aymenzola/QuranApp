@@ -34,7 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ffshamel_book"
-                    android:text="نص الحديث"
+                    tools:text="نص الحديث"
                     android:paddingStart="10dp"
                     android:layout_marginBottom="5dp"
                     android:textColor="@color/tv_gri_color"
@@ -45,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/ffshamel_family_bold"
-                    android:text="صحيح البخاري / رقم الكتاب 10"
+                    tools:text="صحيح البخاري / رقم الكتاب 10"
                     android:textColor="@color/tv_gri_color"
                     android:textSize="@dimen/tv_small_size" />
 
@@ -60,8 +60,9 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/ic_sura_number_holder"
+                android:fontFamily="@font/samim"
                 android:gravity="center"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 tools:text="100" />
 

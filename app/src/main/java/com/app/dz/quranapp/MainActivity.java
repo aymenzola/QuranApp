@@ -12,9 +12,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import com.app.dz.quranapp.MushafParte.MyViewModel;
-import com.app.dz.quranapp.MushafParte.OnFragmentListeners;
-import com.app.dz.quranapp.MushafParte.OnQuranFragmentListeners;
+import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
+import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
+import com.app.dz.quranapp.quran.listeners.OnQuranFragmentListeners;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.databinding.ActivityMainBinding;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
@@ -22,7 +22,6 @@ import com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran;
 import com.app.dz.quranapp.ui.activities.searchParte.SearchActivity;
 
 public class MainActivity extends AppCompatActivity implements
-        SearchActivity.OnFragmentInteractionListener,
         ActivitySearchQuran.OnFragmentInteractionListener,
         OnFragmentListeners,
         OnQuranFragmentListeners {

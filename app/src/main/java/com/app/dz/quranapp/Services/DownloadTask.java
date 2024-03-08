@@ -4,6 +4,8 @@ package com.app.dz.quranapp.Services;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.app.dz.quranapp.Util.PublicMethods;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,11 +20,9 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
     private boolean isCancelled = false;
     private int downloadedSize = 0;
     private int totalSize = -1;
-    private String url;
-    private File outputFile;
-    private DownloadListeners listener;
-    private int lastProgress = -1;
-    private String fileName;
+    private final String url;
+    private final File outputFile;
+    private final DownloadListeners listener;
 
     public DownloadTask(String url, File outputFile, DownloadListeners listener) {
         this.url = url;
@@ -39,7 +39,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
         try {
             //File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),AppfolderName+"/"+fileName);
 
-            Log.e("Download", "we are here starting download");
+            Log.e("Download", "we are here starting download "+url);
             URL url = new URL(this.url);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
@@ -59,9 +59,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
                     output.flush();
                     output.close();
                     input.close();
-                    if (outputFile.exists()) {
-                        outputFile.delete();
-                    }
+                    if (outputFile.exists()) outputFile.delete();
                     return downloadedSize;
                 }
                 if (!isPaused) {
@@ -74,6 +72,8 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
 
             return downloadedSize;
         } catch (IOException e) {
+            if (outputFile.exists()) outputFile.delete();
+            listener.onDownloadError(e.getMessage());
             Log.e("Download", "download exception "+e.getMessage());
             e.printStackTrace();
             return downloadedSize;
@@ -86,6 +86,8 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
                     input.close();
                 }
             } catch (IOException e) {
+                if (outputFile.exists()) outputFile.delete();
+                listener.onDownloadError(e.getMessage());
                 Log.e("Download", "2 download exception "+e.getMessage());
                 e.printStackTrace();
             }
@@ -112,7 +114,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
             if (downloadedSize == totalSize) {
                 listener.onDownloadComplete(outputFile);
             } else {
-                listener.onDownloadCacled("reasen");
+                listener.onDownloadCanceled("reasen");
             }
         }
     }

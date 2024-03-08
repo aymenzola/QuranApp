@@ -2,6 +2,10 @@ package com.app.dz.quranapp.ui.activities.AdkarParte;
 
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,12 +29,15 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver;
 import com.app.dz.quranapp.databinding.DialogAdkarOnBinding;
 import com.app.dz.quranapp.databinding.FragmentAdkarBinding;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.AdkarViewModel;
 import com.app.dz.quranapp.ui.activities.subha.AdkarSubhaUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
 
 import java.util.Calendar;
 import java.util.List;
@@ -239,11 +246,15 @@ public class AdkarFragment extends Fragment {
         int currentHour = now.get(Calendar.HOUR_OF_DAY);
 
         if (currentHour >= 8) {
+
+            //using work manager to schedule the next dikr notification
             AdkarHelper.setIsFirstNotification(true);
-            PeriodicWorkRequest adkarNotificationRequest = new PeriodicWorkRequest.Builder(AdkarNotificationWorker.class, AdkarHelper.getAdkarLevel(), TimeUnit.HOURS).build();
+            PeriodicWorkRequest adkarNotificationRequest = new PeriodicWorkRequest.Builder(AdkarNotificationWorker.class,AdkarHelper.getAdkarLevel(), TimeUnit.HOURS).build();
             AdkarHelper.saveAdkarWorkId(adkarNotificationRequest.getId().toString());
             AdkarHelper.saveScheduledNotificationCount((int) AdkarHelper.getNumberOfNotifications());
             WorkManager.getInstance(requireActivity()).enqueue(adkarNotificationRequest);
+            //using alarm manager to schedule the next dikr notification
+            AdkarHelper.scheduleDikrAlarm(requireActivity());
         } else {
             WeAreIntheNight();
         }
@@ -326,8 +337,7 @@ public class AdkarFragment extends Fragment {
         dialogBuilder.setView(binding.getRoot());
         AlertDialog dialog = dialogBuilder.create();
 
-        if (dialog.getWindow() != null)
-            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        if (dialog.getWindow() != null) dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         dialog.setCancelable(true);
         dialog.show();
@@ -357,6 +367,7 @@ public class AdkarFragment extends Fragment {
         super.onDestroyView();
         Log.e("lifecycle", "onDestroyView FragmentPlayLists");
     }
+
 }
 
 

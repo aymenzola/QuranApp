@@ -32,14 +32,17 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
     public void addBooks(List<BookWithCount> bookWithCountList) {
         this.dataList.addAll(bookWithCountList);
+        notifyDataSetChanged();
     }
 
     public void addMoton(List<SavedMatnPage> savedMatnPageList) {
         this.dataList.addAll(savedMatnPageList);
+        notifyDataSetChanged();
     }
 
     public void addChapters(List<Chapter> chapterList) {
         this.dataList.addAll(chapterList);
+        notifyDataSetChanged();
     }
 
     @NonNull

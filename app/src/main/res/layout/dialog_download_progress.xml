@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -20,12 +21,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="2dp"
             android:fontFamily="@font/ffshamel_family_bold"
             android:gravity="center"
             android:text="جااري التحميل انتظر"
+            android:textSize="@dimen/tv_small_size" />
 
-            android:textSize="@dimen/tv_normal_size" />
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="2dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:text="حدث خطأ اثناء التحميل حاول مرة اخرى"
+            android:textSize="@dimen/tv_mini_size" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress_download"
@@ -44,10 +57,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_button"
-            android:fontFamily="@font/ffshamel_family_bold"
+            android:fontFamily="@font/ffshamel_book"
             android:layout_marginTop="10dp"
-            android:text="الغاء"
+            android:text="التحميل في الخلفية"
             android:textColor="@color/white"
+            android:textSize="@dimen/tv_normal_size" />
+
+        <TextView
+            android:id="@+id/btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="@font/ffshamel_book"
+            android:layout_marginTop="15dp"
+            android:text="الغاء التحميل"
             android:textSize="@dimen/tv_normal_size" />
 
     </LinearLayout>

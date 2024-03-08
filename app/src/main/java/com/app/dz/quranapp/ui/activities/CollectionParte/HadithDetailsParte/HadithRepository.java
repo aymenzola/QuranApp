@@ -26,6 +26,7 @@ public class HadithRepository {
     private final CompositeDisposable compositeDisposable;
     private final Api api;
     private final MutableLiveData<List<Hadith>> hadithList;
+    private final MutableLiveData<List<Hadith>> hadithListForChapter;
     private final BookDao bookdao;
 
     public HadithRepository(Application application) {
@@ -34,6 +35,7 @@ public class HadithRepository {
 
         api = RetrofitClient.getInstance(BASE_URL).getApi();
         hadithList = new MutableLiveData<>();
+        hadithListForChapter = new MutableLiveData<>();
         compositeDisposable = new CompositeDisposable();
     }
 
@@ -68,9 +70,16 @@ public class HadithRepository {
                 }));
     }
 
+    public void askHadithsListChapter(String CollectionName, String bookNumber, String chapterId) {
+        compositeDisposable.add(bookdao.getHadithList(CollectionName,bookNumber,chapterId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(hadithListForChapter::setValue, e-> Log.e("checkdata","1 data error  1 "+e.getMessage())));
+    }
 
-
-
+    public MutableLiveData<List<Hadith>> getHadithListForChapter() {
+        return hadithListForChapter;
+    }
 
     public void clearDesposite() {
         compositeDisposable.clear();

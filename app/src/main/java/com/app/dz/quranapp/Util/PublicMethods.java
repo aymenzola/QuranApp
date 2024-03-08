@@ -6,6 +6,7 @@ import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudio
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -16,8 +17,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
-import com.app.dz.quranapp.MushafParte.riwayat_parte.RiwayaType;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
+import com.app.dz.quranapp.quran.models.RiwayaType;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -163,6 +164,18 @@ public class PublicMethods {
     }
 
 
+    public String getUserFriendlyErrorMessage(String errorMessage) {
+        if (errorMessage.contains("MalformedURLException")) {
+            return "تنسيق URL للملف غير صحيح.";
+        } else if (errorMessage.contains("IOException")) {
+            return "حدثت مشكلة أثناء القراءة أو الكتابة في الملف.";
+        } else if (errorMessage.contains("ProtocolException")) {
+            return "حدث خطأ في بروتوكول HTTP أثناء تنزيل الملف.";
+        } else {
+            return "حدث خطأ أثناء تنزيل الملف. الرجاء المحاولة مرة أخرى.";
+        }
+    }
+
     /*public File getFile(Context context, String readerTag, int suraIndex) {
         String filename = readerTag + "_" + suraIndex + ".mp3";
         File downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
@@ -272,6 +285,41 @@ public class PublicMethods {
         } else {
             return true;
         }
+    }
+
+    public int getForignSuraPage(String riwayaTag,int id) {
+        if (riwayaTag.equals(RiwayaType.ENGLISH_QURAN.name())){
+            //return page english pdf
+            return 40;
+        } else {
+            //return page french pdf
+            return 50;
+        }
+    }
+
+
+    public String getCollectionArabicName(String collectionName) {
+        return switch (collectionName) {
+            case "bukhari" -> "صحيح البخاري";
+            case "muslim" -> "صحيح مسلم";
+            case "nasai" -> "سنن النسائي";
+            case "ibnmajah" -> "سنن ابن ماجة";
+            case "hisn" -> "حصن المسلم";
+            default -> "سنن أبي داود";
+        };
+    }
+
+    public String getErrorMessage(int what) {
+        return switch (what) {
+            case MediaPlayer.MEDIA_ERROR_UNKNOWN -> "خطأ غير معروف في تشغيل الوسائط";
+            case MediaPlayer.MEDIA_ERROR_SERVER_DIED -> "توقف خادم الوسائط";
+            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> "الوسائط غير صالحة للتشغيل التدريجي";
+            case MediaPlayer.MEDIA_ERROR_IO -> "خطأ IO في الوسائط";
+            case MediaPlayer.MEDIA_ERROR_MALFORMED -> "وسائط غير صحيحة البنية";
+            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED -> "وسائط غير مدعومة";
+            case MediaPlayer.MEDIA_ERROR_TIMED_OUT -> "انتهت مدة الوسائط";
+            default -> "هذا القارئ يمكن تشغيله في هذه السورة";
+        };
     }
 
 }

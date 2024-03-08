@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -20,9 +21,10 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
 
-    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+<!--    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />-->
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
@@ -63,11 +65,7 @@
         <activity android:name="com.app.dz.quranapp.ui.activities.OnBoardingParte.StartActivityPager"
             android:screenOrientation="portrait" />
 
-        <activity android:name="com.app.dz.quranapp.MushafParte.TafsirParte.AudioFilesActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="com.app.dz.quranapp.MushafParte.TafsirParte.ReaderListActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+
         <activity android:name="com.app.dz.quranapp.ui.activities.LocationParte.LocationActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.AboutActivity"
@@ -81,28 +79,38 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.AdkarParte.AdkarDetailsParte.ActivityDikrDetailsList"
+
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsList"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev"
+        <activity android:name="com.app.dz.quranapp.ui.activities.adhan.AdhanConfigActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.qibla_parte.QiblaFinder" />
-        <activity android:name="com.app.dz.quranapp.MushafParte.mushaf_list.MushafListActivity" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.adhan.AdhanConfigActivity" />
-        <activity android:name="com.app.dz.quranapp.fix_new_futers.aManageNewSources.TestQuranAudioAyaLimitsActivity" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.NewBooksParte.BooksNewActivity" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.subha.SubhaActivity" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnViewer" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.PdfViewer" />
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnList" />
+        <activity android:name="com.app.dz.quranapp.fix_new_futers.aManageNewSources.TestQuranAudioAyaLimitsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.subha.SubhaActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnViewer"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.PdfViewer"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithSearchDetailsList"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnOnlineViewer" />
 
         <service
             android:name=".Services.QuranServices.PAudioServiceSelection"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"
+            />
 
         <service
             android:name=".Services.QuranServices.PAudioServiceNoSelection"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback"
+            />
 
         <service
             android:name=".Services.QuranServices.ForegroundDownloadAudioService"
@@ -114,12 +122,7 @@
             android:exported="false"/>
         <service android:name="com.app.dz.quranapp.Services.ForegroundExtractMushafService"
             android:exported="false"/>
-        <service android:name="com.app.dz.quranapp.MushafParte.mushaf_list.DownloadService" />
 
-        <receiver
-            android:name=".ui.activities.MainActivityPartes.TimeParte.AlarmReceiver"
-            android:enabled="true"
-            android:exported="true" />
 
 
         <!-- Declare the JobIntentService -->
@@ -135,32 +138,16 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.SCREEN_ON" />
+                <action android:name="com.htc.intent.action.TIME_TICK" />
+                <action android:name="com.htc.intent.action.USER_PRESENT" />
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
             </intent-filter>
-        </receiver>
-
-
-        <service
-            android:name="com.app.dz.quranapp.fix_new_futers.ai_commands.AudioForegroundService"
-            android:enabled="true"
-            android:exported="true"
-            android:foregroundServiceType="microphone"
-            android:stopWithTask="false"/>
-
-
-        <receiver android:name=".fix_new_futers.ai_commands.MyWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
         </receiver>
 
         <service android:name=".Services.adhan.AdanAudioPlayerService"
@@ -168,6 +155,18 @@
             android:enabled="true"
             />
 
+
+        <receiver
+            android:name="com.app.dz.quranapp.Services.adhan.AlarmAdkrarBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
+
+        <receiver
+            android:name="com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
 
 
 

@@ -28,6 +28,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:gravity="center|end"
+        android:layout_toEndOf="@+id/img_save"
         android:orientation="horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp">
@@ -37,19 +38,19 @@
             android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
+            android:layout_gravity="top"
             android:src="@drawable/ic_star2" />
 
         <TextView
-            android:id="@+id/tv_book_title"
+            android:id="@+id/tvBookTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
             android:ellipsize="end"
             android:fontFamily="@font/ffshamel_family_bold"
-            android:gravity="center_vertical|end"
-            android:maxWidth="210dp"
-            android:singleLine="true"
-            android:text="كتاب الأصول الثلاثة"
+            android:gravity="center_vertical|start"
+            android:maxLines="2"
+            android:text="كتاب الأصول "
             android:textColor="@color/tv_gri_color"
             android:textSize="@dimen/tv_small_size" />
 
@@ -72,9 +73,9 @@
         android:paddingTop="4dp"
         android:paddingEnd="7dp"
         android:paddingBottom="4dp"
-        android:text="الباب الأول : العلم وأهميته في حياة المسلمد"
+        android:text="الباب الأول : العلم وأهميته في حياة المسلم"
         android:textColor="@color/tv_gri_color"
-        android:textSize="13sp" />
+        android:textSize="@dimen/tv_small_size" />
 
     <View
         android:id="@+id/view_line"

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
 
 import java.io.BufferedReader;

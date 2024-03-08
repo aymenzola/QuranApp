@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="top"
         android:gravity="start"
         android:orientation="vertical"
         tools:visibility="visible"
@@ -23,8 +23,8 @@
 
         <ImageView
             android:id="@+id/image_mode"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="start"
             android:padding="5dp"
             android:src="@drawable/ic_adhan_silent"
@@ -38,7 +38,7 @@
             android:gravity="center"
             android:text="الوضع \nالصامت"
             android:textColor="@color/black"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -67,17 +67,19 @@
             android:layout_marginTop="3dp"
             android:text="آذان الحرم المكي"
             android:textColor="#E6A34C"
-            android:textSize="13sp" />
+            android:textSize="@dimen/tv_mini_size" />
 
         <CheckBox
             android:id="@+id/checkbox"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:button="@null"
             android:drawableRight="@drawable/checkbox_selecter"
             android:drawablePadding="5dp"
             android:text="تشغيل في الوضع الصامت "
+            android:autoSizeTextType="uniform"
+            android:maxLines="1"
             android:textColor="#4E261E"
             android:textSize="11sp" />
     </LinearLayout>

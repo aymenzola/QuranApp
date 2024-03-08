@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="tv_mini_size">12sp</dimen>
     <dimen name="tv_small_size">13sp</dimen>
     <dimen name="tv_normal_size">15sp</dimen>
     <dimen name="tv_title_size">16sp</dimen>
@@ -11,6 +12,11 @@
     <dimen name="tv_time_size">30sp</dimen>
     <dimen name="tv_quran_size">22sp</dimen>
     <dimen name="img_location_image_width">100dp</dimen>
+    <dimen name="icon_size">40dp</dimen>
+    <dimen name="back_icon_padding">10dp</dimen>
+    <dimen name="padding_kounoz_image">14sp</dimen>
+    <dimen name="save_adkar_size">25dp</dimen>
+    <dimen name="qubla_image_size">290dp</dimen>
 
 
 </resources>

@@ -29,6 +29,7 @@
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:gravity="center"
+                android:textSize="@dimen/tv_mini_size"
                 tools:text="سورة النمل" />
 
             <TextView
@@ -38,6 +39,7 @@
                 android:layout_weight="0"
                 android:background="@color/white"
                 android:gravity="center"
+                android:textSize="@dimen/tv_mini_size"
                 tools:text="ص 20" />
 
             <TextView
@@ -47,6 +49,7 @@
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:gravity="center"
+                android:textSize="@dimen/tv_mini_size"
                 tools:text="الجزء 2" />
 
         </LinearLayout>

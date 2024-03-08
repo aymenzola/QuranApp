@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/linear_mode_silent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:layout_marginStart="20dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="start"
+        android:orientation="vertical"
+        tools:visibility="visible"
+
+        >
+
+        <ImageView
+            android:id="@+id/image_mode"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_gravity="start"
+            android:padding="5dp"
+            android:src="@drawable/ic_adhan_silent"
+            app:tint="@color/tv_gri_color" />
+
+        <TextView
+            android:id="@+id/tv_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center"
+            android:text="الوضع \nالصامت"
+            android:textColor="@color/black"
+            android:textSize="@dimen/tv_small_size" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <LinearLayout
+        android:id="@+id/linear_fajr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:layout_marginEnd="20dp"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_prayer_name_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:textSize="@dimen/tv_normal_size"
+            tools:text="الفجر 05:30 " />
+
+        <TextView
+            android:id="@+id/tv_prayer_adhan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="آذان الحرم المكي"
+            android:textColor="#E6A34C"
+            android:textSize="@dimen/tv_small_size" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:button="@null"
+            android:drawableRight="@drawable/checkbox_selecter"
+            android:drawablePadding="5dp"
+            android:text="تشغيل في الوضع الصامت "
+            android:maxLines="1"
+            android:textColor="#4E261E"
+            android:textSize="@dimen/tv_small_size" />
+    </LinearLayout>
+</LinearLayout>

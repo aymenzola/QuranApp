@@ -19,13 +19,13 @@
         android:background="@color/blan">
 
         <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/switch_adkar"
+            android:id="@+id/switchAdkar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:minHeight="5dp"
             android:maxHeight="10dp"
             tools:checked="true"
@@ -70,13 +70,13 @@
             android:layout_centerHorizontal="true"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="5dp"
             android:layout_marginEnd="15dp"
+            android:layout_marginBottom="5dp"
             android:fontFamily="@font/ffshamel_book"
             android:gravity="center|start"
             android:text="اختر مستوى عرض الأذكار يوميا"
             android:textColor="@color/tv_gri_color"
-            android:textSize="14sp" />
+            android:textSize="@dimen/tv_small_size" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/tv_chapter"
@@ -94,74 +94,74 @@
 
 
             <TextView
-                android:id="@+id/tv_level_1"
+                android:id="@+id/tvLevel1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="1"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/shape_button_unselected"
                 android:fontFamily="@font/ffshamel_book"
                 android:gravity="center"
                 android:paddingStart="10dp"
+                android:paddingTop="5dp"
                 android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:tag="1"
                 android:text="عالي"
                 android:textColor="@color/tv_gri_color"
-                android:textSize="12sp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:textSize="@dimen/tv_mini_size"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_level_2"
+                android:id="@+id/tvLevel2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="2"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/shape_button_unselected"
                 android:fontFamily="@font/ffshamel_book"
                 android:gravity="center"
                 android:paddingStart="10dp"
+                android:paddingTop="5dp"
                 android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:tag="2"
                 android:text="عادي"
                 android:textColor="@color/tv_gri_color"
-                android:textSize="12sp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:textSize="@dimen/tv_mini_size"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_level_3"
+                android:id="@+id/tvLevel3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="3"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/shape_button_unselected"
                 android:fontFamily="@font/ffshamel_book"
                 android:gravity="center"
                 android:paddingStart="10dp"
+                android:paddingTop="5dp"
                 android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:tag="3"
                 android:text="متوسط"
                 android:textColor="@color/tv_gri_color"
-                android:textSize="12sp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:textSize="@dimen/tv_mini_size"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_level_4"
+                android:id="@+id/tvLevel4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/shape_button_unselected"
-                android:tag="4"
                 android:fontFamily="@font/ffshamel_book"
                 android:gravity="center"
                 android:paddingStart="10dp"
+                android:paddingTop="5dp"
                 android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:tag="4"
                 android:text="منخفظ"
                 android:textColor="@color/tv_gri_color"
-                android:textSize="12sp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:textSize="@dimen/tv_mini_size"
                 android:textStyle="bold" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

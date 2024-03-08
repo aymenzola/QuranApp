@@ -1,25 +1,37 @@
 package com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment;
 
+import static com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker.convertMillisToTime;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
+import com.app.dz.quranapp.Communs.PrayerTimesHelper;
+import com.app.dz.quranapp.Communs.PrayerTimesPreference;
+import com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker;
 import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.AyaDao;
 import com.app.dz.quranapp.data.room.Daos.BookDao;
@@ -27,20 +39,19 @@ import com.app.dz.quranapp.data.room.DatabaseClient;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.data.room.MushafDatabase;
 import com.app.dz.quranapp.databinding.FragmentHomeBinding;
+import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarCountsHelper;
 import com.app.dz.quranapp.ui.activities.subha.AdkarSubhaUtils;
 import com.app.dz.quranapp.ui.activities.subha.SubhaActivity;
 import com.app.dz.quranapp.data.room.Entities.DayPrayerTimes;
 import com.app.dz.quranapp.ui.activities.AboutActivity;
-import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
 import com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.PrayerTimes;
-import com.app.dz.quranapp.MushafParte.ReadingPosition;
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.quran.models.ReadingPosition;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.Util.UserLocation;
-import com.app.dz.quranapp.Util.CsvReader;
+import com.google.gson.Gson;
 
 
 import java.text.DateFormatSymbols;
@@ -53,8 +64,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -86,7 +99,7 @@ public class HomeFragment extends Fragment {
     private static CountDownTimer count;
     private DayPrayerTimes PreviousDayTimesG;
     private boolean isThereSavedBook = false;
-//    private List<AdkarModel> globalAdkarList;
+    //    private List<AdkarModel> globalAdkarList;
     private int adkarCouner = 0;
 
 
@@ -140,14 +153,9 @@ public class HomeFragment extends Fragment {
         setObservers();
         viewModel.setDayPrayer();
         viewModel.setRandomDikr();
-        //viewModel.setFastDick();
-        new LoadAudioTask(getActivity()).execute();
-
     }
 
     private void setListeners() {
-
-        binding.tvHomeTitle.setOnClickListener(v->fixdb());
 
         String dikr = AdkarSubhaUtils.getLastDikr(requireActivity());
         binding.includeFastAdkarCard.tvFastAdkarText.setText(dikr);
@@ -155,15 +163,6 @@ public class HomeFragment extends Fragment {
         binding.includeFastAdkarCard.btnFastAdkar.setOnClickListener(v -> {
             adkarCouner = adkarCouner + 1;
             binding.includeFastAdkarCard.btnFastAdkar.setText(String.valueOf(adkarCouner));
-            /*if (adkarCouner == globalAdkarList.size() - 1) {
-                adkarCouner = 0;
-            } else {
-                adkarCouner = adkarCouner + 1;
-            }
-            binding.includeFastAdkarCard.tvFastAdkarText.setText(globalAdkarList.get(adkarCouner).getDikr());
-            int value = adkarCouner + 1;
-            binding.includeFastAdkarCard.btnFastAdkar.setText("" + value);
-            */
         });
 
         binding.includeFastAdkarCard.tvFastAdkarText.setSelected(true);
@@ -274,10 +273,10 @@ public class HomeFragment extends Fragment {
         }
 
         DisplayCardHadith();
-        checkLocationAviablity();
+        checkLocationViability();
     }
 
-    private void checkLocationAviablity() {
+    private void checkLocationViability() {
         boolean alreadyExist = SharedPreferenceManager.getInstance(getActivity()).iSLocationAvialable();
         if (alreadyExist) {
             binding.tvLocation.setVisibility(View.VISIBLE);
@@ -304,7 +303,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void MoveToHadithDetails() {
-        ChapterUtils.moveToChapterDetails(requireActivity(),ChapterUtils.getLastSavedChapter(requireActivity()));
+        ChapterUtils.moveToChapterDetails(requireActivity(), ChapterUtils.getLastSavedChapter(requireActivity()));
     }
 
     private String getDateArabicName(String inputDate) {
@@ -325,7 +324,7 @@ public class HomeFragment extends Fragment {
     private void DisplayCardHadith() {
         //get the last saved book
         Chapter lastChapter = ChapterUtils.getLastSavedChapter(requireActivity());
-        if (lastChapter!=null) Log.e("quran_tag","last chapter "+lastChapter.toString());
+        if (lastChapter != null) Log.e("quran_tag", "last chapter " + lastChapter.toString());
         if (lastChapter != null && lastChapter.collectionName != null) {
             Log.e("quran_tag", "last chapter " + lastChapter.chapterTitle_no_tachkil);
             isThereSavedBook = true;
@@ -348,13 +347,15 @@ public class HomeFragment extends Fragment {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             binding.tvDate.setText(getDateArabicName(dateString));
         } else {
-            //there no hijri date
-            DateFormatSymbols arabicSymbols = new DateFormatSymbols(new Locale("ar"));
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat outputDateFormat = new SimpleDateFormat("EEE d MMMM yyyy", arabicSymbols);
-            binding.tvDate.setText(outputDateFormat.format(dateString));
+            try {
+                //there no hijri date
+                DateFormatSymbols arabicSymbols = new DateFormatSymbols(new Locale("ar"));
+                SimpleDateFormat outputDateFormat = new SimpleDateFormat("EEE d MMMM yyyy", arabicSymbols);
+                binding.tvDate.setText(outputDateFormat.format(dateString));
+            } catch (Exception e) {
+                Log.e(TAG, "error in hijri date " + e.getMessage());
+            }
         }
-
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -389,7 +390,7 @@ public class HomeFragment extends Fragment {
                 Log.e(TAG, "count already working does not null return");
                 return;
             } else Log.e(TAG, "count null create null one");
-            getTheNextPrayer(PrayerTimesToday, FajrTimeTommorow);
+            getTheNextPrayer(PrayerTimesToday,FajrTimeTommorow);
         });
 
         viewModel.getRandomDikr().observe(getViewLifecycleOwner(), adkarModel -> {
@@ -522,7 +523,12 @@ public class HomeFragment extends Fragment {
             nextSalatName = "العشاء";
         }
 
-        binding.tvSalatMessage.setText("بقي على أذان " + nextSalatName + " : ");
+        String text = "بقي على أذان " + nextSalatName + " : ";
+        SpannableString spannableString = new SpannableString(text);
+        spannableString.setSpan(new StyleSpan(Typeface.BOLD), text.indexOf(nextSalatName),
+                text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.tvSalatMessage.setText(spannableString);
+
 
         countdownDuration = Nextmillseconds - System.currentTimeMillis();
         if (count != null) count = null;
@@ -536,7 +542,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFinish() {
                 // display a message when the timer finishes
-                binding.tvSalatMessage.setText("حان الان موعد صلاة " + nextSalatName);
+                String text = "حان الان موعد صلاة " + nextSalatName + " : ";
+
+                Typeface typeface = ResourcesCompat.getFont(requireActivity(), R.font.ffshamel_family_bold);
+                SpannableString spannableString = new SpannableString(text);
+                spannableString.setSpan(new CustomTypefaceSpan("", typeface), text.indexOf(nextSalatName),
+                        text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                binding.tvSalatMessage.setText(spannableString);
             }
         }.start();
 
@@ -635,38 +647,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private static class LoadAudioTask extends AsyncTask<Void, Void, List<ReaderAudio>> {
-        private final Context context;
-
-        public LoadAudioTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected List<ReaderAudio> doInBackground(Void... voids) {
-
-            Log.e(TAG, "start prepare database ");
-
-            // Get the Room database instance
-            List<ReaderAudio> audioList = CsvReader.readReaderAudioListFromCsv(context, "audio.csv");
-
-            Log.e(TAG, "finish prepare database ");
-
-            return audioList;
-        }
-
-        @Override
-        protected void onPostExecute(List<ReaderAudio> audioList) {
-            // Handle the result
-            Log.e(TAG, "onpost prepare database " + audioList.size());
-
-            for (ReaderAudio audio : audioList) {
-                Log.e(TAG, "result " + audio.getReaderTag());
-                // Process each audio item
-            }
-        }
-    }
-
     public void getFirstAyaInPagePage(int page) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         MushafDatabase database = MushafDatabase.getInstance(requireActivity());
@@ -719,14 +699,33 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(Void unused) {
             super.onPostExecute(unused);
-            Log.e("quran_position_tag1","finished");
+            Log.e("quran_position_tag1", "finished");
         }
     }
 
-    private void fixdb(){
-        AppDatabase db = DatabaseClient.getInstance(requireActivity()).getAppDatabase();
-        BookDao bookDao = db.getBookDao();
-        new UpdateChapterTitleTask(bookDao).execute();
+
+
+    private void managePrayerTime(){
+
+        PrayerTimesHelper prayerTimesHelper = new PrayerTimesHelper(requireActivity());
+        prayerTimesHelper.setListener(new PrayerTimesHelper.TimesListener() {
+            @Override
+            public void onPrayerTimesResult(Map<String,DayPrayerTimes> TimesMap) {
+
+            }
+
+            @Override
+            public void onNextPrayerNameAndTimeResult(PrayerTimesPreference.PrayerInfo prayerInfo) {
+
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+        prayerTimesHelper.getDayPrayerTimes();
+
     }
 
 }

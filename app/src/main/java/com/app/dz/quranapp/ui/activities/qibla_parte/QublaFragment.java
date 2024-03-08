@@ -2,12 +2,16 @@ package com.app.dz.quranapp.ui.activities.qibla_parte;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,6 +39,11 @@ import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.Util.UserLocation;
 import com.app.dz.quranapp.databinding.ActivityQiblaFinderBinding;
+import com.app.dz.quranapp.ui.activities.LocationParte.LocationActivity;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 
 public class QublaFragment extends Fragment {
@@ -46,6 +56,8 @@ public class QublaFragment extends Fragment {
     private SharedPreferences prefs;
     private ActivityResultLauncher<String[]> requestPermissionLauncher;
     private boolean workingOffLine = false;
+    private boolean doesWeSavedTheNewLocation = false;
+    private String globalAdresseName = null;
 
     public QublaFragment() {
         // Required empty public constructor
@@ -82,6 +94,11 @@ public class QublaFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (requestPermissionLauncher != null) requestPermissionLauncher = null;
+    }
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -96,7 +113,7 @@ public class QublaFragment extends Fragment {
 
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        if (SharedPreferenceManager.getInstance(requireActivity()).iSLocationAvialable()) {
+        if (SharedPreferenceManager.getInstance(requireActivity()).getLastQublaLocation() != null) {
             setupOfflineCompass();
         } else {
             //should use internet
@@ -110,11 +127,12 @@ public class QublaFragment extends Fragment {
                     //wait for button clicked to ask permission
                     binding.tvMoaayara.setText("حتى تتمكن من تحديد اتجاه القبلة يجب أن تمنح الصلاحيات للتطبيق");
                     binding.btnMoaayara.setText("منح الصلاحيات");
-                    binding.mainImageQibla.setVisibility(View.GONE);
                 }
 
             } else {
-                Toast.makeText(requireActivity(), "تحقق من الاتصال بالانترنت", Toast.LENGTH_SHORT).show();
+                binding.tvMoaayara.setText("هده اول مرة تحتاج الى الاتصال بالانترنت لتحديد اتجاه القبلة");
+                binding.btnMoaayara.setText("الحصول على اتجاه القبلة");
+
             }
 
         }
@@ -126,37 +144,45 @@ public class QublaFragment extends Fragment {
 
     private void setListeners() {
 
-        binding.btnMoaayara.setOnClickListener(v -> {
-            if (PublicMethods.getInstance().checkNetworkConnection(requireActivity())) {
-                boolean permission_granted = hasPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
-                if (permission_granted) {
-                    Log.e(TAG, "button clicked we have permission");
-                    weHavePermissionStartGps();
-                } else {
-                    //user need to grant permission so we request it
-                    requestPermissionLauncher.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
-                }
-            } else {
-                Toast.makeText(requireActivity(), "تحقق من الاتصال بالانترنت", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        binding.imgTitle.setOnClickListener(v -> startActivity(new Intent(requireActivity(), QiblaFinder.class)));
+        binding.btnMoaayara.setOnClickListener(v -> buttonClicked());
 
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main3);
         binding.imgBack.setOnClickListener(v -> navController.navigateUp());
 
     }
 
-    private void setupOfflineCompass() {
-        UserLocation userLocation = SharedPreferenceManager.getInstance(requireActivity()).getUserLocation();
-        Log.d(TAG, "setupOfflineCompass with latitude " + userLocation.latitude + " longitude " + userLocation.longitude);
+    private void buttonClicked() {
+        if (PublicMethods.getInstance().checkNetworkConnection(requireActivity())) {
+            boolean permission_granted = hasPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+            if (permission_granted) {
+                Log.e(TAG, "button clicked we have permission");
+                weHavePermissionStartGps();
+            } else {
+                //user need to grant permission so we request it
+                requestPermissionLauncher.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+            }
+        } else {
+            Toast.makeText(requireActivity(), "تحقق من الاتصال بالانترنت", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        workingOffLine = true;
-        binding.mainImageQibla.setVisibility(View.VISIBLE);
+    private void setupOfflineCompass() {
+        UserLocation userLocation = SharedPreferenceManager.getInstance(requireActivity()).getLastQublaLocation();
+        Log.d(TAG, "setupOfflineCompass with latitude " + userLocation.latitude + " longitude " + userLocation.longitude);
+        if (userLocation.locality != null)
+            globalAdresseName = userLocation.locality;
+        else
+            globalAdresseName = userLocation.address;
+
+        binding.tvMoaayara.setText("يتم تحديد اتجاه القبلة على  اخر موقع تم تحديده\n  " + globalAdresseName);
         binding.btnMoaayara.setVisibility(INVISIBLE);
-        binding.tvMoaayara.setText("حرك جهازك بشكل سريع ثم ضعه على شكل مسطح و اضغط معايرة للحصول على أفضل نتيجة.");
+        binding.btnUpdateLocation.setVisibility(VISIBLE);
+        binding.btnUpdateLocation.setOnClickListener(v -> {
+            workingOffLine = false;
+            buttonClicked();
+        });
+        workingOffLine = true;
+        binding.mainImageQibla.setVisibility(VISIBLE);
 
         getQublaDegree(userLocation.latitude, userLocation.longitude);
         compass = new Compass(requireActivity());
@@ -168,7 +194,7 @@ public class QublaFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (compass != null) {
-            setFinalView();
+            //setFinalView();
             Log.d(TAG, "start compass");
             compass.start();
         }
@@ -188,7 +214,6 @@ public class QublaFragment extends Fragment {
 
         if (workingOffLine) {
             Log.e(TAG, "onResume workingOffLine true so compass start");
-            setFinalView();
             compass.start();
             return;
         }
@@ -197,13 +222,6 @@ public class QublaFragment extends Fragment {
 
     }
 
-    private void setFinalView() {
-        if (binding.mainImageQibla.getVisibility() == View.GONE) {
-            binding.mainImageQibla.setVisibility(View.VISIBLE);
-        }
-        binding.tvMoaayara.setText("حرك جهازك بشكل سريع ثم ضعه على شكل مسطح و اضغط معايرة للحصول على أفضل نتيجة.");
-        binding.btnMoaayara.setText("تحديد اتجاه القبلة");
-    }
 
     @Override
     public void onStop() {
@@ -219,7 +237,12 @@ public class QublaFragment extends Fragment {
         super.onDestroy();
         if (gps != null) {
             Log.d(TAG, "onDestroy: stopUsingGPS");
+            //should make variables null for memory leak
             gps.stopUsingGPS();
+            gps = null;
+            binding = null;
+            compass = null;
+            requestPermissionLauncher = null;
         }
     }
 
@@ -231,6 +254,8 @@ public class QublaFragment extends Fragment {
 
 
     public void adjustArrowQiblat(float azimuth) {
+        if (!workingOffLine)
+            binding.tvMoaayara.setText("حرك جهازك بشكل سريع ثم ضعه على شكل مسطح و اضغط معايرة للحصول على أفضل نتيجة.");
         float QiblaDegree = GetFloat("QiblaDegree");
         Animation an = new RotateAnimation(-(currentAzimuth) + QiblaDegree, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         currentAzimuth = (azimuth);
@@ -240,7 +265,7 @@ public class QublaFragment extends Fragment {
         binding.mainImageQibla.startAnimation(an);
 
         if (QiblaDegree > 0) {
-            binding.mainImageQibla.setVisibility(View.VISIBLE);
+            binding.mainImageQibla.setVisibility(VISIBLE);
         } else {
             binding.mainImageQibla.setVisibility(INVISIBLE);
             binding.mainImageQibla.setVisibility(View.GONE);
@@ -294,15 +319,17 @@ public class QublaFragment extends Fragment {
     public void fetch_GPS() {
         Log.e(TAG, "fetch gps");
 
-        if (gps == null) gps = new GPSTracker(requireActivity(), (latitude, longitude) -> {
-            // do something with the location
-            Log.e(TAG, "location listener receive " + latitude + " " + longitude);
-            getQublaDegree(latitude, longitude);
-            if (compass == null) {
-                setupCompass();
-                compass.start();
-            } else compass.start();
-        });
+        if (gps == null)
+            gps = new GPSTracker(requireActivity(), (latitude, longitude, location) -> {
+                // do something with the location
+                Log.e(TAG, "location listener receive " + latitude + " " + longitude);
+                getQublaDegree(latitude, longitude);
+                saveLastQublaLocation(location);
+                if (compass == null) {
+                    setupCompass();
+                    compass.start();
+                } else compass.start();
+            });
 
 
         if (gps.canGetLocation()) {
@@ -310,9 +337,8 @@ public class QublaFragment extends Fragment {
             gps.getLocation();
         } else {
             Log.e(TAG, "fetch_GPS canGetLocation false");
-            binding.btnMoaayara.setVisibility(View.VISIBLE);
-            binding.btnMoaayara.setText("البحث على اتجاه القبلة");
-
+            //binding.btnMoaayara.setVisibility(View.VISIBLE);
+            //binding.btnMoaayara.setText("البحث على اتجاه القبلة");
 
             showSettigAlert();
         }
@@ -321,11 +347,8 @@ public class QublaFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void getQublaDegree(double latitude, double longitude) {
         double result = 0;
-        binding.textDown.setText(getResources().getString(R.string.coord) + "\n" + getResources().getString(R.string.latitude) + ": " + latitude + getResources().getString(R.string.longitude) + ": " + longitude);
         if (latitude < 0.001 && longitude < 0.001) {
-            binding.mainImageQibla.setVisibility(INVISIBLE);
             binding.mainImageQibla.setVisibility(View.GONE);
-            binding.tvMoaayara.setVisibility(View.VISIBLE);
             binding.tvMoaayara.setText(getResources().getString(R.string.locationunready));
         } else {
             double longitude2 = 39.826209; // Kaabah Position https://www.latlong.net/place/kaaba-mecca-saudi-arabia-12639.html
@@ -335,12 +358,14 @@ public class QublaFragment extends Fragment {
             double y = Math.sin(longDiff) * Math.cos(latitude2);
             double x = Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longDiff);
             result = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
-            float result2 = (float) result;
-            Log.e("logstep", "dsaveDegree " + result2 + " and show the arrow");
-            SaveFloat("QiblaDegree", result2);
-            binding.textUp.setText(getResources().getString(R.string.qibladirection) + " " + result2 + " " + getResources().getString(R.string.fromnorth));
-            binding.mainImageQibla.setVisibility(View.VISIBLE);
-            binding.tvMoaayara.setText("للحصول على أفضل نتيجة حرك جهازك بشكل سريع ثم ضعه على شكل مسطح");
+            float qublaDegree = (float) result;
+            SaveFloat("QiblaDegree", qublaDegree);
+
+            if (globalAdresseName != null) {
+                String formattedQublaDegree = String.format(Locale.US, "%.1f", qublaDegree);
+                binding.textUp.setText(getResources().getString(R.string.qibladirection) + " " + formattedQublaDegree + " " + getResources().getString(R.string.fromnorth) + " \n " + globalAdresseName);
+            }
+            binding.mainImageQibla.setVisibility(VISIBLE);
         }
     }
 
@@ -359,6 +384,35 @@ public class QublaFragment extends Fragment {
         alertDialog.setPositiveButton(requireActivity().getResources().getString(R.string.ok), (dialog, which) -> dialog.cancel());
         alertDialog.show();
     }
+
+    private void saveLastQublaLocation(Location location) {
+        if (doesWeSavedTheNewLocation) return;
+        Geocoder geocoder = new Geocoder(requireActivity(), new Locale("ar"));
+        List<Address> addresses;
+        try {
+            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+            Log.e(TAG, "adress object " + addresses.get(0).toString());
+
+            UserLocation newQublaLocation = new UserLocation();
+            newQublaLocation.address = addresses.get(0).getAddressLine(0);
+            newQublaLocation.longitude = (long) addresses.get(0).getLongitude();
+            newQublaLocation.latitude = (long) addresses.get(0).getLatitude();
+            newQublaLocation.country = addresses.get(0).getCountryName();
+            newQublaLocation.locality = addresses.get(0).getLocality();
+
+            if (newQublaLocation.locality != null) globalAdresseName = newQublaLocation.locality;
+            else globalAdresseName = newQublaLocation.address;
+
+
+            SharedPreferenceManager.getInstance(requireActivity()).saveLastQublaLocation(newQublaLocation);
+            doesWeSavedTheNewLocation = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            doesWeSavedTheNewLocation = false;
+        }
+    }
+
 
 }
 

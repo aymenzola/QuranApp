@@ -35,12 +35,13 @@ public class GPSTracker extends Service implements LocationListener {
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 100; // 10 meters
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1 ; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
     // Declaring a Location Manager
     protected LocationManager locationManager;
     private LocationListener listener;
     private boolean isLocationAvialable = false;
-    public GPSTracker(Context context,LocationListener listener) {
+
+    public GPSTracker(Context context, LocationListener listener) {
         this.mContext = context;
         this.listener = listener;
     }
@@ -59,7 +60,7 @@ public class GPSTracker extends Service implements LocationListener {
                 this.canGetLocation = true;
                 Log.e(TAG, "getLocation: return canGetLocation true ");
                 if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES,this);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                     Log.e(TAG, "getLocation: Network Enabled 1");
                     if (locationManager != null) {
                         Log.e(TAG, "getLocation: Network Enabled 2");
@@ -69,7 +70,7 @@ public class GPSTracker extends Service implements LocationListener {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                             isLocationAvialable = true;
-                            listener.onNewLocation(latitude,longitude);
+                            listener.onNewLocation(latitude, longitude,location);
                         }
                     }
                 } else {
@@ -89,7 +90,7 @@ public class GPSTracker extends Service implements LocationListener {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
                                 isLocationAvialable = true;
-                                listener.onNewLocation(latitude,longitude);
+                                listener.onNewLocation(latitude, longitude,location);
                             }
                         }
                     }
@@ -98,44 +99,49 @@ public class GPSTracker extends Service implements LocationListener {
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "getLocation: Exception "+e.getMessage());
+            Log.e(TAG, "getLocation: Exception " + e.getMessage());
             e.printStackTrace();
         }
         return location;
     }
+
     /**
      * Stop using GPS listener
      * Calling this function will stop using GPS in your app
-     * */
-    public void stopUsingGPS(){
-        if(locationManager != null){
+     */
+    public void stopUsingGPS() {
+        if (locationManager != null) {
             locationManager.removeUpdates(GPSTracker.this);
         }
     }
+
     /**
      * Function to get latitude
-     * */
-    public double getLatitude(){
-        if(location != null){
+     */
+    public double getLatitude() {
+        if (location != null) {
             latitude = location.getLatitude();
         }
         // return latitude
         return latitude;
     }
+
     /**
      * Function to get longitude
-     * */
-    public double getLongitude(){
-        if(location != null){
+     */
+    public double getLongitude() {
+        if (location != null) {
             longitude = location.getLongitude();
         }
         // return longitude
         return longitude;
     }
+
     /**
      * Function to check GPS/wifi enabled
+     *
      * @return boolean
-     * */
+     */
     public boolean canGetLocation() {
 
         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
@@ -149,11 +155,12 @@ public class GPSTracker extends Service implements LocationListener {
 
         return this.canGetLocation;
     }
+
     /**
      * Function to show settings alert dialog
      * On pressing Settings button will lauch Settings Options
-     * */
-    public void showSettingsAlert(){
+     */
+    public void showSettingsAlert() {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
         alertDialog.setTitle(mContext.getResources().getString(R.string.gps_settings_title));
@@ -174,8 +181,19 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        if (location != null) {
+            Log.e(TAG, "gps class onLocationChanged get called");
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            isLocationAvialable = true;
+            listener.onNewLocation(latitude, longitude,location);
+        } else
+            Log.e(TAG, "gps class onLocationChanged get called with null location");
+
+
 // TODO Auto-generated method stub
     }
+
     @Override
     public void onProviderDisabled(String provider) {
 // TODO Auto-generated method stub
@@ -183,13 +201,17 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
+        Log.e(TAG, "onProviderEnabled");
+
 // TODO Auto-generated method stub
 
     }
+
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
 // TODO Auto-generated method stub
     }
+
     @Override
     public IBinder onBind(Intent intent) {
 // TODO Auto-generated method stub
@@ -197,7 +219,7 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     public interface LocationListener {
-        void onNewLocation(double latitude,double longitude);
+        void onNewLocation(double latitude, double longitude,Location location);
     }
 
 }

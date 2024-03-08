@@ -18,8 +18,6 @@ import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.data.room.Entities.Hadith;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.FragmentBookListBinding;
-import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
 
 import java.util.ArrayList;
 import java.util.List;

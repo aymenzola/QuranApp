@@ -46,7 +46,7 @@ import androidx.annotation.RequiresApi;
 
 import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.MainActivity;
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
@@ -61,7 +61,6 @@ import com.app.dz.quranapp.data.room.Entities.Sura;
 import com.app.dz.quranapp.data.room.Entities.SuraAudio;
 import com.app.dz.quranapp.data.room.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.data.room.MushafDatabase;
-import com.app.dz.quranapp.fix_new_futers.ai_commands.MyWidgetProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -810,11 +809,13 @@ public class ForegroundPlayAudioService2 extends Service implements MediaPlayer.
             builder = new androidx.core.app.NotificationCompat.Builder(this);
         }
 
-        updateWidgetImage(R.id.image_reader, bitmapIcon);
+        /*updateWidgetImage(R.id.image_reader, bitmapIcon);
         updateWidget("", R.id.tv_state);
         updateWidget("سورة " + suraArabicName, R.id.tv_sura_name);
         updateWidget(selectedReader.getName(), R.id.tv_reader_name);
 
+
+         */
         builder.setSmallIcon(R.drawable.ic_mashaf)
                 .setContentTitle("سورة " + suraArabicName)
                 .setContentText(selectedReader.getName())
@@ -908,6 +909,7 @@ public class ForegroundPlayAudioService2 extends Service implements MediaPlayer.
         }
     }
 
+    /*
     private void updateWidget(String title, int id) {
         RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
         views.setTextViewText(id, title);
@@ -924,5 +926,6 @@ public class ForegroundPlayAudioService2 extends Service implements MediaPlayer.
                 new ComponentName(ForegroundPlayAudioService2.this, MyWidgetProvider.class), views);
     }
 
+    */
 
 }

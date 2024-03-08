@@ -11,8 +11,7 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        >
+        android:background="@color/background_color">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -28,15 +27,16 @@
 
         </RelativeLayout>
 
+
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:elevation="0dp"
+            android:textColor="@color/tv_gri_color"
             android:background="#00FFFFFF"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways"
-            >
+            android:theme="@style/ThemeOverlay.AppCompat.Light"
+            app:elevation="0dp"
+            app:layout_scrollFlags="scroll|enterAlways">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -48,24 +48,22 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
+                        android:layout_height="wrap_content">
+
                         <ImageView
                             android:id="@+id/img_close"
                             android:layout_width="?actionBarSize"
                             android:layout_height="?actionBarSize"
-                            android:layout_alignParentTop="true"
                             android:layout_alignParentStart="true"
-                            android:src="@drawable/ic_konouz"
-                            android:background="?selectableItemBackground"
-                            android:padding="12dp"
+                            android:layout_alignParentTop="true"
                             android:layout_gravity="end"
-                            />
+                            android:background="?selectableItemBackground"
+                            android:padding="@dimen/back_icon_padding"
+                            android:src="@drawable/ic_konouz" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -80,65 +78,78 @@
 
                     <include
                         android:id="@+id/include_saved_book"
-                        layout="@layout/include_saved_book"
-                        />
+                        layout="@layout/include_saved_book" />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="15dp"
                 android:background="@drawable/shape_card_top"
-                android:padding="4dp"
-                >
+                android:orientation="vertical">
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/linear_titles"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_titels"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/blan"
+                    android:orientation="horizontal"
+                    app:cardCornerRadius="7dp"
+                    app:cardElevation="7dp">
 
-                    <TextView
-                        android:id="@+id/tv_adkar"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/linear_titles"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:background="@color/blan"
-                        android:fontFamily="@font/ffshamel_family_bold"
                         android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="المتون"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tv_books"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_weight="1"
-                        android:background="@drawable/round_right"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:text="الكتب"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/tv_normal_size" />
+                        <TextView
+                            android:id="@+id/tv_adkar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_weight="1"
+                            android:background="@color/blan"
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="المتون"
+                            android:textColor="@color/tv_gri_color"
+                            android:textSize="@dimen/tv_normal_size" />
+
+                        <TextView
+                            android:id="@+id/tv_books"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/round_right"
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:text="الكتب"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/tv_normal_size" />
 
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
+                </androidx.cardview.widget.CardView>
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </LinearLayout>
 
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -148,46 +159,38 @@
             android:layout_height="match_parent"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
-            android:paddingTop="10dp"
-            app:cardCornerRadius="7dp"
-            app:cardElevation="6dp"
+            android:paddingBottom="20dp"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="2dp"
             android:background="@drawable/shape_card_bottom"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+            android:paddingEnd="2dp"
+            android:paddingStart="2dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="10dp"
-                android:background="@color/blan"
+                android:layout_centerInParent="true"
                 android:nestedScrollingEnabled="true"
-                android:layout_marginBottom="10dp"
-                android:visibility="visible"
                 tools:listitem="@layout/item_collection_adapterr"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+                />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview_adkar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_centerInParent="true"
                 android:nestedScrollingEnabled="true"
-                android:layout_marginBottom="10dp"
-                android:visibility="gone"
-                android:padding="5dp"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:itemCount="2"
-                tools:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="true"
-            android:visibility="visible"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" >
-
-    </RelativeLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

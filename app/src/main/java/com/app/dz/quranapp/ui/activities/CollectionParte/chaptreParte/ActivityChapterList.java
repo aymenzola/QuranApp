@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.databinding.FragmentChaptersListBinding;
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,23 +18,17 @@ import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.MotonDao;
 import com.app.dz.quranapp.data.room.DatabaseClient;
-import com.app.dz.quranapp.data.room.Entities.BookCollection;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
-import com.app.dz.quranapp.data.room.MushafDatabase;
-import com.app.dz.quranapp.databinding.ActivityMahfodatBinding;
 import com.app.dz.quranapp.databinding.FragmentMahfodat1Binding;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarSavedAdapter;
 import com.app.dz.quranapp.ui.activities.AdkarParte.ChaptersSavedAdapter;
 import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.BooksUtils;
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnViewer;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.SavedMatnPage;
-import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -100,8 +92,15 @@ public class ActivityMahfodatList extends AppCompatActivity {
 
     private void getSavedMotonPages() {
         motonDao.getSavedPagesList().observe(this, savedMatnPageList -> {
-            if (savedMatnPageList != null && savedMatnPageList.size() > 0)
+            if (savedMatnPageList != null && savedMatnPageList.size() > 0) {
+                Log.e(TAG, "we getSavedMotonPages: " + savedMatnPageList.size()+" adapter.getItemCount(); "+adapter.getItemCount());
+                boolean isRecyclerviewVisible = binding.recyclerview.getVisibility()==View.VISIBLE;
+                boolean isRecyclerviewAdkarVisible = binding.recyclerviewAdkar.getVisibility()==View.VISIBLE;
+
+                Log.e(TAG, "is recyclerview is visible " +isRecyclerviewVisible+" isRecyclerviewAdkarVisible "+isRecyclerviewAdkarVisible);
+
                 adapter.addMoton(savedMatnPageList);
+            }
         });
     }
 

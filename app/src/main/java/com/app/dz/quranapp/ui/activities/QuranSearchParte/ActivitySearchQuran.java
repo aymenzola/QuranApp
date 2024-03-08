@@ -35,7 +35,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.dz.quranapp.MainActivity;
 import com.app.dz.quranapp.data.room.Entities.AyaWithSura;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.FragmentQuranSearch1Binding;
 import com.app.dz.quranapp.databinding.FragmentQuranSearchBinding;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class ActivitySearchQuran extends AppCompatActivity {
     public int currentPage = 0; // Index of the current page
 
 
-    private FragmentQuranSearch1Binding binding;
+    private FragmentQuranSearchBinding binding;
     private QuranSearchAdapter adapter;
     private QuranSearchViewModel searchViewModel;
 
@@ -76,7 +75,7 @@ public class ActivitySearchQuran extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = FragmentQuranSearch1Binding.inflate(getLayoutInflater());
+        binding = FragmentQuranSearchBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

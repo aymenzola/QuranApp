@@ -7,7 +7,7 @@
 
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -19,58 +19,63 @@
 
         <TextView
             android:id="@+id/tv_sura_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@+id/tv_count"
             android:fontFamily="@font/ffshamel_book"
-            android:maxLength="20"
-            android:text="كتاب الايمان"
+            android:layout_marginTop="10dp"
+            android:maxLines="2"
+            android:paddingBottom="5dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            tools:text="كتاب الايمان "
             android:textColor="@color/tv_gri_color"
-            android:textSize="@dimen/tv_normal_size" />
+            android:textSize="@dimen/tv_small_size"
+            app:layout_constraintEnd_toStartOf="@+id/tv_count"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_description"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
             android:layout_toStartOf="@+id/tv_sura_name"
             android:fontFamily="@font/ffshamel_book"
-            android:text="عدد الابواب"
+            tools:text="عدد الابواب 5"
             android:textColor="#989797"
-            android:textSize="@dimen/tv_normal_size"
-            android:textStyle="bold" />
+            android:lines="2"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:gravity="center"
+            android:textSize="@dimen/tv_mini_size"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_sura_name"
+            app:layout_constraintEnd_toEndOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_sura_name" />
 
         <TextView
             android:id="@+id/tv_count"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/ic_sura_number_holder"
             android:gravity="center"
             android:padding="10dp"
-            android:text="1"
             android:textColor="@color/item_count_color"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_sura_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_sura_name"
+            tools:text="1" />
 
-        <View
-            android:id="@+id/click_view"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/tv_count"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-10dp"
-            android:background="?selectableItemBackground" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.3" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

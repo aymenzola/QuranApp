@@ -29,7 +29,7 @@
             android:fontFamily="@font/al_qalam_quran"
             android:gravity="center_vertical"
             android:textColor="@color/black"
-            android:textSize="25sp"
+            android:textSize="@dimen/tv_quran_size"
             tools:text="الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴿2﴾" />
 
         <TextView

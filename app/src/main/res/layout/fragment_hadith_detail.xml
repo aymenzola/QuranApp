@@ -164,6 +164,7 @@
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/ffshamel_family_bold"
                     android:gravity="center"
+                    android:textSize="@dimen/tv_normal_size"
                     android:text="المكتبة" />
 
             </RelativeLayout>

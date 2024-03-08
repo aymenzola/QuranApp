@@ -2,15 +2,19 @@ package com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte;
 
 import static android.content.Context.ALARM_SERVICE;
 import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
+import static com.app.dz.quranapp.Communs.PrayerTimesPreference.turnOffAllPrayersConfig;
 import static com.app.dz.quranapp.Util.QuranInfoManager.convertToHijri;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
@@ -45,6 +50,7 @@ import com.batoulapps.adhan.CalculationParameters;
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
 import com.batoulapps.adhan.data.DateComponents;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,8 +79,6 @@ public class FragmentPrayer extends Fragment {
     @SuppressLint("SimpleDateFormat")
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
-    public static final int REQUEST_NO_CHANGES = -1;
-    public static final int REQUEST_MORE_THEN_ITEM_CHANGED = -2;
     AlarmManager alarmManager;
 
     private FragmentPrayerTimesBinding binding;
@@ -140,7 +144,11 @@ public class FragmentPrayer extends Fragment {
                 if (adapter == null) return;
                 String date = adapter.getItem(position).getDate();
                 binding.tvDayHijri.setText(getDateArabicName(date));
+                Log.e("testLog","الموافق ل " + date+"  "+getDateArabicName(date));
                 binding.tvDay.setText("الموافق ل " + date);
+
+                Log.e("testLog","tvDay content "+binding.tvDay.getText().toString());
+
             }
         };
 
@@ -169,6 +177,9 @@ public class FragmentPrayer extends Fragment {
 
     private void setListeners() {
 
+
+        binding.includToolbar.imgBack.setVisibility(View.GONE);
+
         binding.imgBack.setOnClickListener(v -> {
             int currentItem = binding.viewpager.getCurrentItem();
             if (currentItem > 0) {
@@ -192,7 +203,6 @@ public class FragmentPrayer extends Fragment {
                 //the prayer timing data is saved we have to display them and set the next alarm
                 binding.viewpager.setVisibility(View.VISIBLE);
                 binding.tvGettingTiming.setVisibility(View.GONE);
-                setNextAlarm();
                 viewModel.setDayPrayer();
             }
 
@@ -374,6 +384,7 @@ public class FragmentPrayer extends Fragment {
             date = dateFormat.parse(inputDate);
             hijriDateStr = outputDateFormatDayName.format(date) + " " + getHijriDate(inputDate);
         } catch (Exception e) {
+            Log.e("testLog","error in getDateArabicName "+e.getMessage());
             Log.e(TAG, "error " + e.getMessage());
         }
         return hijriDateStr;
@@ -548,7 +559,12 @@ public class FragmentPrayer extends Fragment {
             nextSalatName = "العشاء";
         }
 
-        binding.tvSalatMessage.setText("بقي على أذان " + nextSalatName + " : ");
+        String text = "بقي على أذان  <b>" + nextSalatName + "</b> :";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            binding.tvSalatMessage.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            binding.tvSalatMessage.setText(Html.fromHtml(text));
+        }
 
         countdownDuration = Nextmillseconds - System.currentTimeMillis();
         if (count != null) count = null;
@@ -562,7 +578,12 @@ public class FragmentPrayer extends Fragment {
             @Override
             public void onFinish() {
                 // display a message when the timer finishes
-                binding.tvSalatMessage.setText("حان الان موعد صلاة " + nextSalatName);
+                String text = "حان الان موعد صلاة  <b>" + nextSalatName + "</b> :";
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    binding.tvSalatMessage.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    binding.tvSalatMessage.setText(Html.fromHtml(text));
+                }
             }
         }.start();
 
@@ -581,7 +602,7 @@ public class FragmentPrayer extends Fragment {
                     " " + convertToHijri(hijrahDate.get(ChronoField.MONTH_OF_YEAR)) + " "
                     + hijrahDate.get(ChronoField.YEAR);
         } else {
-            binding.tvDay.setVisibility(View.GONE);
+            //binding.tvDay.setVisibility(View.GONE);
             return "";
         }
     }
@@ -589,11 +610,6 @@ public class FragmentPrayer extends Fragment {
 
     private void checkIfTheWorkIsScheduler() {
         PrayerTimesHelper.getInstance(requireActivity()).checkIfTheWorkIsScheduler(requireActivity());
-    }
-
-    private void setNextAlarm() {
-        PrayerTimesHelper.scheduleNextPrayerJob(requireActivity());
-        Toast.makeText(requireActivity(), "next prayer adhan scheduled", Toast.LENGTH_SHORT).show();
     }
 
     // Define an instance of the contract
@@ -608,6 +624,7 @@ public class FragmentPrayer extends Fragment {
                     Log.e("logtag", "onActivityResult: not ok");
                 }
             });
+
 
 }
 

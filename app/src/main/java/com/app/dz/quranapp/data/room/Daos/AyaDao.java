@@ -76,6 +76,9 @@ public interface AyaDao {
     @Query("SELECT * FROM Aya WHERE page=:pageNum ORDER BY id DESC LIMIT 1")
     Observable<Aya> getLastAyaInPage(int pageNum);
 
+    @Query("SELECT * FROM Aya WHERE page=:pageNum")
+    List<Aya> getAyaListInPage(int pageNum);
+
     @Query("SELECT * FROM Aya where id=(SELECT MIN(id) FROM Aya WHERE sura=:sura)")
     Aya getFirstAyaInSura(int sura);
 
@@ -84,6 +87,9 @@ public interface AyaDao {
 
     @Query("SELECT * FROM Aya where sura=:sura and sura_aya=:ayaInSura")
     Aya getJuzaStartAya(int sura,int ayaInSura);
+
+    @Query("SELECT * FROM Sura WHERE id=:suraId")
+    Sura findSuraById(int suraId);
 
 
 

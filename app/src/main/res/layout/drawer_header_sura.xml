@@ -9,7 +9,7 @@
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="@dimen/tv_normal_size"
         android:padding="10dp"
         android:background="@color/white"
         android:fontFamily="@font/ffshamel_family_bold"

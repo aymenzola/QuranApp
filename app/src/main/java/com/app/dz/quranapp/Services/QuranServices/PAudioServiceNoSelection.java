@@ -1,8 +1,8 @@
 package com.app.dz.quranapp.Services.QuranServices;
 
 import static com.app.dz.quranapp.Communs.Statics.ACTION.CHANGE_READER_ACTION;
-import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_ERROR_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_FINISHED_ACTION;
+import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_NOT_AVAILABLE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PAUSE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_PROGRESS_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_RESUME_ACTION;
@@ -41,12 +41,11 @@ import androidx.annotation.RequiresApi;
 
 import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.MainActivity;
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.data.room.Entities.SuraAudio;
-import com.app.dz.quranapp.fix_new_futers.ai_commands.MyWidgetProvider;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,11 +144,22 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
                 this.selectedReader = (ReaderAudio) intent.getSerializableExtra("selectedReader");
                 this.audioReadingSpeed = intent.getFloatExtra("speed", 1f);
 
-                //getting sura arabic name and reader image
-                suraArabicName = quranInfoManager.getSuraName(suraAudio.SuraNumber - 1);
-                new Thread(() -> bitmapIcon = getReaderBitmap()).start();
-                sendPreparingStateToFragment(getBaseContext(), AUDIO_PROGRESS_ACTION);
-                prepareSuraAudio(suraAudio);
+                if (!PublicMethods.getInstance().isAvailableFile(suraAudio.SuraNumber, selectedReader.getReaderTag())) {
+                    //send to fragment that the sura is not available
+                    if (this.suraAudio != null)
+                        sendPreparingStateToFragment(getBaseContext(),AUDIO_NOT_AVAILABLE_ACTION);
+                    destroyPlayer();
+                    stopForeground(true);
+                    stopSelf();
+
+                } else {
+
+                    //getting sura arabic name and reader image
+                    suraArabicName = quranInfoManager.getSuraName(suraAudio.SuraNumber - 1);
+                    new Thread(() -> bitmapIcon = getReaderBitmap()).start();
+                    sendPreparingStateToFragment(getBaseContext(), AUDIO_PROGRESS_ACTION);
+                    prepareSuraAudio(suraAudio);
+                }
             }
             case Statics.ACTION.PAUSE_ACTION -> {
                 sendPreparingStateToFragment(getBaseContext(), AUDIO_PAUSE_ACTION);
@@ -285,14 +295,14 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
     }
 
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        String message = getErrorMessage(what);
+        String message = PublicMethods.getInstance().getErrorMessage(what);
         Log.e(TAG, "Player onError() what:" + message);
         destroyPlayer();
         mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
         mStateService = Statics.STATE_SERVICE.NOT_INIT;
         stopForeground(true);
         stopSelf();
-        sendErrorMessage(getBaseContext(),message);
+        sendErrorMessage(getBaseContext(), message);
         return false;
     }
 
@@ -446,7 +456,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
         }
     }
 
-    private void updateWidget(String title, int id) {
+    /*private void updateWidget(String title,int id) {
         RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
         views.setTextViewText(id, title);
         // Update the widget
@@ -461,7 +471,7 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
         AppWidgetManager.getInstance(PAudioServiceNoSelection.this).updateAppWidget(
                 new ComponentName(PAudioServiceNoSelection.this, MyWidgetProvider.class), views);
     }
-
+    */
     private Notification prepareNotification() {
         Log.d("notification_tag", "notification called ");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
@@ -508,11 +518,11 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
             builder = new androidx.core.app.NotificationCompat.Builder(this);
         }
 
-        updateWidgetImage(R.id.image_reader, bitmapIcon);
+        /*updateWidgetImage(R.id.image_reader, bitmapIcon);
         updateWidget("", R.id.tv_state);
         updateWidget("سورة " + suraArabicName, R.id.tv_sura_name);
         updateWidget(selectedReader.getName(), R.id.tv_reader_name);
-
+*/
         builder.setSmallIcon(R.drawable.ic_mashaf)
                 .setContentTitle("سورة " + suraArabicName)
                 .setContentText(selectedReader.getName())
@@ -547,19 +557,6 @@ public class PAudioServiceNoSelection extends Service implements MediaPlayer.OnE
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
 
-    }
-
-    public String getErrorMessage(int what) {
-        return switch (what) {
-            case MediaPlayer.MEDIA_ERROR_UNKNOWN -> "Unknown media playback error";
-            case MediaPlayer.MEDIA_ERROR_SERVER_DIED -> "Media server died";
-            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK -> "Media not valid for progressive playback";
-            case MediaPlayer.MEDIA_ERROR_IO -> "IO media error";
-            case MediaPlayer.MEDIA_ERROR_MALFORMED -> "Malformed media";
-            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED -> "Unsupported media";
-            case MediaPlayer.MEDIA_ERROR_TIMED_OUT -> "Media timed out";
-            default -> "Unknown error";
-        };
     }
 
     private void seekPlayer(Intent intent) {

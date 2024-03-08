@@ -51,7 +51,7 @@
                 android:layout_alignTop="@id/img_title"
                 android:layout_alignParentEnd="true"
                 android:gravity="center"
-                android:padding="10dp"
+                android:padding="@dimen/back_icon_padding"
                 android:src="@drawable/baseline_keyboard_arrow_right_24"
                 />
 

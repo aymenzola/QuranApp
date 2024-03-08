@@ -1,12 +1,9 @@
 package com.app.dz.quranapp.ui.activities.adhan;
 
-import static com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.FragmentPrayer.REQUEST_MORE_THEN_ITEM_CHANGED;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,8 +11,8 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.app.dz.quranapp.Communs.Constants;
 import com.app.dz.quranapp.Communs.PrayerTimesHelper;
+import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.Services.adhan.AdanAudioPlayerService;
 import com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker;
 import com.app.dz.quranapp.databinding.AdhanActivityBinding;
@@ -74,7 +71,7 @@ public class AdhanConfigActivity extends AppCompatActivity {
         List<PrayerConfig> prayerConfigList = new ArrayList<>();
         // Add some dummy data for demonstration
 
-        DayPrayersConfig dayPrayersConfig = PrayerTimesHelper.getDayPrayersConfig(this);
+        DayPrayersConfig dayPrayersConfig = PrayerTimesPreference.getDayPrayersConfig(this);
 
         Log.e("logtag", "fajr " + dayPrayersConfig.FajrConfig.toString());
         Log.e("logtag", "duhr " + dayPrayersConfig.DuhrConfig.toString());
@@ -108,9 +105,9 @@ public class AdhanConfigActivity extends AppCompatActivity {
 
 
     private void scheduleTestPrayerWorker() {
-        PrayerTimesHelper.PrayerInfo prayerInfo = new PrayerTimesHelper.PrayerInfo("", PrayerTimesHelper.PrayerNames.ASR.name(), 445645);
+        PrayerTimesPreference.PrayerInfo prayerInfo = new PrayerTimesPreference.PrayerInfo("", PrayerTimesPreference.PrayerNames.ASR.name(), 445645);
         Data inputData = new Data.Builder()
-                .putString("prayerInfo", new Gson().toJson(prayerInfo, PrayerTimesHelper.PrayerInfo.class))
+                .putString("prayerInfo", new Gson().toJson(prayerInfo, PrayerTimesPreference.PrayerInfo.class))
                 .build();
 
 

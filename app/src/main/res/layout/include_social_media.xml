@@ -16,7 +16,6 @@
         >
 
         <TextView
-            android:id="@+id/tv_social_media"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ffshamel_book"
@@ -28,21 +27,18 @@
             android:textSize="@dimen/tv_small_size" />
 
         <ImageView
-            android:id="@+id/img_youtube"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_youtube" />
 
         <ImageView
-            android:id="@+id/img_instagram"
             android:layout_width="33dp"
             android:layout_height="33dp"
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_instagram" />
 
         <ImageView
-            android:id="@+id/img_facebook"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_facebook" />
@@ -59,7 +55,6 @@
         >
 
         <TextView
-            android:id="@+id/tv_website"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ffshamel_book"
@@ -71,14 +66,12 @@
             android:textSize="@dimen/tv_small_size" />
 
         <ImageView
-            android:id="@+id/img_website"
             android:layout_width="33dp"
             android:layout_height="33dp"
             android:src="@drawable/ic_website" />
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/img_qr1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -86,7 +79,6 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/ic_qr_code1" >
         <ImageView
-            android:id="@+id/img_qr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -98,7 +90,6 @@
 
 
     <TextView
-        android:id="@+id/tv_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/ffshamel_book"

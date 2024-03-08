@@ -28,7 +28,7 @@
             android:fontFamily="@font/al_qalam_quran"
             android:gravity="center"
             android:textColor="@color/black"
-            android:textSize="25sp"
+            android:textSize="@dimen/tv_quran_size"
             android:text="بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمَ"
             tools:ignore="HardcodedText" />
 

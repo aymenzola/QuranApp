@@ -48,10 +48,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_marginStart="40dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="50dp"
                 android:layout_marginBottom="5dp"
+                android:layout_toStartOf="@+id/item_search_icon"
+                android:layout_toEndOf="@+id/item_clear_click_parent"
                 android:background="@color/white"
                 android:fontFamily="@font/ffshamel_book"
                 android:hint="البحث"
@@ -63,18 +63,19 @@
                 android:paddingEnd="10dp"
                 android:textColor="@color/black"
                 android:textColorHint="#B6B2B2"
-                android:textSize="16sp" />
+                android:textSize="@dimen/tv_normal_size" />
 
             <ImageView
                 android:id="@+id/item_search_icon"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_alignTop="@+id/edit_search"
                 android:layout_alignBottom="@+id/edit_search"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="5dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="5dp"
+                android:padding="5dp"
                 app:srcCompat="@drawable/ic_search_black_24dp"
                 app:tint="@color/text_color"
                 />
@@ -96,8 +97,8 @@
 
                 <ImageView
                     android:id="@+id/item_clear_icon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     app:srcCompat="@drawable/ic_close_icon"
@@ -110,11 +111,11 @@
             android:id="@+id/img_back"
             android:layout_width="?actionBarSize"
             android:layout_height="?actionBarSize"
-            android:layout_alignParentTop="true"
+            android:layout_alignTop="@+id/relative_search"
+            android:layout_alignBottom="@+id/relative_search"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="5dp"
             android:gravity="center"
-            android:padding="15dp"
+            android:padding="5dp"
             android:src="@drawable/baseline_keyboard_arrow_right_24"
             />
 
@@ -144,7 +145,7 @@
                 android:paddingBottom="5dp"
                 android:text="كتب"
                 android:textColor="@color/purple_700"
-                android:textSize="15dp" />
+                android:textSize="@dimen/tv_mini_size" />
 
             <TextView
                 android:id="@+id/btn_chapters"
@@ -164,7 +165,7 @@
                 android:paddingBottom="5dp"
                 android:text="اجزاء الكتب"
                 android:textColor="@color/white"
-                android:textSize="15dp" />
+                android:textSize="@dimen/tv_mini_size" />
 
             <TextView
                 android:id="@+id/btn_hadiths"
@@ -182,7 +183,7 @@
                 android:lines="1"
                 android:text="احاديث"
                 android:textColor="@color/white"
-                android:textSize="15dp" />
+                android:textSize="@dimen/tv_mini_size" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -214,7 +215,7 @@
             android:fontFamily="@font/ffshamel_book"
             android:text="لا توجد نتائج"
             android:textColor="@color/text_color_dark"
-            android:textSize="17sp"
+            android:textSize="@dimen/tv_normal_size"
             android:visibility="gone"
             tools:visibility="visible" />
 

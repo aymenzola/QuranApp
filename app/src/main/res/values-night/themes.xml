@@ -37,14 +37,5 @@
         <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
     </style>
 
-    <style name="AlertDialogRounded" parent="@style/ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="shapeAppearanceOverlay">@style/RoundedShapeAppearanceOverlayAlertDialog</item>
-    </style>
-
-    <style name="RoundedShapeAppearanceOverlayAlertDialog">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">8dp</item>
-    </style>
-
 </resources>
 

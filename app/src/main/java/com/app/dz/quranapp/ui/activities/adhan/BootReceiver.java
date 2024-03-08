@@ -11,35 +11,94 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 
+import com.app.dz.quranapp.Communs.PrayerTimesHelper;
 import com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BootReceiver extends BroadcastReceiver {
+    public static final String TAG_BROAD_CAST= "testKounozLog";
     Context context;
     public static final int JOB_ID = 1001; // Unique ID for the job
 
     @Override
     public void onReceive(Context contextt, Intent intent) {
         context = contextt;
-        if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
-                intent.getAction().equals("android.intent.action.QUICKBOOT_POWERON")
-                || intent.getAction().equals("com.htc.intent.action.QUICKBOOT_POWERON")) {
-            // Schedule the job again when the device is rebooted
-            Log.e("testLog", "onReceive schdule next job ");
-            rescheduleForNextPrayerTime(5000);
-            //checkAndRestartJob(context);
-            //PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() + 1000, context,true);
-        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_POWER_CONNECTED)) {
-            Log.e("testLog", "onReceive ACTION_POWER_CONNECTED");
-            /* if (checkAndRestartJob(context)) {
-
-            } else {
-                //PrayerJobIntentService.schedulePrayerJob(System.currentTimeMillis() +1000, context,true);
-            }*/
+        if (intent.getAction() != null) {
+            switch (intent.getAction()) {
+                case Intent.ACTION_BOOT_COMPLETED:
+                case "android.intent.action.QUICKBOOT_POWERON":
+                case "com.htc.intent.action.QUICKBOOT_POWERON":
+                    Log.e(TAG_BROAD_CAST,"onReceive BOOT_COMPLETED or QUICKBOOT_POWERON");
+                    // Handle boot completed actions
+                    break;
+                case "android.net.conn.CONNECTIVITY_CHANGE":
+                    Log.e(TAG_BROAD_CAST,"onReceive CONNECTIVITY_CHANGE");
+                    // Handle connectivity change actions
+                    break;
+                case Intent.ACTION_POWER_CONNECTED:
+                    Log.e(TAG_BROAD_CAST,"onReceive ACTION_POWER_CONNECTED");
+                    // Handle power connected actions
+                    break;
+                case "com.htc.intent.action.SCREEN_ON":
+                    Log.e(TAG_BROAD_CAST,"onReceive SCREEN_ON");
+                    checkIfTheWorkIsScheduler();
+                    // Handle screen on actions
+                    break;
+                case "com.htc.intent.action.TIME_TICK":
+                    Log.e(TAG_BROAD_CAST,"onReceive TIME_TICK");
+                    // Handle time tick actions
+                    break;
+                case "com.htc.intent.action.USER_PRESENT":
+                    Log.e(TAG_BROAD_CAST,"onReceive USER_PRESENT");
+                    // Handle user present actions
+                    break;
+                default:
+                    Log.e(TAG_BROAD_CAST,"onReceive UNKNOWN_ACTION");
+                    // Handle other actions
+                    break;
+            }
         }
     }
+
+    private void checkIfTheWorkIsScheduler() {
+        PrayerTimesHelper.getInstance(context).checkIfTheWorkIsScheduler(context);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private boolean checkAndRestartJob(Context context) {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -48,7 +107,7 @@ public class BootReceiver extends BroadcastReceiver {
             for (JobInfo jobInfo : allPendingJobs) {
                 if (jobInfo.getId() == JOB_ID) {
                     // The job is still scheduled, no need to reschedule
-                    Log.e("testLog", "onReceive The job is still scheduled, no need to reschedule ");
+                    Log.e("testLog","onReceive The job is still scheduled, no need to reschedule ");
                     return true;
                 }
             }

@@ -16,11 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.Communs.PrayerTimesHelper;
+import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.data.room.Entities.DayPrayerTimes;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.databinding.IncludePrayerTime2Binding;
-import com.app.dz.quranapp.databinding.IncludePrayerTimeBinding;
 import com.app.dz.quranapp.databinding.ItemDayTimingNewBinding;
 import com.app.dz.quranapp.ui.models.adhan.DayPrayersConfig;
 import com.app.dz.quranapp.ui.models.adhan.PrayerConfig;
@@ -126,12 +124,12 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
 
         holder.binding.includePtFajr.linearModeSilent.setOnClickListener(v -> listener.onItemChanged());
 
-        if (isActive(config1, PrayerTimesHelper.AdhanSound.NORMAL) == 1) {
-            activeView(R.drawable.ic_adhan_active, holder.binding.includePtFajr.imageMode, holder.binding.includePtFajr.tvMode, "الوضع المرتفع");
-        } else if (isActive(config1, PrayerTimesHelper.AdhanSound.SILENT) == 1) {
-            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtFajr.imageMode, holder.binding.includePtFajr.tvMode, "الوضع الصامت");
+        if (isActive(config1, PrayerTimesPreference.AdhanSound.NORMAL) == 1) {
+            activeView(R.drawable.ic_adhan_active, holder.binding.includePtFajr.imageMode, holder.binding.includePtFajr.tvMode, "الوضع \n المرتفع");
+        } else if (isActive(config1, PrayerTimesPreference.AdhanSound.SILENT) == 1) {
+            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtFajr.imageMode, holder.binding.includePtFajr.tvMode, "الوضع \n الصامت");
         } else {
-            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtFajr.imageMode, holder.binding.includePtFajr.tvMode, "وضع الاهتزاز");
+            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtFajr.imageMode, holder.binding.includePtFajr.tvMode, "وضع \n الاهتزاز");
         }
 
 
@@ -141,12 +139,12 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
         holder.binding.includePtShorok.tvPrayerNameTime.setText("الشروق " + times.getSunrise());
         holder.binding.includePtShorok.linearModeSilent.setOnClickListener(v -> listener.onItemChanged());
 
-        if (isActive(config6,PrayerTimesHelper.AdhanSound.NORMAL) == 1) {
-            activeView(R.drawable.ic_adhan_active, holder.binding.includePtShorok.imageMode, holder.binding.includePtShorok.tvMode, "الوضع المرتفع");
-        } else if (isActive(config6, PrayerTimesHelper.AdhanSound.SILENT) == 1) {
-            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtShorok.imageMode, holder.binding.includePtShorok.tvMode, "الوضع الصامت");
+        if (isActive(config6,PrayerTimesPreference.AdhanSound.NORMAL) == 1) {
+            activeView(R.drawable.ic_adhan_active, holder.binding.includePtShorok.imageMode, holder.binding.includePtShorok.tvMode, "الوضع \n المرتفع");
+        } else if (isActive(config6, PrayerTimesPreference.AdhanSound.SILENT) == 1) {
+            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtShorok.imageMode, holder.binding.includePtShorok.tvMode, "الوضع \n الصامت");
         } else {
-            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtShorok.imageMode, holder.binding.includePtShorok.tvMode, "وضع الاهتزاز");
+            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtShorok.imageMode, holder.binding.includePtShorok.tvMode, "وضع \n الاهتزاز");
         }
 
 
@@ -158,12 +156,12 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
 
         holder.binding.includePtDuhr.linearModeSilent.setOnClickListener(v -> listener.onItemChanged());
 
-        if (isActive(config2, PrayerTimesHelper.AdhanSound.NORMAL) == 1) {
-            activeView(R.drawable.ic_adhan_active, holder.binding.includePtDuhr.imageMode, holder.binding.includePtDuhr.tvMode, "الوضع المرتفع");
-        } else if (isActive(config2, PrayerTimesHelper.AdhanSound.SILENT) == 1) {
-            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtDuhr.imageMode, holder.binding.includePtDuhr.tvMode, "الوضع الصامت");
+        if (isActive(config2, PrayerTimesPreference.AdhanSound.NORMAL) == 1) {
+            activeView(R.drawable.ic_adhan_active, holder.binding.includePtDuhr.imageMode, holder.binding.includePtDuhr.tvMode, "الوضع \n المرتفع");
+        } else if (isActive(config2, PrayerTimesPreference.AdhanSound.SILENT) == 1) {
+            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtDuhr.imageMode, holder.binding.includePtDuhr.tvMode, "الوضع \n الصامت");
         } else {
-            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtDuhr.imageMode, holder.binding.includePtDuhr.tvMode, "وضع الاهتزاز");
+            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtDuhr.imageMode, holder.binding.includePtDuhr.tvMode, "وضع \n الاهتزاز");
         }
 
 // For Asr
@@ -174,12 +172,12 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
 
         holder.binding.includePtAsr.linearModeSilent.setOnClickListener(v -> listener.onItemChanged());
 
-        if (isActive(config3, PrayerTimesHelper.AdhanSound.NORMAL) == 1) {
-            activeView(R.drawable.ic_adhan_active, holder.binding.includePtAsr.imageMode, holder.binding.includePtAsr.tvMode, "الوضع المرتفع");
-        } else if (isActive(config3, PrayerTimesHelper.AdhanSound.SILENT) == 1) {
-            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtAsr.imageMode, holder.binding.includePtAsr.tvMode, "الوضع الصامت");
+        if (isActive(config3, PrayerTimesPreference.AdhanSound.NORMAL) == 1) {
+            activeView(R.drawable.ic_adhan_active, holder.binding.includePtAsr.imageMode, holder.binding.includePtAsr.tvMode, "الوضع \n المرتفع");
+        } else if (isActive(config3, PrayerTimesPreference.AdhanSound.SILENT) == 1) {
+            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtAsr.imageMode, holder.binding.includePtAsr.tvMode, "الوضع \n الصامت");
         } else {
-            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtAsr.imageMode, holder.binding.includePtAsr.tvMode, "وضع الاهتزاز");
+            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtAsr.imageMode, holder.binding.includePtAsr.tvMode, "وضع \n الاهتزاز");
         }
 
 // For Maghrib
@@ -190,12 +188,12 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
 
         holder.binding.includePtMaghrib.linearModeSilent.setOnClickListener(v -> listener.onItemChanged());
 
-        if (isActive(config4, PrayerTimesHelper.AdhanSound.NORMAL) == 1) {
-            activeView(R.drawable.ic_adhan_active, holder.binding.includePtMaghrib.imageMode, holder.binding.includePtMaghrib.tvMode, "الوضع المرتفع");
-        } else if (isActive(config4, PrayerTimesHelper.AdhanSound.SILENT) == 1) {
-            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtMaghrib.imageMode, holder.binding.includePtMaghrib.tvMode, "الوضع الصامت");
+        if (isActive(config4, PrayerTimesPreference.AdhanSound.NORMAL) == 1) {
+            activeView(R.drawable.ic_adhan_active, holder.binding.includePtMaghrib.imageMode, holder.binding.includePtMaghrib.tvMode, "الوضع \n المرتفع");
+        } else if (isActive(config4, PrayerTimesPreference.AdhanSound.SILENT) == 1) {
+            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtMaghrib.imageMode, holder.binding.includePtMaghrib.tvMode, "الوضع \n الصامت");
         } else {
-            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtMaghrib.imageMode, holder.binding.includePtMaghrib.tvMode, "وضع الاهتزاز");
+            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtMaghrib.imageMode, holder.binding.includePtMaghrib.tvMode, "وضع \n الاهتزاز");
         }
 
 // For Isha
@@ -206,12 +204,12 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
 
         holder.binding.includePtIsha.linearModeSilent.setOnClickListener(v -> listener.onItemChanged());
 
-        if (isActive(config5, PrayerTimesHelper.AdhanSound.NORMAL) == 1) {
-            activeView(R.drawable.ic_adhan_active, holder.binding.includePtIsha.imageMode, holder.binding.includePtIsha.tvMode, "الوضع المرتفع");
-        } else if (isActive(config5, PrayerTimesHelper.AdhanSound.SILENT) == 1) {
-            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtIsha.imageMode, holder.binding.includePtIsha.tvMode, "الوضع الصامت");
+        if (isActive(config5, PrayerTimesPreference.AdhanSound.NORMAL) == 1) {
+            activeView(R.drawable.ic_adhan_active, holder.binding.includePtIsha.imageMode, holder.binding.includePtIsha.tvMode, "الوضع \n المرتفع");
+        } else if (isActive(config5, PrayerTimesPreference.AdhanSound.SILENT) == 1) {
+            activeView(R.drawable.ic_adhan_silent, holder.binding.includePtIsha.imageMode, holder.binding.includePtIsha.tvMode, "الوضع \n الصامت");
         } else {
-            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtIsha.imageMode, holder.binding.includePtIsha.tvMode, "وضع الاهتزاز");
+            activeView(R.drawable.ic_adhan_vibration, holder.binding.includePtIsha.imageMode, holder.binding.includePtIsha.tvMode, "وضع \n الاهتزاز");
         }
 
 
@@ -230,11 +228,11 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
     }
 
 
-    private static int getColor(PrayerConfig config, PrayerTimesHelper.AdhanSound soundType) {
+    private static int getColor(PrayerConfig config, PrayerTimesPreference.AdhanSound soundType) {
         return config.soundType.equals(soundType.name()) ? R.color.purple_500 : R.color.tv_gri_color;
     }
 
-    private static int isActive(PrayerConfig config, PrayerTimesHelper.AdhanSound soundType) {
+    private static int isActive(PrayerConfig config, PrayerTimesPreference.AdhanSound soundType) {
         return config.soundType.equals(soundType.name()) ? 1 : 0;
     }
 
@@ -261,7 +259,7 @@ public class DayPrayerAdapter extends RecyclerView.Adapter<DayPrayerAdapter.View
     }
 
     public PrayerConfig getDayConfig(Context mCtx, int prayerRank) {
-        DayPrayersConfig dayPrayersConfig = PrayerTimesHelper.getDayPrayersConfig(mCtx);
+        DayPrayersConfig dayPrayersConfig = PrayerTimesPreference.getDayPrayersConfig(mCtx);
         return switch (prayerRank) {
             case 1 -> dayPrayersConfig.FajrConfig;
             case 2 -> dayPrayersConfig.ShourokConfig;

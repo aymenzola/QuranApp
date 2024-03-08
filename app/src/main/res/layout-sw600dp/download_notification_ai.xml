@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/img_close"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
         android:layout_margin="10dp"
         android:src="@drawable/ic_baseline_close_24"
         />
@@ -47,9 +47,8 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/album_art"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
         android:layout_margin="10dp"
         android:src="@drawable/ic_baseline_arrow_circle_down_24"
         />

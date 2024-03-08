@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/img_save"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="@dimen/save_adkar_size"
+            android:layout_height="@dimen/save_adkar_size"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="10dp"

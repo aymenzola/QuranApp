@@ -18,7 +18,7 @@
 
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_mahfodaat"
+            android:id="@+id/cardviewMahfodaat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -44,10 +44,12 @@
             android:fontFamily="@font/ffshamel_family_bold"
             android:lines="1"
             android:text="المحفوظات"
+            android:textSize="@dimen/tv_mini_size"
             android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/cardviewSobha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -55,7 +57,6 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_sobha"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -80,6 +81,7 @@
             android:fontFamily="@font/ffshamel_family_bold"
             android:lines="1"
             android:text="السبحة"
+            android:textSize="@dimen/tv_mini_size"
             android:textColor="@color/text_color" />
     </LinearLayout>
 
@@ -91,7 +93,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_adkar"
+            android:id="@+id/cardviewAdkar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -117,6 +119,8 @@
             android:fontFamily="@font/ffshamel_family_bold"
             android:lines="1"
             android:text="الأذكار"
+            android:textSize="@dimen/tv_mini_size"
+
             android:textColor="@color/text_color" />
     </LinearLayout>
 
@@ -128,7 +132,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_qibla"
+            android:id="@+id/cardviewQibla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -153,6 +157,7 @@
             android:layout_gravity="center"
             android:fontFamily="@font/ffshamel_family_bold"
             android:lines="1"
+            android:textSize="@dimen/tv_mini_size"
             android:text="القبلة"
             android:textColor="@color/text_color" />
     </LinearLayout>

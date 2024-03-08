@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -39,59 +40,59 @@
             android:layout_alignTop="@id/img_title"
             android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="@dimen/back_icon_padding"
             android:src="@drawable/baseline_keyboard_arrow_right_24" />
 
         <ImageView
             android:layout_width="?actionBarSize"
             android:layout_height="?actionBarSize"
-            android:padding="15dp"
+            android:padding="@dimen/padding_kounoz_image"
             android:layout_alignTop="@id/img_title"
             android:layout_alignParentStart="true"
             android:onClick="QiblaTips"
             android:src="@drawable/ic_konouz" />
 
-        <ImageView
-            android:id="@+id/main_image_dial"
-            android:layout_width="320dp"
-            android:layout_height="320dp"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="-40dp"
-            android:src="@drawable/ic_qubla_background2" />
-
-        <ImageView
-            android:id="@+id/main_image_qibla"
-            android:layout_width="320dp"
-            android:layout_height="320dp"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="-40dp"
-            android:src="@drawable/ic_qubla_forground" />
-
-
-
-        <TextView
-            android:id="@+id/text_up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:fontFamily="@font/ffshamel_book"
-            android:textSize="14sp"
-            android:layout_marginTop="70dp"
-            android:visibility="gone"
-            />
+            android:layout_below="@+id/img_title"
+            android:layout_above="@+id/tv_moaayara"
+            >
 
-        <TextView
-            android:id="@+id/text_down"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/ffshamel_book"
-            android:textSize="14sp"
-            android:layout_marginBottom="60dp"
-            android:visibility="gone"
-            />
+            <TextView
+                android:id="@+id/text_up"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/ffshamel_book"
+                android:textSize="@dimen/tv_small_size"
+                android:gravity="center"
+                tools:text="108 درجة شمال "
+                android:layout_marginTop="7dp"
+                android:visibility="visible"
+                />
+
+            <ImageView
+                android:id="@+id/main_image_dial"
+                android:layout_width="@dimen/qubla_image_size"
+                android:layout_height="@dimen/qubla_image_size"
+                android:layout_below="@+id/text_up"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_qubla_background2" />
+
+            <ImageView
+                android:id="@+id/main_image_qibla"
+                android:layout_width="@dimen/qubla_image_size"
+                android:layout_height="@dimen/qubla_image_size"
+                android:layout_below="@+id/text_up"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:src="@drawable/ic_qubla_forground" />
+
+        </RelativeLayout>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_moaayara"
@@ -105,13 +106,12 @@
             android:layout_alignStart="@+id/btn_moaayara"
             android:layout_marginBottom="10dp"
             android:textColor="@color/text_color"
-            android:textSize="13sp"
-            android:visibility="visible"
+            android:textSize="@dimen/tv_small_size"
             />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_moaayara"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
@@ -122,8 +122,27 @@
             android:layout_marginBottom="30dp"
             android:text="منح الصلاحيات"
             android:textColor="@color/white"
+            android:textSize="@dimen/tv_small_size"
             android:fontFamily="@font/ffshamel_family_bold"
             android:visibility="visible"
+            tools:visibility="invisible"
+            />
+
+        <TextView
+            android:id="@+id/btn_update_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:background="?selectableItemBackground"
+            android:layout_below="@+id/tv_moaayara"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:text="تحديث موقع القبلة"
+            android:textSize="@dimen/tv_small_size"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:textColor="@color/teal_200"
             />
 
 

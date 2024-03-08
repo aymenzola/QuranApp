@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:id="@+id/img_background"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"
+            android:gravity="center"
+            android:src="@drawable/ic_adkar_background" />
+
+        <ImageView
+            android:id="@+id/img_title"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:padding="16dp"
+            android:src="@drawable/ic_subha_title" />
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:src="@drawable/baseline_keyboard_arrow_right_24" />
+
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img_title"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:text="نترك لك حرية اختيار الذكر او بامكانك اخذ ما نقترحه! 😊"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/tv_normal_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_choose_text"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:layout_below="@+id/tv_text"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:text="اختيار الذكر"
+            android:textColor="@color/purple_500"
+            android:textSize="@dimen/tv_small_size"
+            android:textStyle="bold"
+            app:drawableStartCompat="@drawable/round_keyboard_arrow_down_24"
+            app:drawableTint="@color/purple_500" />
+
+        <include
+            android:id="@+id/include_fast_adkar_card"
+            layout="@layout/include_subha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            tools:visibility="visible" />
+
+        <RelativeLayout
+            android:id="@+id/relative_choose_dikr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="2dp"
+            android:paddingStart="2dp"
+            android:paddingTop="2dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/shape_card"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            tools:visibility="gone"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:itemCount="5"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                tools:listitem="@layout/item_choose_dikr"
+                android:layout_above="@+id/linear_buttons"
+                />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                >
+
+                <TextView
+                    android:id="@+id/btn_add_new_dikr"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:tag="add"
+                    android:layout_weight="1"
+                    android:layout_above="@+id/btn_cancel_new_dikr"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/shape_button"
+                    android:gravity="center"
+                    android:lines="1"
+                    android:text="ذكر جديد"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/tv_normal_size" />
+
+                <TextView
+                    android:id="@+id/btn_cancel_new_dikr"
+                    android:text="الغاء"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="add"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/shape_button"
+                    android:gravity="center"
+                    android:backgroundTint="@color/text_color"
+                    android:lines="1"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/tv_normal_size"
+                    android:visibility="gone"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</layout>

@@ -12,6 +12,7 @@ import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_R
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_SELECT_AYA_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_START_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_STOP_ACTION;
+import static com.app.dz.quranapp.Services.QuranServices.NotifyBroadcastHelper.sendPreparingStateToFragment;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -53,12 +54,11 @@ import com.app.dz.quranapp.data.room.Entities.AyaAudioLimitsFirebase;
 import com.app.dz.quranapp.data.room.Entities.Sura;
 import com.app.dz.quranapp.data.room.Entities.SuraAudio;
 import com.app.dz.quranapp.data.room.Entities.SuraAudioFirebase;
-import com.app.dz.quranapp.MushafParte.multipleRiwayatParte.ReaderAudio;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
-import com.app.dz.quranapp.fix_new_futers.ai_commands.MyWidgetProvider;
 import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.AyaAudioLimitDao;
 import com.app.dz.quranapp.data.room.Daos.AyaDao;
@@ -193,7 +193,7 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
 
                 if (!PublicMethods.getInstance().isAvailableFile(suraAudio.SuraNumber, selectedReader.getReaderTag())) {
                     //send to fragment that the sura is not available
-                    if (this.suraAudio != null) sendPreparingStateToFragment(AUDIO_NOT_AVAILABLE_ACTION);
+                    if (this.suraAudio != null) NotifyBroadcastHelper.sendPreparingStateToFragment(getBaseContext(),AUDIO_NOT_AVAILABLE_ACTION);
                     destroyPlayer();
                     stopForeground(true);
                     stopSelf();
@@ -818,11 +818,11 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
             builder = new androidx.core.app.NotificationCompat.Builder(this);
         }
 
-        updateWidgetImage(R.id.image_reader, bitmapIcon);
+        /*updateWidgetImage(R.id.image_reader, bitmapIcon);
         updateWidget("", R.id.tv_state);
         updateWidget("سورة " + suraArabicName, R.id.tv_sura_name);
         updateWidget(selectedReader.getName(), R.id.tv_reader_name);
-
+*/
         builder.setSmallIcon(R.drawable.ic_mashaf)
                 .setContentTitle("سورة " + suraArabicName)
                 .setContentText(selectedReader.getName())
@@ -896,13 +896,8 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo lWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (lWifi != null && lWifi.isConnected()) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB_MR1) {
-                mWiFiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(
-                        WifiManager.WIFI_MODE_FULL_HIGH_PERF, PAudioServiceSelection.class.getSimpleName());
-            } else {
-                mWiFiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(
-                        WifiManager.WIFI_MODE_FULL, PAudioServiceSelection.class.getSimpleName());
-            }
+            mWiFiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(
+                    WifiManager.WIFI_MODE_FULL_HIGH_PERF, PAudioServiceSelection.class.getSimpleName());
             mWiFiLock.acquire();
             Log.d(TAG, "Player lockWiFi()");
         }
@@ -916,14 +911,13 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
         }
     }
 
-    private void updateWidget(String title, int id) {
+    /*private void updateWidget(String title, int id) {
         RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
         views.setTextViewText(id, title);
         // Update the widget
         AppWidgetManager.getInstance(PAudioServiceSelection.this).updateAppWidget(
                 new ComponentName(PAudioServiceSelection.this, MyWidgetProvider.class), views);
     }
-
     private void updateWidgetImage(int imageViewId, Bitmap bitmapIcon) {
         RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_layout);
         views.setImageViewBitmap(imageViewId, bitmapIcon);
@@ -932,5 +926,6 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
                 new ComponentName(PAudioServiceSelection.this, MyWidgetProvider.class), views);
     }
 
+    */
 
 }

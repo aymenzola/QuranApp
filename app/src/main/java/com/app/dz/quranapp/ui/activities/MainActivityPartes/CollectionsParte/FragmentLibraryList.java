@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -43,7 +42,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.OneTimeWorkRequest;
 
 import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.R;
@@ -52,19 +50,14 @@ import com.app.dz.quranapp.Util.CsvReader;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.data.room.Entities.BookCollection;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
-import com.app.dz.quranapp.data.room.Entities.Chapter;
-import com.app.dz.quranapp.databinding.DialogDownloadProgressBinding;
-import com.app.dz.quranapp.databinding.FragmentLibrary1Binding;
-import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarDetailsParte.ActivityDikrDetailsList;
+import com.app.dz.quranapp.databinding.FragmentLibraryBinding;
 import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.ActivityBooksList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.BooksUtils;
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsListDev;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnList;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
 import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.MotonAdapter;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.HomeFragment;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.io.File;
@@ -81,14 +74,13 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
     private static final int COLLECTION_WRITE_REQUEST_CODE = 12;
     private static Dialog dialog;
     private CollectionsAdapter adapter;
-    private FragmentLibrary1Binding binding;
+    private FragmentLibraryBinding binding;
     private BroadcastReceiver DownloadReceiver;
     private String ClickedCollectionName;
     private CollectionViewModel viewModel;
     private int LastClickedPosition = 0;
     private BookCollection globalModel;
     private int type = HomeFragment.BOOKS_TYPE;
-    private boolean isDkarAvilaible = false;
     private boolean isBooksDownloadType = true;
 
     public FragmentLibraryList() {
@@ -104,7 +96,7 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentLibrary1Binding.inflate(getLayoutInflater(), container, false);
+        binding = FragmentLibraryBinding.inflate(getLayoutInflater(), container, false);
         return binding.getRoot();
     }
 
@@ -175,10 +167,6 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
                                 adapter.updateItem(LastClickedPosition);
                                 if (dialog != null) dialog.dismiss();
                                 moveToAyatFragment(ClickedCollectionName);
-                            } else {
-                                //todo dirk type
-                                isDkarAvilaible = true;
-
                             }
 
                             break;
@@ -237,11 +225,6 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         binding.tvBooks.setBackgroundColor(getResources().getColor(R.color.white));
         binding.tvBooks.setTextColor(getResources().getColor(R.color.tv_gri_color));
 
-        if (!isDkarAvilaible) {
-            BookCollection bookCollection = new BookCollection("hisn", isDkarAvilaible, " سعيد بن علي بن وهف القحطاني", "حصن المسلم", countItemsCount_hisn_muslim);
-            isBooksDownloadType = false;
-            DownloadTheBook(bookCollection);
-        }
 
     }
 
@@ -268,15 +251,8 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
             booksList.add(new BookCollection("ibnmajah", booksAvailableList.contains("ibnmajah"), "ابن ماجة", "سنن ابن ماجة", countItemsCount_ibn_majah));
             booksList.add(new BookCollection("hisn", booksAvailableList.contains("hisn"), " سعيد بن علي بن وهف القحطاني", "حصن المسلم", countItemsCount_hisn_muslim));
             booksList.add(new BookCollection("abudawud", booksAvailableList.contains("abudawud"), "أبي داود", "سنن أبي داود", countItemsCount_abudawaed));
-            isDkarAvilaible = booksAvailableList.contains("hisn");
             initializeArticlesAdapter(booksList);
         });
-    }
-
-    private void moveToAdkarDetails(Chapter categoryName) {
-        Intent intent = new Intent(getActivity(), ActivityDikrDetailsList.class);
-        intent.putExtra("categoryName", categoryName.chapterTitle);
-        startActivity(intent);
     }
 
     public void initializeArticlesAdapter(List<BookCollection> booksList) {
@@ -443,27 +419,6 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
 
         dialog.setContentView(view);
         dialog.show();
-    }
-
-    private void MoveToHadithDetails() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", MODE_PRIVATE);
-
-        String bookName = sharedPreferences.getString("bookName", "");
-
-        if (bookName.isEmpty()) return;
-        String collectionName = sharedPreferences.getString("collectionName", "");
-        String bookNumber = sharedPreferences.getString("bookNumber", "");
-        int CurrantPosition = sharedPreferences.getInt("CurrantPosition", 0);
-
-        Bundle bundle = new Bundle();
-        Intent intent = new Intent(getActivity(), ActivityHadithDetailsListDev.class);
-        bundle.putString("collectionName", collectionName);
-        bundle.putString("bookNumber", bookNumber);
-        bundle.putString("bookName", bookName);
-        bundle.putInt("position", CurrantPosition);
-
-        intent.putExtra("bundle", bundle);
-        startActivity(intent);
     }
 
     @SuppressLint("SetTextI18n")

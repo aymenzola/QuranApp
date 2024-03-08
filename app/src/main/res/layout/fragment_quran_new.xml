@@ -10,9 +10,7 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-
+        android:layout_height="match_parent">
 
 
         <RelativeLayout
@@ -61,17 +59,18 @@
 
                 <TextView
                     android:id="@+id/tv_change_riwaya"
-                    android:layout_width="150dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="?actionBarSize"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
+                    android:ellipsize="marquee"
                     android:fontFamily="@font/ffshamel_family_bold"
                     android:gravity="center"
-                    android:text="مصحف الأحكام"
-                    android:visibility="visible"
-                    android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
                     android:singleLine="true"
+                    android:text="رواية ورش"
+                    android:textSize="@dimen/tv_small_size"
+                    android:visibility="visible"
                     app:drawableStartCompat="@drawable/round_keyboard_arrow_down_24" />
 
             </RelativeLayout>
@@ -86,7 +85,6 @@
                 android:layout_centerInParent="true"
                 android:background="@color/blan"
                 android:visibility="visible" />
-
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linear_loading"
@@ -112,7 +110,7 @@
                     android:fontFamily="@font/ffshamel_book"
                     android:text="جاري التحميل "
                     android:textColor="@color/tv_gri_color"
-                    android:textSize="@dimen/tv_normal_size_tablet" />
+                    android:textSize="@dimen/tv_normal_size" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -212,16 +210,15 @@
 
             </androidx.cardview.widget.CardView>
 
-
             <LinearLayout
                 android:id="@+id/relative_pages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/bottom_linear"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="-2dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                android:layout_marginBottom="-2dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -256,28 +253,18 @@
                             android:id="@+id/tv_top_title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:paddingTop="7dp"
-                            android:paddingBottom="5dp"
                             android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
                             android:fontFamily="@font/ffshamel_family_bold"
                             android:gravity="center"
-                            android:text="سماع القراء :" />
-
-                        <ImageView
-                            android:id="@+id/img_close_audio_layout"
-                            android:layout_width="?actionBarSize"
-                            android:layout_height="?actionBarSize"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginStart="10dp"
-                            android:padding="23dp"
-                            android:visibility="gone"
-                            android:src="@drawable/ic_navigat1" />
+                            android:paddingTop="7dp"
+                            android:paddingBottom="5dp"
+                            android:text="سماع القراء :"
+                            android:textSize="@dimen/tv_small_size" />
 
                         <include
                             android:id="@+id/include_audio_playing"
-                            layout="@layout/include_audio_playing2"
+                            layout="@layout/include_audio_playing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tv_top_title"
@@ -295,21 +282,21 @@
                 android:id="@+id/bottom_linear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/shape_card_bottom"
                 android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_centerHorizontal="true"
-                >
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/shape_card_bottom"
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:id="@+id/linear_more"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:gravity="center"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="7dp"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     android:padding="2dp"
                     tools:visibility="visible">
@@ -369,116 +356,119 @@
 
             <LinearLayout
                 android:id="@+id/linear_riwaya_list"
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_centerHorizontal="true"
                 android:layout_below="@+id/relative_tool_bar"
-                android:background="@drawable/shape_card"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="-15dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:background="@drawable/shape_card"
+                android:orientation="vertical"
                 android:visibility="gone"
-                tools:visibility="visible"
-                >
+                android:gravity="end"
+                tools:visibility="visible">
+
                 <TextView
                     android:id="@+id/tv_riwaya1"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:text="مصحف ورش" />
+                    android:text="رواية ورش"
+                    android:textSize="@dimen/tv_mini_size" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="#EBEAE6"
-                    />
+                    android:layout_gravity="center"
+                    android:background="#EBEAE6" />
+
                 <TextView
                     android:id="@+id/tv_riwaya2"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:text="مصحف حفص" />
+                    android:text="رواية حفص"
+                    android:textSize="@dimen/tv_mini_size" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="#EBEAE6"
-                    />
+                    android:layout_gravity="center"
+                    android:background="#EBEAE6" />
+
                 <TextView
                     android:id="@+id/tv_riwaya3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:text="مصحف الأحكام" />
+                    android:text="نسخة الأحكام"
+                    android:textSize="@dimen/tv_mini_size" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="#EBEAE6"
-                    />
+                    android:layout_gravity="center"
+                    android:background="#EBEAE6" />
+
                 <TextView
                     android:id="@+id/tv_riwaya4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:visibility="gone"
-                    android:text="مصحف التفاعلي" />
+                    android:text="مصحف التفاعلي"
+                    android:textSize="@dimen/tv_mini_size"
+                    android:visibility="gone" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="#EBEAE6"
-                    />
+                    android:layout_gravity="center"
+                    android:background="#EBEAE6" />
+
                 <TextView
                     android:id="@+id/tv_riwaya5"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:text="مصحف الفرنسي" />
+                    android:text="النسخة الفرنسية"
+                    android:textSize="@dimen/tv_mini_size" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center"
+                    android:background="#EBEAE6" />
+
+                <TextView
+                    android:id="@+id/tv_riwaya6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
+                    android:textSize="@dimen/tv_mini_size"
+                    android:text="النسخة الانجليزية" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="15dp"
-                    android:background="#EBEAE6"
-                    /> <TextView
-                android:id="@+id/tv_riwaya6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
-                android:text="مصحف الانجليزي" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="#EBEAE6"
-                    />
+                    android:background="#EBEAE6" />
 
 
             </LinearLayout>
-
 
 
         </RelativeLayout>
@@ -495,17 +485,16 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
                 android:background="@color/white"
-                >
+                android:orientation="vertical">
+
                 <include layout="@layout/drawer_header_sura" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/nested_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/white"
-                    />
+                    android:background="@color/white" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </com.google.android.material.navigation.NavigationView>
@@ -514,115 +503,107 @@
             android:id="@+id/relative_reader_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="2dp"
-            android:paddingStart="2dp"
-            android:paddingTop="2dp"
+            android:layout_centerInParent="true"
             android:layout_marginStart="15dp"
             android:layout_marginTop="25dp"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="25dp"
             android:background="@drawable/shape_card"
             android:orientation="vertical"
-            android:paddingBottom="10dp"
-            android:layout_centerInParent="true"
-            android:visibility="gone"
-            tools:visibility="gone"
-            app:cardElevation="2dp"
-            >
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="2dp"
             android:paddingStart="2dp"
             android:paddingTop="2dp"
-            android:orientation="vertical"
-            android:background="@color/white"
-            >
+            android:paddingEnd="2dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            app:cardElevation="2dp"
+            tools:visibility="gone">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/linear_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                >
-
-                <TextView
-                    android:id="@+id/btn_hafs_readers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:lines="1"
-                    android:text="حفص"
-                    android:textSize="@dimen/tv_normal_size" />
-
-                <View
-                    android:layout_width="2dp"
-                    android:layout_height="20dp"
-                    android:background="#EBEAE6"
-                    android:layout_weight="0"
-                    />
-
-                <TextView
-                    android:id="@+id/btn_warsh_readers"
-                    android:text="ورش"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center"
-                    android:lines="1"
-                    android:textSize="@dimen/tv_normal_size"
-                    android:visibility="visible"
-                    />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <View
-                android:id="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1.5dp"
-                android:layout_centerHorizontal="true"
-                android:background="#EBEAE6"
-                android:layout_below="@+id/linear_buttons"
-                />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_readers"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:itemCount="5"
-                android:layout_below="@+id/divider"
-                android:layout_centerHorizontal="true"
-                tools:listitem="@layout/item_reader_new"
-                android:layout_above="@+id/btn_dismis"/>
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingStart="2dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="2dp">
 
-            <TextView
-                android:id="@+id/btn_dismis"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
-                android:gravity="center"
-                android:lines="1"
-                android:textColor="@color/white"
-                android:background="@drawable/shape_button_no_round"
-                android:text="اخفاء"
-                android:textSize="@dimen/tv_normal_size" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/btn_hafs_readers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:lines="1"
+                        android:text="حفص"
+                        android:textSize="@dimen/tv_normal_size" />
+
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="0"
+                        android:background="#EBEAE6" />
+
+                    <TextView
+                        android:id="@+id/btn_warsh_readers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:lines="1"
+                        android:text="ورش"
+                        android:textSize="@dimen/tv_normal_size"
+                        android:visibility="visible" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1.5dp"
+                    android:layout_below="@+id/linear_buttons"
+                    android:layout_centerHorizontal="true"
+                    android:background="#EBEAE6" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_readers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/btn_dismis"
+                    android:layout_below="@+id/divider"
+                    android:layout_centerHorizontal="true"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/item_reader" />
+
+                <TextView
+                    android:id="@+id/btn_dismis"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/shape_button_no_round"
+                    android:gravity="center"
+                    android:lines="1"
+                    android:text="اخفاء"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/tv_normal_size" />
 
 
-        </RelativeLayout>
+            </RelativeLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
     </androidx.drawerlayout.widget.DrawerLayout>
-
-
 
 
 </layout>

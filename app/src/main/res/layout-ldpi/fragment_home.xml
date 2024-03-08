@@ -67,6 +67,7 @@
                         android:fontFamily="@font/ffshamel_book"
                         android:gravity="center|start"
                         android:paddingEnd="15dp"
+                        android:lines="1"
                         android:text="بقي على أذان الظهر"
                         android:textColor="@color/blan"
                         android:textSize="@dimen/tv_normal_size" />
@@ -83,6 +84,7 @@
                         android:fontFamily="@font/ffshamel_family_bold"
                         android:gravity="center"
                         tools:text="1:05:11"
+                        android:lines="1"
                         android:textColor="@color/blan"
                         android:textSize="@dimen/tv_time_size" />
 
@@ -103,6 +105,7 @@
                         android:textColor="@color/blan"
                         android:textSize="@dimen/tv_small_size"
                         android:visibility="gone"
+                        android:lines="1"
                         tools:text="بوعاتي محمود قالمة"
                         tools:visibility="visible" />
 
@@ -118,6 +121,7 @@
                         android:layout_marginEnd="20dp"
                         android:fontFamily="@font/ffshamel_book"
                         android:gravity="center"
+                        android:lines="1"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:textColor="@color/blan"

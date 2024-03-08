@@ -15,7 +15,7 @@
 
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_mahfodaat"
+            android:id="@+id/cardviewMahfodaat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -51,7 +51,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_sobha"
+            android:id="@+id/cardviewSobha"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -87,7 +87,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_adkar"
+            android:id="@+id/cardviewAdkar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -125,7 +125,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_qibla"
+            android:id="@+id/cardviewQibla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"

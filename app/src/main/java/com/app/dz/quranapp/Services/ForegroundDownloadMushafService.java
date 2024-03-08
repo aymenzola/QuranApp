@@ -306,8 +306,14 @@ public class ForegroundDownloadMushafService extends Service {
                 DownloadFinished();
             }
 
+
             @Override
-            public void onDownloadCacled(String reason) {
+            public void onDownloadError(String error) {
+
+            }
+
+            @Override
+            public void onDownloadCanceled(String reason) {
                 Log.e(TAG, "download canceled " + reason);
                 if (isCanceled) return;
                 toldTheActivty(DOWNLOAD_ERROR_ACTION, 0);
