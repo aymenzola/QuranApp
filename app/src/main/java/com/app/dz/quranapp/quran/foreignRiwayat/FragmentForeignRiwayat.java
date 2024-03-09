@@ -1,7 +1,5 @@
 package com.app.dz.quranapp.quran.foreignRiwayat;
 
-import static com.app.dz.quranapp.Util.QuranInfoManager.getPageSurasNames;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.app.dz.quranapp.Util.PublicMethods;
-import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
@@ -26,6 +23,7 @@ import com.app.dz.quranapp.quran.models.ReadingPosition;
 import com.app.dz.quranapp.quran.models.RiwayaType;
 import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
+import com.shockwave.pdfium.PdfDocument;
 
 import java.util.List;
 
@@ -119,14 +117,14 @@ public class FragmentForeignRiwayat extends Fragment {
             fileName = "EnglishQuran.pdf";
         }
 
-        binding.pdfViewer.fromFile(PublicMethods.getInstance().getFile(fileName))
+        binding.pdfViewer.fromFile(PublicMethods.getInstance().getFile(fileName,requireActivity()))
                 .onPageChange((page, pageCount) -> {
                     if (readingPosition.page!=null) {
                         Log.d("pageinfoTag", "readingPosition page " + readingPosition.page + " page " + page);
                         StateViewModel.setIsForeignPageSaved(readingPosition.page == page);
                     }
                 })
-                .onLoad(nbPages -> {})
+                .onLoad(nbPages -> StateViewModel.setBookMarks(getBookmarks()))
                 .defaultPage(moveTopage)
                 .swipeHorizontal(true)
                 .fitEachPage(false)
@@ -163,21 +161,25 @@ public class FragmentForeignRiwayat extends Fragment {
         }
     }
 
-    /**
-     * check if the page contains more then sura
-     **/
-
-    public String getJuzaName() {
-        if (globalAyatList == null) return "";
-        return QuranInfoManager.getInstance().getJuzaNameNumber(globalAyatList.get(0).getJuz());
-    }
-
     public void changePdfPage(int page) {
         binding.pdfViewer.jumpTo(page);
     }
 
-    public String getSuraName(int pageNumber) {
-        return getPageSurasNames(pageNumber);
+    public void setReadingPosition(ReadingPosition readingPosition) {
+        this.readingPosition = readingPosition;
+    }
+
+    public void updateReadingPosition() {
+        readingPosition = SharedPreferenceManager.getInstance(requireActivity()).getReadinPosition();
+    }
+
+    public List<PdfDocument.Bookmark> getBookmarks() {
+        try {
+            return binding.pdfViewer.getTableOfContents().get(0).getChildren();
+        } catch (Exception e) {
+            Log.e(TAG, "getCurrantPage: " + e.getMessage());
+            return null;
+        }
     }
 
 }

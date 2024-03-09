@@ -83,7 +83,7 @@ public class ActivityMatnViewer extends AppCompatActivity implements OnPageChang
     }
 
     private void showPdfFile(int pageNumber) {
-        binding.pdfView.fromFile(PublicMethods.getInstance().getFile(matn.fileName))
+        binding.pdfView.fromFile(PublicMethods.getInstance().getFile(matn.fileName, this))
                 .onPageChange(this)
                 .onLoad(this)
                 .pageSnap(true)
@@ -133,6 +133,8 @@ public class ActivityMatnViewer extends AppCompatActivity implements OnPageChang
         binding.nestedRecyclerView.setAdapter(adapterDrawer);
 
     }
+
+
 
     @Override
     public void onPageChanged(int page, int pageCount) {

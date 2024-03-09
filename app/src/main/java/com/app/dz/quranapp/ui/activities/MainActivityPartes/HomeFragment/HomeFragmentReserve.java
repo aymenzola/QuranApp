@@ -1,8 +1,10 @@
 package com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -25,11 +27,10 @@ import androidx.navigation.Navigation;
 import com.app.dz.quranapp.Communs.PrayerTimesHelper;
 import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.Util.PublicMethods;
-import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.Util.UserLocation;
 import com.app.dz.quranapp.data.room.Daos.AyaDao;
+import com.app.dz.quranapp.data.room.Daos.BookDao;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.data.room.Entities.DayPrayerTimes;
 import com.app.dz.quranapp.data.room.MushafDatabase;
@@ -37,11 +38,13 @@ import com.app.dz.quranapp.databinding.FragmentHomeBinding;
 import com.app.dz.quranapp.quran.models.ReadingPosition;
 import com.app.dz.quranapp.ui.activities.AboutActivity;
 import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.PrayerTimes;
 import com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList;
 import com.app.dz.quranapp.ui.activities.subha.AdkarSubhaUtils;
 import com.app.dz.quranapp.ui.activities.subha.SubhaActivity;
 
 import java.text.DateFormatSymbols;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -58,7 +61,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragmentReserve extends Fragment {
 
     public final static String QURAN_TAG = "quran_tag";
     public final static String TAG = "FragmentQuranList";
@@ -66,27 +69,55 @@ public class HomeFragment extends Fragment {
     public static final int BOOKS_TYPE = 1;
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
+    private final Calendar calendar = Calendar.getInstance();
+
+    private OnListenerInterface listener;
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private int lastPage = 1;
+    private final int lastPagemh = 2;
+
+    private DayPrayerTimes TodayTimesG;
+    private DayPrayerTimes NextDayTimesG;
+    private long MidnightTimeInMillis_Today;
+    private long MidnightTimeInMillis_NextDAY;
     private String nextSalatName;
     private long countdownDuration;
     private static CountDownTimer count;
+    private DayPrayerTimes PreviousDayTimesG;
     private boolean isThereSavedBook = false;
+    //    private List<AdkarModel> globalAdkarList;
     private int adkarCouner = 0;
-    private long NextPrayerMillis;
 
 
-    public HomeFragment() {
+    public HomeFragmentReserve() {
         // Required empty public constructor
     }
 
 
-    public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
+    public static HomeFragmentReserve newInstance() {
+        HomeFragmentReserve fragment = new HomeFragmentReserve();
         Log.e("lifecycle", "create new instance FragmentPlayLists");
         return fragment;
     }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnListenerInterface) {
+            listener = (OnListenerInterface) context;
+        } else {
+            Log.e("log", "activity dont implimaents Onclicklistnersenttoactivity");
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -107,8 +138,8 @@ public class HomeFragment extends Fragment {
         }
         setListeners();
         setObservers();
+        viewModel.setDayPrayer();
         viewModel.setRandomDikr();
-        managePrayerTime();
     }
 
     private void setListeners() {
@@ -284,7 +315,7 @@ public class HomeFragment extends Fragment {
         if (lastChapter != null && lastChapter.collectionName != null) {
             Log.e("quran_tag", "last chapter " + lastChapter.chapterTitle_no_tachkil);
             isThereSavedBook = true;
-            String destination = PublicMethods.getInstance().getCollectionArabicName(lastChapter.collectionName) + " > " + lastChapter.bookName + " > ";
+            String destination = getCollectionArabicName(lastChapter.collectionName) + " > " + lastChapter.bookName + " > ";
             binding.tvDestination.setText(destination);
             binding.tvChapter.setText(lastChapter.chapterTitle_no_tachkil);
         } else {
@@ -300,7 +331,7 @@ public class HomeFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         String dateString = dateFormat.format(calendar.getTime());
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             binding.tvDate.setText(getDateArabicName(dateString));
         } else {
             try {
@@ -317,6 +348,38 @@ public class HomeFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void setObservers() {
 
+        viewModel.getDayPrayer().observe(getViewLifecycleOwner(), dayPrayerTimes -> {
+            if (TodayTimesG != null) {
+                Log.e(TAG, "time object not null retern the observer");
+                return;
+            }
+            if (dayPrayerTimes != null) {
+                TodayTimesG = dayPrayerTimes;
+                viewModel.setNextDayPrayer();
+            } else {
+                // there is no timing for this day
+                checkLocation();
+                //TODO we have to get this month timing
+
+            }
+        });
+
+        viewModel.getNextDayPrayer().observe(getViewLifecycleOwner(), nextDayPrayerTimes -> {
+            if (nextDayPrayerTimes != null) NextDayTimesG = nextDayPrayerTimes;
+            viewModel.setPreviousDayPrayer();
+        });
+
+        viewModel.getPreviousDayPrayer().observe(getViewLifecycleOwner(), previousDayTimesG -> {
+            if (previousDayTimesG != null) PreviousDayTimesG = previousDayTimesG;
+            PrayerTimes PrayerTimesToday = getConvertTimeMilliSeconds();
+            long FajrTimeTommorow = getTommorowFajt();
+            if (count != null) {
+                Log.e(TAG, "count already working does not null return");
+                return;
+            } else Log.e(TAG, "count null create null one");
+            getTheNextPrayer(PrayerTimesToday,FajrTimeTommorow);
+        });
+
         viewModel.getRandomDikr().observe(getViewLifecycleOwner(), adkarModel -> {
             if (adkarModel != null) {
                 binding.tvCategory.setText(adkarModel.getCategory());
@@ -325,6 +388,157 @@ public class HomeFragment extends Fragment {
                 binding.cardviewDikr.setVisibility(View.GONE);
             }
         });
+
+        /*viewModel.getFastDikr().observe(getViewLifecycleOwner(), adkarModelList -> {
+            if (adkarModelList != null && adkarModelList.size() > 0) {
+                globalAdkarList = adkarModelList;
+                adkarCouner = 1;
+                binding.includeFastAdkarCard.tvFastAdkarText.setText(adkarModelList.get(0).getDikr());
+            }
+        });
+        */
+    }
+
+    public void checkLocation() {
+        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(getActivity());
+        if (sharedPreferenceManager.iSLocationAvialable()) {
+            long longitude = sharedPreferenceManager.getUserLocation().longitude;
+            long latitude = sharedPreferenceManager.getUserLocation().latitude;
+            // Log.e(TAG, "we find the location");
+
+        } else Log.e(TAG, "we did not find the location");
+
+    }
+
+    public PrayerTimes getConvertTimeMilliSeconds() {
+        Log.e("alarm", " ConvertTimeMilliSeconds ");
+
+        PrayerTimes prayerTimes = new PrayerTimes();
+        Calendar calendar = Calendar.getInstance();
+
+        //fajr
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getFajr()));
+        calendar.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getFajr()));
+        prayerTimes.fajr = calendar.getTimeInMillis();
+
+        //sunrise
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getSunrise()));
+        calendar.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getSunrise()));
+        prayerTimes.sunrise = calendar.getTimeInMillis();
+
+        //thuhr
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getDhuhr()));
+        calendar.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getDhuhr()));
+        prayerTimes.duhr = calendar.getTimeInMillis();
+
+        //assr
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getAsr()));
+        calendar.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getAsr()));
+        prayerTimes.assr = calendar.getTimeInMillis();
+
+        //maghrib
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getMaghrib()));
+        calendar.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getMaghrib()));
+        prayerTimes.maghrib = calendar.getTimeInMillis();
+
+        //ishaa
+        calendar.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getIsha()));
+        calendar.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getIsha()));
+        prayerTimes.ishaa = calendar.getTimeInMillis();
+
+        return prayerTimes;
+    }
+
+    public Integer getIntHour(String time) {
+        return Integer.parseInt(time.substring(0, 2));
+    }
+
+    public Integer getIntMinute(String time) {
+        return Integer.parseInt(time.substring(3, 5));
+    }
+
+
+    public void getMidnightTimeInMillis() {
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        // Set the time to midnight
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        MidnightTimeInMillis_Today = calendar.getTimeInMillis();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        MidnightTimeInMillis_NextDAY = calendar.getTimeInMillis();
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void getTheNextPrayer(PrayerTimes PrayerTimesToday, long FajrTimeTommorow) {
+        long Nextmillseconds;
+        Calendar currant = Calendar.getInstance();
+        getMidnightTimeInMillis();
+        long currantMilliseconds = currant.getTimeInMillis();
+
+        //test
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(MidnightTimeInMillis_NextDAY);
+        Log.e(TAG, "middle time today " + c.getTime());
+        c.add(Calendar.DAY_OF_MONTH, 1);
+        Log.e(TAG, "middle time next day " + c.getTime());
+
+
+        if (currantMilliseconds > PrayerTimesToday.ishaa && currantMilliseconds < MidnightTimeInMillis_NextDAY) {
+            Nextmillseconds = FajrTimeTommorow;
+            nextSalatName = "الفجر";
+        } else if (currantMilliseconds > MidnightTimeInMillis_Today && currantMilliseconds < PrayerTimesToday.fajr) {
+            Nextmillseconds = PrayerTimesToday.fajr;
+            nextSalatName = "الفجر";
+        } else if (currantMilliseconds > PrayerTimesToday.fajr && currantMilliseconds < PrayerTimesToday.sunrise) {
+            Nextmillseconds = PrayerTimesToday.sunrise;
+            nextSalatName = "الشروق";
+        } else if (currantMilliseconds > PrayerTimesToday.sunrise && currantMilliseconds < PrayerTimesToday.duhr) {
+            Nextmillseconds = PrayerTimesToday.duhr;
+            nextSalatName = "الظهر";
+        } else if (currantMilliseconds > PrayerTimesToday.duhr && currantMilliseconds < PrayerTimesToday.assr) {
+            Nextmillseconds = PrayerTimesToday.assr;
+            nextSalatName = "العصر";
+        } else if (currantMilliseconds > PrayerTimesToday.assr && currantMilliseconds < PrayerTimesToday.maghrib) {
+            Nextmillseconds = PrayerTimesToday.maghrib;
+            nextSalatName = "المغرب";
+        } else {
+            Nextmillseconds = PrayerTimesToday.ishaa;
+            nextSalatName = "العشاء";
+        }
+
+        String text = "بقي على أذان " + nextSalatName + " : ";
+        SpannableString spannableString = new SpannableString(text);
+        spannableString.setSpan(new StyleSpan(Typeface.BOLD), text.indexOf(nextSalatName),
+                text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.tvSalatMessage.setText(spannableString);
+
+
+        countdownDuration = Nextmillseconds - System.currentTimeMillis();
+        if (count != null) count = null;
+        count = new CountDownTimer(countdownDuration, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                displayTime(millisUntilFinished, "-%02d:%02d:%02d");
+            }
+
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onFinish() {
+                // display a message when the timer finishes
+                String text = "حان الان موعد صلاة " + nextSalatName + " : ";
+
+                Typeface typeface = ResourcesCompat.getFont(requireActivity(), R.font.ffshamel_family_bold);
+                SpannableString spannableString = new SpannableString(text);
+                spannableString.setSpan(new CustomTypefaceSpan("", typeface), text.indexOf(nextSalatName),
+                        text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                binding.tvSalatMessage.setText(spannableString);
+            }
+        }.start();
+
     }
 
     private void displayTime(long millisUntilFinished, String foramt) {
@@ -337,10 +551,63 @@ public class HomeFragment extends Fragment {
         binding.tvNextPrayerCountdown.setText(countdownText);
     }
 
+
+    public String convertToHijri(int month) {
+        switch (month) {
+            case 1:
+                return "محرم";
+            case 2:
+                return "صفر";
+            case 3:
+                return "ربيع الأول";
+            case 4:
+                return "ربيع الثاني";
+            case 5:
+                return "جمادى الأولى";
+            case 6:
+                return "جمادى الثانية";
+            case 7:
+                return "رجب";
+            case 8:
+                return "شعبان";
+            case 9:
+                return "رمضان";
+            case 10:
+                return "شوال";
+            case 11:
+                return "ذو القعدة";
+            case 12:
+                return "ذو الحجة";
+            default:
+                return "";
+        }
+    }
+
+    private long getTommorowFajt() {
+        DecimalFormat decimalFormat = new DecimalFormat("00");
+        //tommorow fajr
+        Calendar c = Calendar.getInstance();
+        if (NextDayTimesG == null) {
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            c.set(Calendar.HOUR_OF_DAY, getIntHour(TodayTimesG.getFajr()));
+            c.set(Calendar.MINUTE, getIntMinute(TodayTimesG.getFajr()));
+
+        } else {
+            c.set(Calendar.MONTH, NextDayTimesG.getMonth() - 1);
+            c.set(Calendar.DAY_OF_MONTH, NextDayTimesG.getDay());
+            c.set(Calendar.HOUR_OF_DAY, getIntHour(NextDayTimesG.getFajr()));
+            c.set(Calendar.MINUTE, getIntMinute(NextDayTimesG.getFajr()));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String dateString = dateFormat.format(c.getTime());
+            Log.e("alarm", "next day " + dateString + "   " + NextDayTimesG.toString());
+        }
+        return c.getTimeInMillis();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //count = null;
+        count = null;
         Log.e(TAG, "onDestroy");
     }
 
@@ -351,7 +618,7 @@ public class HomeFragment extends Fragment {
     }
 
     public String getHijriDate(String dateString) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             LocalDate dt = LocalDate.parse(dateString, formatter);
@@ -359,7 +626,7 @@ public class HomeFragment extends Fragment {
             //String formatted = formatter.format(hijrahDate); // 07/03/1439
 
             return hijrahDate.get(ChronoField.DAY_OF_MONTH) +
-                    " " + QuranInfoManager.getInstance().convertToHijri(hijrahDate.get(ChronoField.MONTH_OF_YEAR)) + " "
+                    " " + convertToHijri(hijrahDate.get(ChronoField.MONTH_OF_YEAR)) + " "
                     + hijrahDate.get(ChronoField.YEAR);
         } else {
             //binding.tvDay.setVisibility(View.GONE);
@@ -385,29 +652,58 @@ public class HomeFragment extends Fragment {
         //compositeDisposable.clear();
     }
 
-    private void managePrayerTime() {
-        Log.e("checktimeTag", "managePrayerTime called");
-        if (count != null && binding.tvNextPrayerCountdown.getText().length() > 0) {
-            Log.e("checktimeTag", "managePrayerTime count is not null return");
-            return;
-        } else {
-            Log.e("checktimeTag", "managePrayerTime count is null or length " + binding.tvNextPrayerCountdown.getText().length());
-            if (count != null) {
-                count.cancel();
-                count = null;
-            }
+    public String getCollectionArabicName(String collectionName) {
+        switch (collectionName) {
+            case "bukhari":
+                return "صحيح البخاري";
+            case "muslim":
+                return "صحيح مسلم";
+            case "nasai":
+                return "سنن النسائي";
+            case "ibnmajah":
+                return "سنن ابن ماجة";
+            case "hisn":
+                return "حصن المسلم";
+            default:
+                return "سنن أبي داود";
         }
+    }
+
+
+    private static class UpdateChapterTitleTask extends AsyncTask<Void, Void, Void> {
+        private BookDao bookDao;
+
+        UpdateChapterTitleTask(BookDao bookDao) {
+            this.bookDao = bookDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            bookDao.updateChapterTitle();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            Log.e("quran_position_tag1", "finished");
+        }
+    }
+
+
+
+    private void managePrayerTime(){
 
         PrayerTimesHelper prayerTimesHelper = new PrayerTimesHelper(requireActivity());
         prayerTimesHelper.setListener(new PrayerTimesHelper.TimesListener() {
             @Override
-            public void onPrayerTimesResult(Map<String, DayPrayerTimes> TimesMap) {
+            public void onPrayerTimesResult(Map<String,DayPrayerTimes> TimesMap) {
 
             }
 
             @Override
             public void onNextPrayerNameAndTimeResult(PrayerTimesPreference.PrayerInfo prayerInfo) {
-                displayPrayerTime(prayerInfo);
+
             }
 
             @Override
@@ -417,44 +713,6 @@ public class HomeFragment extends Fragment {
         });
         prayerTimesHelper.getDayPrayerTimes();
 
-    }
-
-    private void displayPrayerTime(PrayerTimesPreference.PrayerInfo prayerInfo) {
-        nextSalatName = prayerInfo.prayer_arabic;
-        NextPrayerMillis = prayerInfo.prayer_time;
-        String text = "بقي على أذان " + nextSalatName + " : ";
-
-
-        SpannableString spannableString = new SpannableString(text);
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), text.indexOf(nextSalatName),
-                text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        binding.tvSalatMessage.setText(spannableString);
-
-
-        countdownDuration = NextPrayerMillis - System.currentTimeMillis();
-        if (count != null) count = null;
-
-
-        Log.e("checktimeTag", "setting value to the timer");
-        count = new CountDownTimer(countdownDuration, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                displayTime(millisUntilFinished, "-%02d:%02d:%02d");
-            }
-
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onFinish() {
-                // display a message when the timer finishes
-                String text = "حان الان موعد صلاة " + nextSalatName + " : ";
-
-                Typeface typeface = ResourcesCompat.getFont(requireActivity(), R.font.ffshamel_family_bold);
-                SpannableString spannableString = new SpannableString(text);
-                spannableString.setSpan(new CustomTypefaceSpan("", typeface), text.indexOf(nextSalatName),
-                        text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                binding.tvSalatMessage.setText(spannableString);
-            }
-        }.start();
     }
 
 }

@@ -22,8 +22,10 @@ public class PrayerForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e("testLog", "----> in foreground onStartCommand");
-        String title = intent.getStringExtra("title");
-        startForeground(NOTIFICATION_ID, createNotification(title));
+        if (intent != null) {
+            String title = intent.getStringExtra("title");
+            startForeground(NOTIFICATION_ID,createNotification(title));
+        }
         return START_STICKY;
     }
 

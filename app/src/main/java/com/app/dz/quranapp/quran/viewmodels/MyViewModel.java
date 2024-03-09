@@ -13,6 +13,7 @@ import com.app.dz.quranapp.quran.warsh_parte.ReadersRepository;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Sura;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.SuraRepository;
+import com.shockwave.pdfium.PdfDocument;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class MyViewModel extends AndroidViewModel {
     private final AyatPageRepository repositoryAyat;
 
     private final MutableLiveData<Boolean> isFullModeActivated = new MutableLiveData<>();
+    private final MutableLiveData<List<PdfDocument.Bookmark>> bookMarks = new MutableLiveData<>();
     private MutableLiveData<Boolean> isFragmentClicked = new MutableLiveData<>();
     private MutableLiveData<Boolean> isOnBackClicked = new MutableLiveData<>();
     private MutableLiveData<Boolean> isForeignPageSaved = new MutableLiveData<>();
@@ -106,4 +108,13 @@ public class MyViewModel extends AndroidViewModel {
     public void setIsForeignPageSaved(Boolean isForeignPageSaved) {
         this.isForeignPageSaved.setValue(isForeignPageSaved);
     }
+
+    public void setBookMarks(List<PdfDocument.Bookmark> bookMarks) {
+        this.bookMarks.postValue(bookMarks);
+    }
+
+    public LiveData<List<PdfDocument.Bookmark>> getBookMarks() {
+        return bookMarks;
+    }
+
 }

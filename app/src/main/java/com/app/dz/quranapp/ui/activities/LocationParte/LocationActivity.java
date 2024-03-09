@@ -110,7 +110,6 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
         binding.imgCloseLocation.setOnClickListener(v -> moveToMainActivity());
 
-
         alreadyExist = SharedPreferenceManager.getInstance(this).iSLocationAvialable();
 
         if (alreadyExist) {
@@ -338,7 +337,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                 Log.e(TAG, "onLocationResult ");
                 if (locationResult == null) {
                     Log.e(TAG, "location result failure");
-                    binding.btnGetLocation.setText("اعادة المحاولة");
+                    binding.btnGetLocation.setText("اعادة المحاولة 1");
                     binding.btnGetLocation.setEnabled(true);
                     binding.progressBar.setVisibility(View.GONE);
 
@@ -382,10 +381,11 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
         fusedLocationProviderClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location == null) {
-                        Log.e(TAG, "location result failure");
-                        binding.btnGetLocation.setText("اعادة المحاولة");
-                        binding.btnGetLocation.setEnabled(true);
-                        binding.progressBar.setVisibility(View.GONE);
+                        Log.e(TAG, "previous problem location result failure so call requestNewLocation");
+                        requestNewLocation();
+                        //binding.btnGetLocation.setText("اعادة المحاولة");
+                        //binding.btnGetLocation.setEnabled(true);
+                        //binding.progressBar.setVisibility(View.GONE);
 
                         // Handle failure
                         return;
@@ -463,7 +463,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
             }
         } catch (IOException e) {
             e.printStackTrace();
-            binding.btnGetLocation.setText("اعادة المحاولة ");
+            binding.btnGetLocation.setText( "اعادة المحاولة "+e.getMessage());
 
         }
     }

@@ -2,30 +2,24 @@ package com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte;
 
 import static android.content.Context.ALARM_SERVICE;
 import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
-import static com.app.dz.quranapp.Communs.PrayerTimesPreference.turnOffAllPrayersConfig;
-import static com.app.dz.quranapp.Util.QuranInfoManager.convertToHijri;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
@@ -36,6 +30,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.app.dz.quranapp.Communs.PrayerTimesHelper;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
 import com.app.dz.quranapp.Util.UserLocation;
 import com.app.dz.quranapp.data.room.AppDatabase;
@@ -50,7 +45,6 @@ import com.batoulapps.adhan.CalculationParameters;
 import com.batoulapps.adhan.Coordinates;
 import com.batoulapps.adhan.Madhab;
 import com.batoulapps.adhan.data.DateComponents;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -567,7 +561,19 @@ public class FragmentPrayer extends Fragment {
         }
 
         countdownDuration = Nextmillseconds - System.currentTimeMillis();
-        if (count != null) count = null;
+
+        if (count != null && binding.tvNextPrayerCountdown.getText().length() > 0) {
+            Log.e("checktimeTag", "managePrayerTime count is not null return");
+            return;
+        } else {
+            Log.e("checktimeTag", "managePrayerTime count is null or length " + binding.tvNextPrayerCountdown.getText().length());
+            if (count != null) {
+                count.cancel();
+                count = null;
+            }
+        }
+
+
         count = new CountDownTimer(countdownDuration, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -599,7 +605,7 @@ public class FragmentPrayer extends Fragment {
             //String formatted = formatter.format(hijrahDate); // 07/03/1439
 
             return hijrahDate.get(ChronoField.DAY_OF_MONTH) +
-                    " " + convertToHijri(hijrahDate.get(ChronoField.MONTH_OF_YEAR)) + " "
+                    " " + QuranInfoManager.getInstance().convertToHijri(hijrahDate.get(ChronoField.MONTH_OF_YEAR)) + " "
                     + hijrahDate.get(ChronoField.YEAR);
         } else {
             //binding.tvDay.setVisibility(View.GONE);

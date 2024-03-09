@@ -4,8 +4,6 @@ package com.app.dz.quranapp.Services;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.app.dz.quranapp.Util.PublicMethods;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -114,7 +112,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
             if (downloadedSize == totalSize) {
                 listener.onDownloadComplete(outputFile);
             } else {
-                listener.onDownloadCanceled("reasen");
+                listener.onDownloadCanceled("فشل التحميل");
             }
         }
     }

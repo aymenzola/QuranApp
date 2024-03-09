@@ -14,7 +14,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.work.ListenableWorker;
 
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Services.DownloadListeners;
@@ -105,7 +104,7 @@ public class DownloadService extends Service {
         }
 
         PublicMethods publicMethods = PublicMethods.getInstance();
-        File file = publicMethods.getFile(fileName);
+        File file = publicMethods.getFile(fileName, this);
 
         downloadTask = new DownloadTask(url, file, new DownloadListeners() {
             private int lastProgress = -1;

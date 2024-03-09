@@ -202,7 +202,7 @@ public class PrayerTimesPreference {
     public static class PrayerInfo {
         public String prayer_arabic;
         public String prayer_english_name;
-        long prayer_time;
+        public long prayer_time;
 
         public PrayerInfo(String prayer_arabic, String prayer_english_name, long prayer_time) {
             this.prayer_arabic = prayer_arabic;

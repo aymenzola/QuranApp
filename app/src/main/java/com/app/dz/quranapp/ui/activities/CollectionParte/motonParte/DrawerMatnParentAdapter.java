@@ -22,7 +22,7 @@ public class DrawerMatnParentAdapter extends RecyclerView.Adapter<DrawerMatnPare
     private static MatnClickListener listener;
 
     public DrawerMatnParentAdapter(List<PdfDocument.Bookmark> parentItemList, MatnClickListener listener) {
-        this.parentItemList = parentItemList;
+        this.parentItemList = parentItemList != null ? parentItemList : new ArrayList<>();
         this.isInSearchMode = false;
         DrawerMatnParentAdapter.listener = listener;
     }
@@ -89,7 +89,7 @@ public class DrawerMatnParentAdapter extends RecyclerView.Adapter<DrawerMatnPare
             tvChapterCount.setText(String.valueOf(parentItem.getChildren().size()));
 
             if (parentItem.getChildren().size() == 0)
-            parentTextView.setOnClickListener(v -> {
+             parentTextView.setOnClickListener(v -> {
                 if (listener != null) listener.onMatnClick(parentItem,0);
             });
 

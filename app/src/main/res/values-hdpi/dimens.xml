@@ -15,7 +15,7 @@
     <dimen name="back_icon_padding">10dp</dimen>
     <dimen name="padding_kounoz_image">14sp</dimen>
     <dimen name="save_adkar_size">25dp</dimen>
-    <dimen name="qubla_image_size">320dp</dimen>
+    <dimen name="qubla_image_size">290dp</dimen>
 
 
 </resources>

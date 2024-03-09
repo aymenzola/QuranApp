@@ -39,6 +39,8 @@ public class NotificationUtils {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDeleteIntent(stopPendingIntent)
                 .setAutoCancel(true)
+                .setOngoing(false)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .addAction(0,"اغلاق الادان",stopPendingIntent); // Auto-cancel the notification when clicked
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

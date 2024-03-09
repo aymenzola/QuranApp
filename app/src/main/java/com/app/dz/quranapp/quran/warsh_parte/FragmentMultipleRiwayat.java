@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,9 +20,9 @@ import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
-import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
 import com.app.dz.quranapp.databinding.QuranPageFragmentWarshBinding;
+import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
+import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -38,10 +37,8 @@ import java.util.List;
 public class FragmentMultipleRiwayat extends Fragment {
 
 
-    public static final String QuranWarchFolderName = "small size";
     private static final String ARG_PAGE_NUMBER = "page_number";
     private static final String ARG_RIWAYA = "riwaya";
-    private final static String TAG = FragmentMultipleRiwayat.class.getSimpleName();
     private OnFragmentListeners listener;
     private int pageNumber = 1;
     private Riwaya riwaya;
@@ -104,6 +101,8 @@ public class FragmentMultipleRiwayat extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = QuranPageFragmentWarshBinding.inflate(inflater, container, false);
+        Log.e("checkQuranTag", "RiwayatFragment onCreateView:");
+
         return binding.getRoot();
 
     }
@@ -120,10 +119,8 @@ public class FragmentMultipleRiwayat extends Fragment {
         setObservers();
         StateViewModel.askPageAyaList(pageNumber);
 
+        Log.e("checkQuranTag", "RiwayatFragment onViewCreated: displayMushafImage " + pageNumber);
         displayMushafImage(pageNumber);
-
-
-
     }
 
     private void displayPageInfo(int pageNumber) {
@@ -135,7 +132,7 @@ public class FragmentMultipleRiwayat extends Fragment {
     private void setListeners() {
         binding.imageview.setOnClickListener(v -> {
 
-            if (isImageLoadFailed){
+            if (isImageLoadFailed) {
                 isImageLoadFailed = false;
                 displayMushafImage(pageNumber);
                 return;
@@ -200,7 +197,6 @@ public class FragmentMultipleRiwayat extends Fragment {
                         // This will be called when the load fails
                         // You can show a message here
                         isImageLoadFailed = true;
-                        Toast.makeText(getContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
                         return false; // return false if you want Glide to handle the error
                     }
 
@@ -210,16 +206,16 @@ public class FragmentMultipleRiwayat extends Fragment {
                         return false;
                     }
                 })
-                .error(R.drawable.svg2) // This is a fallback drawable in case of error
+                .error(R.drawable.image_place_holder) // This is a fallback drawable in case of error
                 .into(binding.imageview);
     }
 
     private void setObservers() {
-        StateViewModel.getData().observe(getViewLifecycleOwner(),isfullModeActive -> {
+        StateViewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
             isfullModeActiveGlobal = isfullModeActive;
         });
 
-        StateViewModel.getPageAyatList().observe(getViewLifecycleOwner(),ayatList -> {
+        StateViewModel.getPageAyatList().observe(getViewLifecycleOwner(), ayatList -> {
             if (ayatList != null && ayatList.size() > 0) {
                 globalAyatList = ayatList;
                 displayPageInfo(pageNumber);
@@ -244,6 +240,18 @@ public class FragmentMultipleRiwayat extends Fragment {
         String suranName = getPageSurasNames(pageNumber);
         Log.e("juza_tag", "asking fro page ayat list " + pageNumber + " sura name " + suranName);
         return suranName;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //Log.e("checkQuranTag", "RiwayatFragment onPause: ");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Log.e("checkQuranTag", "RiwayatFragment onResume:");
     }
 
 }

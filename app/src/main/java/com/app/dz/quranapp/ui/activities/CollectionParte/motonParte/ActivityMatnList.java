@@ -1,7 +1,6 @@
 package com.app.dz.quranapp.ui.activities.CollectionParte.motonParte;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -93,7 +92,7 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
 
     private void initializeMotonAdapter() {
         List<Matn> books = new ArrayList<>();
-        books = PublicMethods.getInstance().checkBooksExistence(getListMatn());
+        books = PublicMethods.getInstance().checkBooksExistence(getListMatn(), this);
         motonAdapter = new MotonAdapter(books, ActivityMatnList.this, (model, position) -> {
             if (model.isDownloaded) {
                 startActivity(new Intent(ActivityMatnList.this, ActivityMatnViewer.class).putExtra("matn", model));
@@ -159,6 +158,7 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
                                     motonAdapter.notifyItemChanged(position);
                                 return;
                             }
+                            binding_dialog.tvMessage.setText("جاري التحميل " + progress + "%");
                             binding_dialog.progressDownload.setProgress(progress);
                         }
                     }

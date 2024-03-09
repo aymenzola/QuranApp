@@ -377,7 +377,7 @@
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
                     android:text="رواية ورش"
-                    android:textSize="@dimen/tv_mini_size" />
+                    android:textSize="@dimen/tv_small_size" />
 
                 <View
                     android:layout_width="match_parent"
@@ -393,7 +393,7 @@
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
                     android:text="رواية حفص"
-                    android:textSize="@dimen/tv_mini_size" />
+                    android:textSize="@dimen/tv_small_size" />
 
                 <View
                     android:layout_width="match_parent"
@@ -409,7 +409,7 @@
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
                     android:text="نسخة الأحكام"
-                    android:textSize="@dimen/tv_mini_size" />
+                    android:textSize="@dimen/tv_small_size" />
 
                 <View
                     android:layout_width="match_parent"
@@ -425,7 +425,7 @@
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
                     android:text="مصحف التفاعلي"
-                    android:textSize="@dimen/tv_mini_size"
+                    android:textSize="@dimen/tv_small_size"
                     android:visibility="gone" />
 
                 <View
@@ -442,7 +442,7 @@
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
                     android:text="النسخة الفرنسية"
-                    android:textSize="@dimen/tv_mini_size" />
+                    android:textSize="@dimen/tv_small_size" />
 
                 <View
                     android:layout_width="match_parent"
@@ -457,7 +457,7 @@
                     android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:textSize="@dimen/tv_mini_size"
+                    android:textSize="@dimen/tv_small_size"
                     android:text="النسخة الانجليزية" />
 
                 <View

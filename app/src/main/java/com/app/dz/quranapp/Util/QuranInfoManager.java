@@ -736,7 +736,7 @@ public class QuranInfoManager {
         return suraList;
     }
 
-    public static String convertToHijri(int month) {
+    public String convertToHijri(int month) {
         switch (month) {
             case 1:
                 return "محرم";

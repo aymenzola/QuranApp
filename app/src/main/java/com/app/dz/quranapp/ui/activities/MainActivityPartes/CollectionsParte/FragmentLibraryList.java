@@ -47,7 +47,6 @@ import com.app.dz.quranapp.Communs.Statics;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Services.ForegroundDownloadBookService;
 import com.app.dz.quranapp.Util.CsvReader;
-import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.data.room.Entities.BookCollection;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.databinding.FragmentLibraryBinding;
@@ -60,7 +59,6 @@ import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.MotonAdapter
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.HomeFragment;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -270,17 +268,6 @@ public class FragmentLibraryList extends Fragment implements EasyPermissions.Per
         binding.recyclerview.setLayoutManager(new GridLayoutManager(getActivity(), 2, RecyclerView.VERTICAL, false));
         binding.recyclerview.setHasFixedSize(true);
         binding.recyclerview.setAdapter(adapter);
-    }
-
-    private List<Matn> checkBooksExistence(List<Matn> books) {
-        PublicMethods publicMethods = PublicMethods.getInstance();
-        for (Matn book : books) {
-            File file = publicMethods.getFile(book.fileName);
-            if (file.exists()) {
-                book.isDownloaded = true;
-            }
-        }
-        return books;
     }
 
     private boolean havePermissions() {

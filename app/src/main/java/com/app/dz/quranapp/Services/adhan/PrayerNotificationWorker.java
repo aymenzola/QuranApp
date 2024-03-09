@@ -26,7 +26,7 @@ import java.util.Locale;
 public class PrayerNotificationWorker extends Worker {
     private final Context context;
 
-    public PrayerNotificationWorker(@NonNull Context contextt,@NonNull WorkerParameters workerParams) {
+    public PrayerNotificationWorker(@NonNull Context contextt, @NonNull WorkerParameters workerParams) {
         super(contextt, workerParams);
         context = contextt;
     }
@@ -38,33 +38,46 @@ public class PrayerNotificationWorker extends Worker {
 
         String prayerInfoStrinf = getInputData().getString("prayerInfo");
         PrayerTimesPreference.PrayerInfo prayerInfo = new Gson().fromJson(prayerInfoStrinf, PrayerTimesPreference.PrayerInfo.class);
-        prepareNextPrayerTime(prayerInfo,context);
+        prepareNextPrayerTime(prayerInfo, context);
         // Indicate that the work was successful
         return Result.success();
     }
 
-    public static void prepareNextPrayerTime(PrayerTimesPreference.PrayerInfo prayerInfo,Context context) {
-        showAndUpdateNotification(prayerInfo,context);
+    public static void prepareNextPrayerTime(PrayerTimesPreference.PrayerInfo prayerInfo, Context context) {
+        showAndUpdateNotification(prayerInfo, context);
         PrayerTimesHelper.scheduleNextPrayerJob(context);
     }
-        public static void showAndUpdateNotification(PrayerTimesPreference.PrayerInfo prayerInfo,Context context) {
+
+    public static void showAndUpdateNotification(PrayerTimesPreference.PrayerInfo prayerInfo, Context context) {
 
 
         //show the current prayer notification
-        NotificationUtils.showPrayerNotification(context,convertMillisToTime(System.currentTimeMillis()), prayerInfo.prayer_arabic);
+
+        //check if the difference between current time and the scheduled time is less than 3 minutes
+        //if yes then we show the notification
+        long diff = prayerInfo.prayer_time - System.currentTimeMillis();
+        if (diff > 3 * 60 * 1000) {
+            Log.e("testLog", "the difference between current time and the scheduled time is more than 3 minutes so we dont show the notification");
+            /*if (BuildConfi.DEBUG) {
+
+            }*/
+            return;
+        }
+
+        NotificationUtils.showPrayerNotification(context, convertMillisToTime(System.currentTimeMillis()), prayerInfo.prayer_arabic);
 
         //play the adhan sound
-        PrayerConfig prayerConfig = PrayerTimesPreference.getInstance(context).getPrayerConfigWithName(context,prayerInfo.prayer_english_name);
+        PrayerConfig prayerConfig = PrayerTimesPreference.getInstance(context).getPrayerConfigWithName(context, prayerInfo.prayer_english_name);
         if (prayerConfig == null) {
             Log.e("testLog", "prayerConfig is null so we dont play adhan audio");
             return;
         }
         if (prayerConfig.soundType.equals(PrayerTimesPreference.AdhanSound.NORMAL.name()) && prayerConfig.isNotifyOnSilentMode) {
-            Log.e("testLog","prayerConfig conditions are granted so play adhan audio");
-            playAudioFromUrl(Constants.Adhan_Audio,context);
+            Log.e("testLog", "prayerConfig conditions are granted so play adhan audio");
+            playAudioFromUrl(Constants.Adhan_Audio, context);
         } else {
-            Log.e("testLog","prayerConfig conditions are not granted so we dont play adhan audio isNotifyOnSilentMode : "
-                    +prayerConfig.isNotifyOnSilentMode+" AdhanSoundValue "+prayerConfig.soundType);
+            Log.e("testLog", "prayerConfig conditions are not granted so we dont play adhan audio isNotifyOnSilentMode : "
+                    + prayerConfig.isNotifyOnSilentMode + " AdhanSoundValue " + prayerConfig.soundType);
         }
 
     }
@@ -87,7 +100,7 @@ public class PrayerNotificationWorker extends Worker {
         super.onStopped();
     }
 
-    public static void playAudioFromUrl(String url,Context context) {
+    public static void playAudioFromUrl(String url, Context context) {
         if (isDeviceInSilentMode(context)) {
             Log.e("quran_tag", "Device is in silent mode");
             return;

@@ -73,24 +73,26 @@
                 android:layout_marginTop="7dp"
                 android:visibility="visible"
                 />
-
             <ImageView
                 android:id="@+id/main_image_dial"
                 android:layout_width="@dimen/qubla_image_size"
                 android:layout_height="@dimen/qubla_image_size"
-                android:layout_below="@+id/text_up"
                 android:layout_centerInParent="true"
-                android:src="@drawable/ic_qubla_background2" />
+                android:src="@drawable/ic_qubla_back5" />
 
             <ImageView
                 android:id="@+id/main_image_qibla"
                 android:layout_width="@dimen/qubla_image_size"
                 android:layout_height="@dimen/qubla_image_size"
-                android:layout_below="@+id/text_up"
                 android:layout_centerInParent="true"
+                android:src="@drawable/ic_qubla_forground"
                 android:visibility="gone"
-                tools:visibility="visible"
-                android:src="@drawable/ic_qubla_forground" />
+                tools:visibility="visible" />
+
+
+
+
+
 
         </RelativeLayout>
 
@@ -106,7 +108,7 @@
             android:layout_alignStart="@+id/btn_moaayara"
             android:layout_marginBottom="10dp"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/tv_small_size"
+            android:textSize="@dimen/tv_mini_size"
             />
 
         <androidx.appcompat.widget.AppCompatButton

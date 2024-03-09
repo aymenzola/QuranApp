@@ -1,22 +1,19 @@
 package com.app.dz.quranapp.ui.activities.CollectionParte.motonParte;
 
-import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
-
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Data;
 import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
@@ -28,6 +25,7 @@ import com.app.dz.quranapp.Services.DownloadTask;
 import com.app.dz.quranapp.Util.PublicMethods;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,13 +33,15 @@ public class DownloadWorker extends Worker {
 
     private static final String TAG = "DownloadWorker";
     private static final String DOWNLOAD_CHANNEL_ID = "Download_Quran_Channel";
-    private static  int NOTIFICATION_DOWNLOAD_ID = 102;
+    private static int NOTIFICATION_DOWNLOAD_ID = 102;
     private DownloadTask downloadTask;
     private String fileTitle = "";
     private int notifyId;
 
     public DownloadWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        NOTIFICATION_DOWNLOAD_ID = getInputData().getInt("notifyId", 1);
+        Log.d(TAG, "DownloadWorker called with id " + NOTIFICATION_DOWNLOAD_ID);
     }
 
 
@@ -51,7 +51,7 @@ public class DownloadWorker extends Worker {
         String fileUrl = getInputData().getString("fileUrl");
         String fileName = getInputData().getString("fileName");
         fileTitle = getInputData().getString("fileTitle");
-        NOTIFICATION_DOWNLOAD_ID = getInputData().getInt("notifyId",1);
+
 
         Log.e("Download", "the download file fileUrl is " + fileUrl);
 
@@ -70,7 +70,7 @@ public class DownloadWorker extends Worker {
                         // The work has been cancelled
                         // Perform necessary actions after cancellation
                         // For example, you can stop the download here
-                        downloadResult("تم إلغاء التحميل");
+                        showDownloadCompleteNotification("تم إلغاء التحميل");
                         downloadTask.cancelDownload();
                         return;
                     }
@@ -80,14 +80,15 @@ public class DownloadWorker extends Worker {
                     if (progress != lastProgress) {
                         lastProgress = progress;
                         // Report progress.
+
+                        if (progress == 1) showDownloadCompleteNotification("تم بدء التحميل");
                         sendProgress(progress);
                     }
                 }
 
                 @Override
                 public void onDownloadComplete(File outputFile) {
-                    downloadFinished();
-                    downloadResult("تم تحميل الملف بنجاح");
+                    showDownloadCompleteNotification("تم التحميل بنجاح");
                     sendProgress(100);
                     result.set(Result.success());
                     latch.countDown();
@@ -96,14 +97,14 @@ public class DownloadWorker extends Worker {
 
                 @Override
                 public void onDownloadError(String error) {
-                    downloadResult(error);
+                    showDownloadCompleteNotification("حدث خطأ أثناء التحميل " + error);
                     sendError(error);
                 }
 
                 @Override
                 public void onDownloadCanceled(String reason) {
                     Log.e(TAG, "download canceled " + reason);
-                    downloadResult(reason);
+                    showDownloadCompleteNotification("تم إلغاء التحميل");
                     result.set(Result.failure());
                     latch.countDown();
                 }
@@ -121,21 +122,17 @@ public class DownloadWorker extends Worker {
     public void downloadFile(String url, String fileName, DownloadListeners listener) {
         Log.d(TAG, "the download file name is " + fileName);
 
-        // Permission is granted, create the folder
-        File folderFile2 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), AppfolderName);
-        if (!folderFile2.exists()) {
-            if (folderFile2.mkdirs()) {
-                Log.d(TAG, "Folder created successfully");
-            } else {
-                Log.e(TAG, "Failed to create folder");
+        File file = PublicMethods.getInstance().getFile(fileName,getApplicationContext());
+        if (!file.exists()) {
+            boolean result = false;
+            try {
+                result = file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } else {
-            Log.d(TAG, "Folder already exists");
+            Log.d(TAG, "the creation file result is " + result);
+
         }
-
-        PublicMethods publicMethods = PublicMethods.getInstance();
-        File file = publicMethods.getFile(fileName);
-
         downloadTask = new DownloadTask(url, file, new DownloadListeners() {
             private int lastProgress = -1;
 
@@ -157,14 +154,11 @@ public class DownloadWorker extends Worker {
             @Override
             public void onDownloadCanceled(String reason) {
                 listener.onDownloadCanceled(reason);
-                /*if (isCanceled) return;
-                toldTheActivty(DOWNLOAD_ERROR_ACTION, 0);
-                stopDownload();
-                */
             }
         });
         downloadTask.execute();
     }
+
 
     private void sendProgress(int progress) {
         updateNotificationProgress(progress);
@@ -184,11 +178,27 @@ public class DownloadWorker extends Worker {
             NotificationChannel channel = new NotificationChannel(
                     DOWNLOAD_CHANNEL_ID,
                     "تحميل القرآن الكريم",
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_HIGH
             );
-            NotificationManager manager = getApplicationContext().getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
+
+            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(soundUri, audioAttributes);
+
+            // Enable lights for the notification
+            channel.enableLights(true);
+            channel.setLightColor(Color.RED);
+
+            // Enable vibration for the notification
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+            // Register the channel with the system
+            NotificationManager notificationManager = getApplicationContext().getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
             }
         }
     }
@@ -205,12 +215,13 @@ public class DownloadWorker extends Worker {
                 .setContentTitle("تحميل القرآن الكريم")
                 .setContentText(fileTitle)
                 .setSmallIcon(R.drawable.ic_download)
-                .setProgress(100, 0, false)
+                .setProgress(100, 0, false).setDefaults(NotificationCompat.DEFAULT_ALL)
                 .build();
 
         // Create a ForegroundInfo object with the notification
+        Log.e("checkNotifyIdTag", "NOTIFICATION_DOWNLOAD_ID " + NOTIFICATION_DOWNLOAD_ID);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return new ForegroundInfo(NOTIFICATION_DOWNLOAD_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_NONE);
+            return new ForegroundInfo(NOTIFICATION_DOWNLOAD_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
         } else {
             return new ForegroundInfo(NOTIFICATION_DOWNLOAD_ID, notification);
         }
@@ -225,47 +236,44 @@ public class DownloadWorker extends Worker {
                 .setSmallIcon(R.drawable.ic_download)
                 .setProgress(100, progress, false)
                 .build();
-        Log.e(TAG, "updateNotificationProgress " + progress);
-        updateNotification(notification);
+        updateNotification(notification, NOTIFICATION_DOWNLOAD_ID);
     }
 
 
-    private void downloadResult(String result) {
-        // Create a new Notification
-        Notification notification = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID)
-                .setContentTitle("تحميل القرآن الكريم")
-                .setContentText(result)
-                .setSmallIcon(R.drawable.ic_download)
-                .build();
-
-        Log.e(TAG, "update notifcation state " + result);
-        updateNotification(notification);
-    }
-
-
-    private void updateNotification(Notification notification) {
+    private void updateNotification(Notification notification, int notifyId) {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (notificationManager != null) {
-            notificationManager.notify(NOTIFICATION_DOWNLOAD_ID, notification);
+            Log.e("checkNotifyIdTag", "updateNotification id  " + NOTIFICATION_DOWNLOAD_ID);
+            notificationManager.notify(notifyId, notification);
         }
     }
 
 
-    private void downloadFinished() {
+    public void showDownloadCompleteNotification(String message) {
+        String channelId = "quran_download_channel1";
+        String channelName = "Download Complete Notifications1";
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID)
+        // Create a notification channel
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Notifications for download completion");
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        // Create a notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId)
                 .setSmallIcon(R.drawable.ic_download) // replace with your own icon
                 .setContentTitle(fileTitle)
-                .setContentText("تم التحميل بنجاح")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // for heads-up notification
+                .setAutoCancel(true); // notification will disappear after click
 
-        // Step 3: Send the Notification
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        builder.setDefaults(Notification.DEFAULT_ALL);
 
-            return;
-        }
-        notificationManager.notify(1,builder.build());
+        // Show the notification
+        notificationManager.notify(19, builder.build());
     }
+
 }
