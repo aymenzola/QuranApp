@@ -13,6 +13,7 @@ import androidx.work.WorkManager;
 
 import com.app.dz.quranapp.Communs.PrayerTimesHelper;
 import com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker;
+import com.app.dz.quranapp.Util.SharedPreferenceManager;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,9 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context contextt, Intent intent) {
         context = contextt;
+
+        checkIfTheWorkIsScheduler(context);
+
         if (intent.getAction() != null) {
             switch (intent.getAction()) {
                 case Intent.ACTION_BOOT_COMPLETED:
@@ -43,7 +47,6 @@ public class BootReceiver extends BroadcastReceiver {
                     break;
                 case "com.htc.intent.action.SCREEN_ON":
                     Log.e(TAG_BROAD_CAST,"onReceive SCREEN_ON");
-                    checkIfTheWorkIsScheduler();
                     // Handle screen on actions
                     break;
                 case "com.htc.intent.action.TIME_TICK":
@@ -62,7 +65,9 @@ public class BootReceiver extends BroadcastReceiver {
         }
     }
 
-    private void checkIfTheWorkIsScheduler() {
+    private void checkIfTheWorkIsScheduler(Context context) {
+        boolean alreadyExist = SharedPreferenceManager.getInstance(context).iSLocationAvialable();
+        if (!alreadyExist) return;
         PrayerTimesHelper.getInstance(context).checkIfTheWorkIsScheduler(context);
     }
 

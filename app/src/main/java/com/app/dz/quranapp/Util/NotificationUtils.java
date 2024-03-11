@@ -27,7 +27,7 @@ public class NotificationUtils {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
 
-        Intent stopIntent = new Intent(context, AdanAudioPlayerService.class);
+        Intent stopIntent = new Intent(context,AdanAudioPlayerService.class);
         stopIntent.setAction(AdanAudioPlayerService.ACTION_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getService(context, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

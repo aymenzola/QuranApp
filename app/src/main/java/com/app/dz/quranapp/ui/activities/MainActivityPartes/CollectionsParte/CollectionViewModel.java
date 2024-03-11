@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.app.dz.quranapp.data.room.Entities.Chapter;
-
 import java.util.List;
 
 
@@ -27,15 +25,6 @@ public class CollectionViewModel extends AndroidViewModel {
     public void setBooksList() {
         repository.setBookAvailable();
     }
-
-    public LiveData<List<Chapter>> getchaptersObject() {
-        return repository.getChaptersObject();
-    }
-
-    public void setChaptersObject(String collectionName) {
-        repository.setChaptersObject(collectionName);
-    }
-
 
     @Override
     protected void onCleared() {

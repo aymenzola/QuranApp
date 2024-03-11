@@ -19,7 +19,6 @@ import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_S
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_CANCEL_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_COMPLETE_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_ERROR_ACTION;
-import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_PREPAREING_FILES_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.PROGRESS_ACTION;
 import static com.app.dz.quranapp.Util.QuranInfoManager.getSuraList;
 
@@ -45,8 +44,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
@@ -92,8 +91,8 @@ import com.app.dz.quranapp.quran.models.ReadingPosition;
 import com.app.dz.quranapp.quran.models.RiwayaType;
 import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
 import com.app.dz.quranapp.quran.warsh_parte.FragmentMultipleRiwayat;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.DownloadWorker;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.DrawerMatnParentAdapter;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.DownloadWorker;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.DrawerMatnParentAdapter;
 import com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -110,15 +109,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import pub.devrel.easypermissions.EasyPermissions;
 
-public class QuranMainFragment extends Fragment implements OnFragmentListeners,
-        EasyPermissions.PermissionCallbacks {
+public class QuranMainFragment extends Fragment implements OnFragmentListeners {
 
 
     public static final int DOWNLOAD_TYPE_AUDIO = 1;
     private final static String TAG = QuranMainFragment.class.getSimpleName();
     private static final int FOREIGN_BOOK_WRITE_REQUEST_CODE = 102;
+    private static final String QURAN_DOWNLOAD = "quran_download";
     private final ArrayList<ModuleFragments> list = new ArrayList<>();
     private int LastPage;
     private int MinPage;
@@ -131,7 +129,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     private Sura playingSura;
     private AyaDao dao;
     private BroadcastReceiver AudioReceiver;
-    private BroadcastReceiver DownloadReceiver;
     private int startPage;
     private Aya selectedAya;
     private MyViewModel viewModel;
@@ -159,6 +156,9 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     private List<Sura> globalSuraList = new ArrayList<>();
     private DrawerMatnParentAdapter adapterDrawerForeignRiwaya;
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private Riwaya downloadedRiwaya;
+    private BroadcastReceiver downloadForeignReceiver;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentQuranNewBinding.inflate(getLayoutInflater(), container, false);
@@ -170,7 +170,12 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     @SuppressLint("SetTextI18n")
     private void manageAndUpdatePageInfo() {
         int page = getCurrentPageInfo();
-        Log.e("checkSaveTag", "manageAndUpdatePageInfo readingPosition.page is " + readingPosition.page + " current page is " + page);
+        Log.e("checkSaveTag", "manageAndUpdatePageInfo readingPosition.page is " + readingPosition.toString() + " current page is " + page);
+        if (readingPosition.page == null) {
+            isSavedPage = false;
+            Glide.with(requireActivity()).load(R.drawable.ic_save_new).into(binding.imgSave);
+            return;
+        }
         if (readingPosition.page == page) {
             isSavedPage = true;
             Glide.with(requireActivity()).load(R.drawable.ic_save).into(binding.imgSave);
@@ -207,9 +212,10 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
 
 
         viewModel.getBookMarks().observe(getViewLifecycleOwner(), bookmarks -> {
-            if (bookmarks != null) {
-                loadComplete(bookmarks);
-            }
+            if (adapterPagerForSign != null)
+                if (bookmarks != null && adapterPagerForSign.getCount() > 0) {
+                    loadComplete(bookmarks);
+                }
         });
 
 
@@ -243,9 +249,10 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
 
         viewModel.getIsFragmentClicked().observe(getViewLifecycleOwner(), isFragmentClicked -> {
             if (isFragmentClicked) {
-                if (binding.linearRiwayaList.isShown()) {
+                if (binding.linearRiwayaList.isShown())
                     binding.linearRiwayaList.setVisibility(View.GONE);
-                }
+                if (binding.linearReaders.getVisibility() == View.VISIBLE) hideAudioControlLinear();
+
             }
         });
 
@@ -299,7 +306,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         }
 
         binding.viewPager.setVisibility(View.GONE);
-        binding.linearLoading.setVisibility(View.VISIBLE);
 
         adapterPagerForSign = null;
         if (list.size() > 0) list.clear();
@@ -345,20 +351,15 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         adapterPagerForSign = new AdapterStartFragments(requireActivity().getSupportFragmentManager());
         adapterPagerForSign.addlist(list);
 
-        /*if (binding.viewPager.getAdapter() == null) {
+        try {
             binding.viewPager.setAdapter(adapterPagerForSign);
-        } else {
-            adapterPagerForSign.notifyDataSetChanged();
-        }*/
-        binding.viewPager.setAdapter(adapterPagerForSign);
-
-/*        int finalCurrantPage = currantPage;
-        new Handler(Looper.getMainLooper()).post(() -> binding.viewPager.setCurrentItem(finalCurrantPage));
-*/
-        binding.viewPager.setCurrentItem(currantPage);
+            binding.viewPager.setCurrentItem(currantPage);
+        } catch (Exception e) {
+            Toast.makeText(requireActivity(), ".", Toast.LENGTH_SHORT).show();
+            Log.e("checkError", "error in setting adapter " + e.getMessage());
+        }
 
         binding.viewPager.setVisibility(View.VISIBLE);
-        binding.linearLoading.setVisibility(View.GONE);
 
     }
 
@@ -415,7 +416,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         binding.includeAudioPlaying.imgChangeSpeed.setOnClickListener(v -> changeSpeed());
         binding.includeAudioPlaying.imgChangeSpeed2.setOnClickListener(v -> changeSpeed());
 
-        binding.imgSave.setOnLongClickListener(v->{
+        binding.imgSave.setOnLongClickListener(v -> {
             createNewFolder();
             return true;
         });
@@ -429,14 +430,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
 
 
             if (binding.linearReaders.getVisibility() == View.VISIBLE) {
-
-                binding.imgOpenReaders.setColorFilter(null);
-
-                Glide.with(requireActivity()).load(R.drawable.ic_navigat3).into(binding.imgExpand);
-                binding.linearReaders.setVisibility(View.GONE);
-                binding.imgExpand.setVisibility(View.GONE);
-                //binding.recyclerViewReaders.setVisibility(View.GONE);
-                binding.bottomLinear.setBackgroundResource(R.drawable.shape_card);
+                hideAudioControlLinear();
             } else {
                 //should change imgOpenReaders src tint
                 binding.imgOpenReaders.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.purple_500), android.graphics.PorterDuff.Mode.SRC_IN);
@@ -516,8 +510,16 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
 
         binding.includeAudioPlaying.imgPlay.setOnClickListener(v -> playAudioButtonClicked());
 
-        binding.imgCancelDownload.setOnClickListener(v -> StopTheDownload());
+    }
 
+    private void hideAudioControlLinear() {
+        binding.imgOpenReaders.setColorFilter(null);
+
+        Glide.with(requireActivity()).load(R.drawable.ic_navigat3).into(binding.imgExpand);
+        binding.linearReaders.setVisibility(View.GONE);
+        binding.imgExpand.setVisibility(View.GONE);
+        //binding.recyclerViewReaders.setVisibility(View.GONE);
+        binding.bottomLinear.setBackgroundResource(R.drawable.shape_card);
     }
 
     private void changeSura(String action) {
@@ -586,20 +588,20 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         }
         ReadingPosition readingPosition;
         if (selectedAya != null) {
-            readingPosition = new ReadingPosition(selectedAya.getSura(), selectedAya.getSuraAya(), selectedAya.getPage(), selectedAya.getText());
+            readingPosition = new ReadingPosition(selectedAya.getSura(), selectedAya.getSuraAya(), selectedAya.getPage(), selectedAya.getText(), selectedRiwaya.tag);
             Toast.makeText(requireActivity(), "تم حفظ الاية", Toast.LENGTH_SHORT).show();
         } else if (isForeignRiwaya()) {
 
             FragmentForeignRiwayat fragment = (FragmentForeignRiwayat) getCurrentFragment();
             int page = fragment.getCurrantPage();
-            readingPosition = new ReadingPosition(1, 1, page, "no");
+            readingPosition = new ReadingPosition(1, 1, page, "no", selectedRiwaya.tag);
             fragment.setReadingPosition(readingPosition);
             Toast.makeText(requireActivity(), "تم حفظ الصفحة", Toast.LENGTH_SHORT).show();
 
         } else {
 
             int page = getCurrentPageNumber();
-            readingPosition = new ReadingPosition(1, 1, page, "no");
+            readingPosition = new ReadingPosition(1, 1, page, "no", selectedRiwaya.tag);
             Toast.makeText(requireActivity(), "تم حفظ الصفحة", Toast.LENGTH_SHORT).show();
 
         }
@@ -633,8 +635,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
             binding.relativePages.setVisibility(View.VISIBLE);
             binding.relativeToolBar.setVisibility(View.VISIBLE);
         }
-
-
         viewModel.setData(true);
 
     }
@@ -695,40 +695,12 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     }
 
     private void checkDownloadPermissionAndStart() {
-        if (isStoragePermissionGranted())
-            startDownload();
-        else
-            requestStoragePermission(WRITE_REQUEST_CODE_DOWNLOAD);
 
     }
-
-    private void requestStoragePermission(int code) {
-        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, code);
-    }
-
-    private boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //check if we have permission
-            return EasyPermissions.hasPermissions(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
-        } else {
-            return true;
-            //we do not need permission
-        }
-
-
-
-    }
-
 
 
     private void startDownload() {
         Log.e(TAG, "Received start Intent ");
-
-        //should manage download layout in notification or layout
-        
-        /* binding.downloadLinear.setVisibility(View.VISIBLE);
-           binding.playLinear.setVisibility(View.GONE);
-        */
 
         Toast.makeText(requireActivity(), "جاري تحميل السورة", Toast.LENGTH_SHORT).show();
 
@@ -758,7 +730,11 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         startIntent.putExtra("suraAudio", suraAudio);
         startIntent.putExtra("selectedReader", selectedReader);
         startIntent.putExtra("speed", audioPlayingSpeed);
-        requireActivity().startService(startIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().startForegroundService(startIntent);
+        }else {
+            requireActivity().startService(startIntent);
+        }
     }
 
     private void PlayTheAudio() {
@@ -851,39 +827,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     private void manageReaderImage(String readerImage) {
         if (isAdded())
             Glide.with(requireActivity()).load(readerImage).into(binding.includeAudioPlaying.readerImage);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.e("checkpermision", "onPermission result   requestCode " + requestCode);
-
-        if (requestCode == WRITE_REQUEST_CODE_DOWNLOAD) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //we have access
-                startDownload();
-            }
-        } else if (requestCode == FOREIGN_BOOK_WRITE_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //complete download matn
-                checkIfWeAreDownloadingAndStartDownload(globalRequestedRiwaya);
-            } else {
-                Toast.makeText(requireActivity(), "لا يمكن التحميل من غير السماح بالتخزين", Toast.LENGTH_SHORT).show();
-                // we do not have access
-            }
-        }
-
-
     }
 
     private void displayWhichSuraDialog(List<Sura> suraList) {
@@ -1077,22 +1020,14 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     }
 
     private void foreignRiwayaClicked(Riwaya riwaya) {
-        if (havePermissions()) {
-            //have permission
-            if (PublicMethods.getInstance().checkIfThisExist(riwaya.fileName,requireActivity())) {
-                //file exist
-                SharedPreferenceManager.getInstance(requireActivity()).saveLastRiwaya(riwaya);
-                changeToForeignRiwaya(riwaya, 1);
-            } else {
-                //should show ask dialog , check internet
-                binding.linearRiwayaList.setVisibility(View.GONE);
-                showAskToDownloadDialog(riwaya);
-            }
-
+        if (PublicMethods.getInstance().checkIfThisExist(riwaya.fileName, requireActivity())) {
+            //file exist
+            SharedPreferenceManager.getInstance(requireActivity()).saveLastRiwaya(riwaya);
+            changeToForeignRiwaya(riwaya, 1);
         } else {
-            //ask for permission
-            globalRequestedRiwaya = riwaya;
-            requestStoragePermission(FOREIGN_BOOK_WRITE_REQUEST_CODE);
+            //should show ask dialog , check internet
+            binding.linearRiwayaList.setVisibility(View.GONE);
+            showAskToDownloadDialog(riwaya);
         }
     }
 
@@ -1340,7 +1275,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         //binding.linearAyaInfo.setVisibility(View.GONE);
         final int serviceState = ForegroundDownloadAudioService.getState();
         if (serviceState == Statics.STATE_SERVICE.NOT_INIT)
-            checkDownloadPermissionAndStart();
+        startDownload();
         else if (serviceState == Statics.STATE_SERVICE.PREPARE || serviceState == Statics.STATE_SERVICE.PLAY)
             PauseDownload();
     }
@@ -1371,15 +1306,18 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
 
 
     private void checkIfWeAreDownloadingAndStartDownload(Riwaya riwaya) {
+        downloadedRiwaya = riwaya;
         if (!PublicMethods.getInstance().checkNetworkConnection(requireActivity())) {
             Toast.makeText(requireActivity(), "تحقق من الاتصال بالانترنت", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (!askNotificationPermission()){
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            Toast.makeText(requireActivity(), "يجب السماح بظهور الاشعارات", Toast.LENGTH_SHORT).show();
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!askNotificationPermission()) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                Toast.makeText(requireActivity(), "يجب السماح بظهور الاشعارات", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         WorkManager workManager = WorkManager.getInstance(requireActivity());
@@ -1405,6 +1343,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     }
 
     private void downloadRequestedRiwaya(Riwaya riwaya) {
+        downloadedRiwaya =riwaya;
         showDownloadProgress();
         // Start the Worker to download the book.
         downloadRequest = new OneTimeWorkRequest.Builder(DownloadWorker.class)
@@ -1414,11 +1353,12 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
                         .putString("fileUrl", riwaya.getFileUrl())
                         .putString("fileName", riwaya.fileName)
                         .putInt("notifyId", riwaya.id)
+                        .putString("action",QURAN_DOWNLOAD)
                         .putString("fileTitle", riwaya.name).build())
                 .build();
         WorkManager.getInstance(requireActivity()).enqueue(downloadRequest);
 
-        WorkManager.getInstance(requireActivity()).getWorkInfoByIdLiveData(downloadRequest.getId())
+        /*WorkManager.getInstance(requireActivity()).getWorkInfoByIdLiveData(downloadRequest.getId())
                 .observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo != null) {
                         int progress = workInfo.getProgress().getInt("progress", 0);
@@ -1467,19 +1407,9 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
                         }
                     }
                 });
+        */
     }
 
-    private boolean havePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return true;
-
-        boolean hasePermission = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //we have permission
-            hasePermission = EasyPermissions.hasPermissions(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
-        Log.e("checkPermissionTag","hasePermission : "+hasePermission);
-        return hasePermission;
-    }
 
     public void showDownloadProgress() {
 
@@ -1561,8 +1491,9 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         IntentFilter filter = new IntentFilter("AUDIO_FINISHED");
         requireActivity().registerReceiver(AudioReceiver, filter);
 
-        IntentFilter filter_download = new IntentFilter("DOWNLOAD_FINISHED");
-        requireActivity().registerReceiver(DownloadReceiver, filter_download);
+
+        IntentFilter filter_download = new IntentFilter(QURAN_DOWNLOAD);
+        requireActivity().registerReceiver(downloadForeignReceiver,filter_download);
 
         final int serviceState = getStateActiveService();
         if (serviceState == Statics.STATE_SERVICE.PLAY) {
@@ -1577,11 +1508,22 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     public void onPause() {
         super.onPause();
         Log.e("checkQuranTag", "MainQuranFragment onPause");
-
         requireActivity().unregisterReceiver(AudioReceiver);
-        requireActivity().unregisterReceiver(DownloadReceiver);
+        requireActivity().unregisterReceiver(downloadForeignReceiver);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
+        publicMethods = PublicMethods.getInstance();
+        selectedRiwaya = SharedPreferenceManager.getInstance(requireActivity()).getLastRiwaya();
+        if (getArguments() != null) startPage = getArguments().getInt("page", 1);
+        else startPage = 1;
+        compositeDisposable = new CompositeDisposable();
+        dao = MushafDatabase.getInstance(requireActivity()).getAyaDao();
+
+    }
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -1589,23 +1531,10 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         super.onViewCreated(view, savedInstanceState);
 
         makeStutsBarColored();
-        viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
-        publicMethods = PublicMethods.getInstance();
 
-        if (getArguments() != null) startPage = getArguments().getInt("page");
-        else startPage = 1;
-
-
-        compositeDisposable = new CompositeDisposable();
-        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(requireActivity());
-        viewModel.setReaderWithId(sharedPreferenceManager.getSelectedReaderId());
+        viewModel.setReaderWithId(SharedPreferenceManager.getInstance(requireActivity()).getSelectedReaderId());
         viewModel.setReadersList();
-
-        selectedRiwaya = SharedPreferenceManager.getInstance(requireActivity()).getLastRiwaya();
         binding.tvChangeRiwaya.setText(selectedRiwaya.name);
-
-        MushafDatabase database = MushafDatabase.getInstance(requireActivity());
-        dao = database.getAyaDao();
 
         setListenrs();
         setRiwayaListListeners();
@@ -1654,14 +1583,14 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         showReadersList();
 
 
-
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     if (isGranted) {
-                        Toast.makeText(QuranMainFragment.this.getActivity(), "Notifications permission granted", Toast.LENGTH_SHORT).show();
+                        if (downloadedRiwaya != null)
+                            checkIfWeAreDownloadingAndStartDownload(downloadedRiwaya);
                     } else {
                         //permission denied
-
+                        Toast.makeText(requireActivity(), "تم الرفض", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -1747,7 +1676,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
                             int max = intent.getIntExtra("maxProgress", 0);
                             int progress = intent.getIntExtra("progress", 0);
                             displayTime(max, progress);
-                            //check privious max
+                            //check previous max
                             if (max != binding.includeAudioPlaying.pregress.getMax())
                                 binding.includeAudioPlaying.pregress.setMax(max);
                             binding.includeAudioPlaying.pregress.setProgress(progress);
@@ -1756,52 +1685,36 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
                 }
             }
         };
-        DownloadReceiver = new BroadcastReceiver() {
-            @SuppressLint("SetTextI18n")
+
+
+        downloadForeignReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction() == null) return;
-                if (intent.getAction().equals("DOWNLOAD_FINISHED")) {
-                    String action = intent.getStringExtra("action");
-                    if (action == null) return;
-                    switch (action) {
-                        case PROGRESS_ACTION -> {
-                            int progress = intent.getIntExtra("progress", 0);
-                            binding.tvDownloadProgress.setText(String.valueOf(progress));
-                            binding.progressBar.setProgress(progress);
-                        }
-                        case DOWNLOAD_CANCEL_ACTION -> {
-                            Log.e(TAG, "we receive " + DOWNLOAD_CANCEL_ACTION);
-                        }
-                        case DOWNLOAD_ERROR_ACTION -> {
-                            Log.e(TAG, "we receive " + DOWNLOAD_ERROR_ACTION);
-                        }
-                        case DOWNLOAD_COMPLETE_ACTION -> {
-                            binding.tvDownloadTitle.setText("اكتمل التحميل");
-                        }
-                        case DOWNLOAD_PREPAREING_FILES_ACTION -> {
-                            Log.e(TAG, "we set progress indeterminate ");
-                            binding.tvDownloadTitle.setText("جاري تحضير الملفات ...");
-                            binding.progressBar.setIndeterminate(true);
-                        }
-                    }
+                String action = intent.getAction();
+                if (action == null) return;
+                if (action.equals(QURAN_DOWNLOAD)) {
+                    String actionType = intent.getStringExtra("type");
+                    if (actionType == null) return;
 
+                    switch (actionType) {
+                        case DOWNLOAD_CANCEL_ACTION -> handleError("تم الغاء التحميل");
+                        case DOWNLOAD_ERROR_ACTION -> handleError(intent.getStringExtra("message"));
+                        case DOWNLOAD_COMPLETE_ACTION -> downloadCompleted();
+                        case PROGRESS_ACTION -> updateDialogProgress(intent.getIntExtra("progress", 0));
+                    }
                 }
             }
         };
-
-
     }
 
 
-
     public void loadComplete(List<PdfDocument.Bookmark> bookmarks) {
-        Log.e(TAG, "we recieve book marks  isForeignRiwaya "+isForeignRiwaya());
+        Log.e(TAG, "we recieve book marks  isForeignRiwaya " + isForeignRiwaya());
         if (isForeignRiwaya()) {
             adapterSuraList = null;
             Fragment f = getCurrentFragment();
             FragmentForeignRiwayat foreignRiwayat = (FragmentForeignRiwayat) f;
-            adapterDrawerForeignRiwaya = new DrawerMatnParentAdapter(bookmarks,(bookmark,position) -> {
+            adapterDrawerForeignRiwaya = new DrawerMatnParentAdapter(bookmarks, (bookmark, position) -> {
                 foreignRiwayat.changePdfPage((int) bookmark.getPageIdx());
                 binding.drawerLayout.closeDrawer(GravityCompat.END);
             });
@@ -1811,9 +1724,9 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
         }
     }
 
-    public void createNewFolder(){
+    public void createNewFolder() {
         // Replace "folderName" with the name of your folder
-        File folder = new File(requireActivity().getFilesDir(),"Books");
+        File folder = new File(requireActivity().getFilesDir(), "Books");
         // Check if the folder exists
         if (!folder.exists()) {
             // Create the folder
@@ -1821,25 +1734,14 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
             Log.e("checkStorageTag", result ? "Folder created" : "Folder not created");
         }
 
-        Log.e("checkStorageTag", "folder path exists"+folder.exists()+" path "+folder.getAbsolutePath());
+        Log.e("checkStorageTag", "folder path exists" + folder.exists() + " path " + folder.getAbsolutePath());
     }
 
     private boolean askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireActivity(),Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                // FCM SDK (and your app) can post notifications.
-                return true;
-            } else {
-
-                return false;
-                // Directly ask for the permission
-                //requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-        return true;
+        return ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void openNotificationSetting() {
         Intent settingsIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -1848,6 +1750,36 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners,
     }
 
 
+    private void handleError(String error) {
+        String message = PublicMethods.getInstance().getUserFriendlyErrorMessage(error);
+        if (dialog_download_foreign != null) {
+            binding_download_foreign_version.progressDownload.setVisibility(View.GONE);
+            binding_download_foreign_version.btnCancel.setVisibility(View.GONE);
+            binding_download_foreign_version.tvTitle.setText("تنبيه");
+            binding_download_foreign_version.btnDone.setText("حسنا");
+            binding_download_foreign_version.tvMessage.setText(message);
+        } else {
+            Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void updateDialogProgress(int progress) {
+        if (binding_download_foreign_version == null) return;
+        binding_download_foreign_version.tvMessage.setText("جاري التحميل " + progress + "%");
+        binding_download_foreign_version.progressDownload.setProgress(progress);
+    }
+
+    private void downloadCompleted() {
+        Toast.makeText(requireActivity(), "تم التحميل ", Toast.LENGTH_SHORT).show();
+
+        if (dialog_download_foreign != null && dialog_download_foreign.isShowing())
+            dialog_download_foreign.dismiss();
+
+        SharedPreferenceManager.getInstance(requireActivity()).saveLastRiwaya(downloadedRiwaya);
+        changeToForeignRiwaya(downloadedRiwaya,1);
+    }
 
 
 

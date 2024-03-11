@@ -37,7 +37,7 @@ import com.app.dz.quranapp.data.room.MushafDatabase;
 import com.app.dz.quranapp.databinding.FragmentHomeBinding;
 import com.app.dz.quranapp.quran.models.ReadingPosition;
 import com.app.dz.quranapp.ui.activities.AboutActivity;
-import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.chaptreParte.ChapterUtils;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.TimeParte.PrayerTimes;
 import com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList;
 import com.app.dz.quranapp.ui.activities.subha.AdkarSubhaUtils;

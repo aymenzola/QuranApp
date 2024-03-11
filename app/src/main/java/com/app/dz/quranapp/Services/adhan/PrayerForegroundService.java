@@ -24,7 +24,12 @@ public class PrayerForegroundService extends Service {
         Log.e("testLog", "----> in foreground onStartCommand");
         if (intent != null) {
             String title = intent.getStringExtra("title");
-            startForeground(NOTIFICATION_ID,createNotification(title));
+            try {
+                startForeground(NOTIFICATION_ID, createNotification(title));
+            } catch (Exception e) {
+                Log.e("testLog", "----> in foreground onStartCommand exception " + e.getMessage());
+            }
+
         }
         return START_STICKY;
     }
@@ -40,7 +45,7 @@ public class PrayerForegroundService extends Service {
         super.onCreate();
         Log.e("testLog", "----> in foreground onCreate()");
         createNotificationChannel();
-        Log.e("testLog", "----> we are creating notifcation channel "+CHANNEL_ID+" notif Id + "+NOTIFICATION_ID);
+        Log.e("testLog", "----> we are creating notifcation channel " + CHANNEL_ID + " notif Id + " + NOTIFICATION_ID);
     }
 
     @Override
@@ -69,8 +74,9 @@ public class PrayerForegroundService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.app_icon)
                 .setContentTitle("Prayer App")
-                .setContentText("الصلاة التالية "+contentText)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setContentText("الصلاة التالية " + contentText)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setOngoing(true);
 
         return builder.build();
     }

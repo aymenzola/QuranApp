@@ -57,10 +57,8 @@ public class SharedPreferenceManager {
     }
 
 
-
-
     public void saveLastQublaLocation(UserLocation userLocation) {
-        editor.putString("LastQublaLocation",new Gson().toJson(userLocation, UserLocation.class)).apply();
+        editor.putString("LastQublaLocation", new Gson().toJson(userLocation, UserLocation.class)).apply();
     }
 
     public UserLocation getLastQublaLocation() {
@@ -86,31 +84,25 @@ public class SharedPreferenceManager {
     }
 
     public void saveReadingPosition(ReadingPosition readingPosition) {
-        editor.putInt("aya", readingPosition.aya);
-        editor.putInt("sura", readingPosition.sura);
-        editor.putInt("page", readingPosition.page);
-        editor.putString("ayaText", readingPosition.ayaText);
+        Log.e("checkSaveTag","saving "+readingPosition.toString());
+        editor.putString("readingPosition", new Gson().toJson(readingPosition,ReadingPosition.class));
         editor.putBoolean("isAyaSaved", true);
         editor.apply();
     }
 
 
     public ReadingPosition getReadinPosition() {
-        ReadingPosition readingPosition = new ReadingPosition();
-        readingPosition.aya = sharedPreferences.getInt("aya", -1);
-        readingPosition.sura = sharedPreferences.getInt("sura", -1);
-        readingPosition.page = sharedPreferences.getInt("page", -1);
-        readingPosition.ayaText = sharedPreferences.getString("ayaText", "");
-        return readingPosition;
+        String reiwayaString = sharedPreferences.getString("readingPosition","no");
+        if (!reiwayaString.equals("no")) {
+            return new Gson().fromJson(reiwayaString,ReadingPosition.class);
+        } else
+            return new ReadingPosition(-1, -1, -1, "", RiwayaType.HAFS.name());
     }
 
     //clrear reading position values
     public void clearReadingPosition() {
-        editor.putInt("aya", -1);
-        editor.putInt("sura", -1);
-        editor.putInt("page", -1);
-        editor.putString("ayaText", "");
-        editor.putBoolean("isAyaSaved", false);
+        saveReadingPosition(new ReadingPosition(-1, -1, -1, "", ""));
+        editor.putBoolean("isAyaSaved",false);
         editor.apply();
     }
 
@@ -146,6 +138,16 @@ public class SharedPreferenceManager {
 
     public void saveLastRiwaya(Riwaya riwaya) {
         editor.putString("riwaya", new Gson().toJson(riwaya)).apply();
+    }
+
+    public void saveAsLastRiwayaWithName(String riwayaName) {
+        List<Riwaya> riwayaList = getAllRiwayaList();
+        for (Riwaya riwaya : riwayaList) {
+            if (riwaya.tag.equals(riwayaName)) {
+                saveLastRiwaya(riwaya);
+                break;
+            }
+        }
     }
 
     public List<Riwaya> getAllRiwayaList() {

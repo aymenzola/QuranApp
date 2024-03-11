@@ -22,7 +22,8 @@ import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.quran.models.RiwayaType;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.moreBooksParte.Book;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.Matn;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.shockwave.pdfium.PdfDocument;
 
@@ -181,6 +182,12 @@ public class PublicMethods {
     }
 
 
+    public File getAppFolder(Context context) {
+        createAppFolderIfNotExist(context);
+        return new File(context.getFilesDir(),AppfolderName);
+    }
+
+
     public boolean checkIfThisExist(String filename,Context context) {
         return getFile(filename,context).exists();
     }
@@ -273,9 +280,20 @@ public class PublicMethods {
                 activeNetwork.isConnectedOrConnecting();
     }
 
-    public List<Matn> checkBooksExistence(List<Matn> books, Context context) {
+    public List<Matn> checkMatnExistence(List<Matn> matnList, Context context) {
         PublicMethods publicMethods = PublicMethods.getInstance();
-        for (Matn book : books) {
+        for (Matn book : matnList) {
+            File file = publicMethods.getFile(book.fileName,context);
+            if (file.exists()) {
+                book.isDownloaded = true;
+            }
+        }
+        return matnList;
+    }
+
+    public List<Book> checkBookExistence(List<Book> books,Context context) {
+        PublicMethods publicMethods = PublicMethods.getInstance();
+        for (Book book : books) {
             File file = publicMethods.getFile(book.fileName,context);
             if (file.exists()) {
                 book.isDownloaded = true;

@@ -61,7 +61,7 @@ public class AdkarDetailsFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getActivity().getWindow().setStatusBarColor(getActivity().getColor(R.color.blan));
+            getActivity().getWindow().setStatusBarColor(getActivity().getColor(R.color.background_color));
         }
 
         Bundle arguments = getArguments();

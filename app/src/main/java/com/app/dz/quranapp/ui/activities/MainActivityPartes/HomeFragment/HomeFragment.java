@@ -1,19 +1,29 @@
 package com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
@@ -25,6 +35,7 @@ import androidx.navigation.Navigation;
 import com.app.dz.quranapp.Communs.PrayerTimesHelper;
 import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
@@ -35,8 +46,9 @@ import com.app.dz.quranapp.data.room.Entities.DayPrayerTimes;
 import com.app.dz.quranapp.data.room.MushafDatabase;
 import com.app.dz.quranapp.databinding.FragmentHomeBinding;
 import com.app.dz.quranapp.quran.models.ReadingPosition;
+import com.app.dz.quranapp.quran.models.RiwayaType;
 import com.app.dz.quranapp.ui.activities.AboutActivity;
-import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ChapterUtils;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.chaptreParte.ChapterUtils;
 import com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList;
 import com.app.dz.quranapp.ui.activities.subha.AdkarSubhaUtils;
 import com.app.dz.quranapp.ui.activities.subha.SubhaActivity;
@@ -62,7 +74,6 @@ public class HomeFragment extends Fragment {
 
     public final static String QURAN_TAG = "quran_tag";
     public final static String TAG = "FragmentQuranList";
-    public static final int ADKAR_TYPE = 0;
     public static final int BOOKS_TYPE = 1;
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
@@ -75,7 +86,8 @@ public class HomeFragment extends Fragment {
     private boolean isThereSavedBook = false;
     private int adkarCouner = 0;
     private long NextPrayerMillis;
-
+    private String savedRiwaya;
+    ActivityResultLauncher<Intent> mStartForResult;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -109,9 +121,26 @@ public class HomeFragment extends Fragment {
         setObservers();
         viewModel.setRandomDikr();
         managePrayerTime();
+
+
+        mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        testAlarm(requireActivity());
+                    }
+                }
+        );
     }
 
     private void setListeners() {
+
+        binding.tvHomeTitle.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                askAlarmPermission();
+            } else {
+                testAlarm(requireActivity());
+            }
+        });
 
         String dikr = AdkarSubhaUtils.getLastDikr(requireActivity());
         binding.includeFastAdkarCard.tvFastAdkarText.setText(dikr);
@@ -143,9 +172,9 @@ public class HomeFragment extends Fragment {
         binding.tvAbout.setOnClickListener(view1 -> startActivity(new Intent(getActivity(), AboutActivity.class)));
 
         //adkar clickes
-        binding.tvMoveDikr.setOnClickListener(v -> moveToCollectionFragment(ADKAR_TYPE));
-        binding.tvDikrBody.setOnClickListener(v -> moveToCollectionFragment(ADKAR_TYPE));
-        binding.tvCategory.setOnClickListener(v -> moveToCollectionFragment(ADKAR_TYPE));
+        binding.tvMoveDikr.setOnClickListener(v -> moveToAdkarFragment());
+        binding.tvDikrBody.setOnClickListener(v -> moveToAdkarFragment());
+        binding.tvCategory.setOnClickListener(v -> moveToAdkarFragment());
 
         //time card Clickes
         binding.cardviewTime.setOnClickListener(v -> moveToAdhanFragment());
@@ -180,7 +209,6 @@ public class HomeFragment extends Fragment {
 
     private void moveToAdhanFragment() {
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main3);
-//        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.fragment_home, false).build();
         navController.navigate(R.id.action_fragment_home_to_navigation_Prayer);
     }
 
@@ -199,27 +227,52 @@ public class HomeFragment extends Fragment {
         navController.navigate(R.id.action_fragment_home_to_qublaFragment);
     }
 
-    public interface OnListenerInterface {
-        void onitemclick(int position);
-    }
-
     @SuppressLint("SetTextI18n")
     @Override
     public void onResume() {
         super.onResume();
+
+        DisplayCardHadith();
+        checkLocationViability();
+
         Log.e(QURAN_TAG, "quran onResume");
         SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(getActivity());
         if (sharedPreferenceManager.iSThereAyaSaved()) {
             //we saved aya
             binding.tvLastAyaTitle.setVisibility(View.VISIBLE);
             ReadingPosition readingPosition = sharedPreferenceManager.getReadinPosition();
+            Log.e("checkSaveTag", "quran onResume 1 readingPosition " + readingPosition.toString());
+            if (readingPosition.page==null) return;
             lastPage = readingPosition.page;
+            Log.e("checkSaveTag", "quran onResume " + readingPosition.toString());
+            if (readingPosition.riwaya==null) return;
+            savedRiwaya = readingPosition.riwaya;
 
-            if (!readingPosition.ayaText.equals("no")) {
-                binding.tvLastAya.setText(readingPosition.ayaText);
+            if (readingPosition.riwaya.equals(RiwayaType.ENGLISH_QURAN.name())) {
+                binding.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
+                binding.tvLastAya.setText("الترجمة الانجليزية للقرآن الكريم الصفحة رقم " + readingPosition.page);
+                Typeface typeface = ResourcesCompat.getFont(requireActivity(),R.font.ffshamel_book);
+                binding.tvLastAya.setTypeface(typeface);
+                float textSize = getResources().getDimension(R.dimen.tv_small_size);
+                binding.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+
+            } else if (readingPosition.riwaya.equals(RiwayaType.FRENCH_QURAN.name())) {
+                binding.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
+                binding.tvLastAya.setText("الترجمة الفرنسية للقرآن الكريم الصفحة رقم " + readingPosition.page);
+                Typeface typeface = ResourcesCompat.getFont(requireActivity(),R.font.ffshamel_book);
+                binding.tvLastAya.setTypeface(typeface);
+                float textSize = getResources().getDimension(R.dimen.tv_small_size);
+                binding.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+
+
             } else {
-                //should get first aya in the page and display it
-                getFirstAyaInPagePage(lastPage);
+
+                if (!readingPosition.ayaText.equals("no")) {
+                    binding.tvLastAya.setText(readingPosition.ayaText);
+                } else {
+                    //should get first aya in the page and display it
+                    getFirstAyaInPagePage(lastPage);
+                }
             }
 
         } else {
@@ -228,8 +281,7 @@ public class HomeFragment extends Fragment {
             binding.tvLastAya.setText("ستظهر هنا اخر اية قمت بحفظها");
         }
 
-        DisplayCardHadith();
-        checkLocationViability();
+
     }
 
     private void checkLocationViability() {
@@ -253,9 +305,12 @@ public class HomeFragment extends Fragment {
 
     private void OpenMushaf(int startPage) {
         Bundle bundle = new Bundle();
-        bundle.putInt("page", startPage);
+        if (savedRiwaya != null) {
+            SharedPreferenceManager.getInstance(requireActivity()).saveAsLastRiwayaWithName(savedRiwaya);
+            bundle.putInt("page", startPage);
+        }
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main3);
-        navController.navigate(R.id.action_fragment_home_to_quranFragmentDev, bundle);
+        navController.navigate(R.id.action_fragment_home_to_quranFragmentDev,bundle);
     }
 
     private void MoveToHadithDetails() {
@@ -335,19 +390,6 @@ public class HomeFragment extends Fragment {
         // display the remaining time in the TextView
         String countdownText = String.format(foramt, hours, minutes, seconds);
         binding.tvNextPrayerCountdown.setText(countdownText);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        //count = null;
-        Log.e(TAG, "onDestroy");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.e(TAG, "onStop");
     }
 
     public String getHijriDate(String dateString) {
@@ -456,6 +498,49 @@ public class HomeFragment extends Fragment {
             }
         }.start();
     }
+
+    public void testAlarm(Context context) {
+
+        //after five minutes
+        long nextPrayerDelay = 6 * 60 * 1000;
+
+        // Create an intent that points to the BroadcastReceiver that you want to trigger
+        Intent intent = new Intent(context,AlarmBroadcastReceiver.class);
+        // Create a PendingIntent with that intent
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextPrayerDelay, pendingIntent);
+                    Toast.makeText(context, "test alarm scheduled", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "can not ScheduleExactAlarms", Toast.LENGTH_SHORT).show();
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextPrayerDelay, pendingIntent);
+                Toast.makeText(context, "test alarm scheduled", Toast.LENGTH_SHORT).show();
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + nextPrayerDelay, pendingIntent);
+                Toast.makeText(context, "test alarm scheduled", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+
+    private void askAlarmPermission(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+            intent.setData(Uri.fromParts("package",requireActivity().getPackageName(), null));
+            mStartForResult.launch(intent);
+
+        }
+    }
+
 
 }
 

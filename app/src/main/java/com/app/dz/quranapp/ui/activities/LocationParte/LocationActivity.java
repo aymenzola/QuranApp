@@ -80,7 +80,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2;
     private boolean mLocationPermissionGranted = false;
     private static final int ERROR_DIALOG_REQUEST = 3;
-    private final static String TAG = LocationActivity.class.getSimpleName();
+    private final static String TAG = "checkLocationTag";
     private ActivityLocationBinding binding;
     private PublicMethods publicMethods;
     private boolean isNewLocationReadyToSave = false;
@@ -105,7 +105,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getWindow().setStatusBarColor(getColor(R.color.white));
+            getWindow().setStatusBarColor(getColor(R.color.background_color));
         }
 
         binding.imgCloseLocation.setOnClickListener(v -> moveToMainActivity());
@@ -138,15 +138,21 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
             }
             if (publicMethods.checkNetworkConnection(this)) {
                 if (checkMapServices()) {
-                    if (mLocationPermissionGranted) {
-                        // do what you want
-                        checkPermissionsAndGetUserLoaction();
+                    if (PublicMethods.getInstance().checkNetworkConnection(LocationActivity.this)) {
+                        if (mLocationPermissionGranted) {
+                            // do what you want
+                            checkPermissionsAndGetUserLoaction();
+                        } else {
+                            getLocationPermission();
+                        }
                     } else {
-                        getLocationPermission();
+                        publicMethods.showNoInternetDialog(LocationActivity.this, getString(R.string.check_internet));
                     }
+
+
                 }
             } else {
-                publicMethods.showNoInternetDialog(LocationActivity.this, getString(R.string.check_internet));
+                publicMethods.showNoInternetDialog(LocationActivity.this, "لا يمكن الحصول على الموقع");
             }
 
         });
@@ -337,7 +343,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                 Log.e(TAG, "onLocationResult ");
                 if (locationResult == null) {
                     Log.e(TAG, "location result failure");
-                    binding.btnGetLocation.setText("اعادة المحاولة 1");
+                    binding.btnGetLocation.setText("اعادة المحاولة");
                     binding.btnGetLocation.setEnabled(true);
                     binding.progressBar.setVisibility(View.GONE);
 
@@ -348,7 +354,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                     if (location != null) {
                         Log.e(TAG, "we recieve new location");
                         binding.progressBar.setVisibility(View.GONE);
-                        ManageTheRecievedLocation(location);
+                        ManageTheReceivedLocation(location);
                         fusedLocationProviderClient.removeLocationUpdates(this);
                         // Use the location
                         return;
@@ -378,6 +384,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
 
     @SuppressLint("MissingPermission")
     private void getLastLocation() {
+        Log.e(TAG, "getting last location ...");
         fusedLocationProviderClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location == null) {
@@ -392,7 +399,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                     }
                     Log.e(TAG, "we recieve new location");
                     binding.progressBar.setVisibility(View.GONE);
-                    ManageTheRecievedLocation(location);
+                    ManageTheReceivedLocation(location);
                     //fusedLocationProviderClient.removeLocationUpdates();
 
                 }).addOnFailureListener(new OnFailureListener() {
@@ -424,7 +431,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    private void ManageTheRecievedLocation(Location location) {
+    private void ManageTheReceivedLocation(Location location) {
         Geocoder geocoder = new Geocoder(LocationActivity.this, new Locale("ar"));
         List<Address> addresses = null;
         binding.btnGetLocation.setEnabled(true);
@@ -462,8 +469,17 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
                 binding.tvLocationResult.setText(newUserLocation.address);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            binding.btnGetLocation.setText( "اعادة المحاولة "+e.getMessage());
+            Log.e(TAG, "Error in get last location " + e.getMessage());
+
+            if (e.getMessage().contains("DEADLINE_EXCEEDED")) {
+                Toast.makeText(this, "الحصول على الموقع لديك يأخد الكثير من الوقت ربما لديك اتصال ضعيف بالأنترنت", Toast.LENGTH_LONG).show();
+                binding.btnGetLocation.setText("اعادة المحاولة ");
+            } else {
+                binding.btnGetLocation.setText("اعادة المحاولة ");
+            }
+            /*
+             * Error in get last location fqpi: DEADLINE_EXCEEDED: Deadline CallOptions will be exceeded in 4.981848923s.
+             * */
 
         }
     }
@@ -643,7 +659,7 @@ public class LocationActivity extends AppCompatActivity implements EasyPermissio
     @RequiresApi(api = Build.VERSION_CODES.S)
     private void askForExactAlarmPermission() {
         Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-        intent.putExtra(Settings.EXTRA_APP_PACKAGE,getPackageName());
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
         resultLauncher.launch(intent);
     }
 

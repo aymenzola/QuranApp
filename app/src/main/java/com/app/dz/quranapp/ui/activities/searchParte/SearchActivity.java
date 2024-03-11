@@ -25,17 +25,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsList;
 import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.data.room.Entities.Hadith;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.FragmentSearchBinding;
-import com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithSearchDetailsList;
-import com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.HadithDetailsParte.ActivityHadithSearchDetailsList;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.chaptreParte.ActivityChapterList;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

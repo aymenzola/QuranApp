@@ -20,6 +20,8 @@ public class NotifyBroadcastHelper {
         context.sendBroadcast(intent2);
     }
 
+
+
     public static void sendPreparingStateToFragment(Context context,String state) {
         Intent intent = new Intent("AUDIO_FINISHED");
         intent.putExtra("action", state);

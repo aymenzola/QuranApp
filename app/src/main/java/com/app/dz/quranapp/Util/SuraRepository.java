@@ -1,19 +1,11 @@
 package com.app.dz.quranapp.Util;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.app.dz.quranapp.Services.ForegroundPlayAudioService2;
-import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.AyaDao;
-import com.app.dz.quranapp.data.room.Daos.SuraDao;
-import com.app.dz.quranapp.data.room.DatabaseClient;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Sura;
 import com.app.dz.quranapp.data.room.MushafDatabase;
-
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.HashSet;

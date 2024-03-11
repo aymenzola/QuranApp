@@ -100,7 +100,8 @@ dependencies {
 
     implementation 'com.github.barteksc:android-pdf-viewer:3.2.0-beta.1'
 
-
+    implementation 'androidx.media3:media3-exoplayer:1.1.0'
+    implementation 'androidx.media3:media3-common:1.1.0'
 
 
 

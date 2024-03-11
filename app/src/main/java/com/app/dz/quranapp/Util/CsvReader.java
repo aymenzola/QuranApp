@@ -5,7 +5,8 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.app.dz.quranapp.quran.models.ReaderAudio;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.Matn;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.moreBooksParte.Book;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.Matn;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -95,6 +96,56 @@ public class CsvReader {
                         }
                     } else {
                         matnList.add(matn);
+                    }
+                } else {
+                    Log.e(TAG, "Invalid number of columns in CSV file");
+                }
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading CSV file", e);
+        }
+
+        return matnList;
+    }
+
+    public static List<Book> readBooksListFromCsv(Context context, String fileName,Integer bookId) {
+        List<Book> matnList = new ArrayList<>();
+        AssetManager assetManager = context.getAssets();
+
+        try {
+            InputStream inputStream = assetManager.open(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+
+            // Read the header line (skip it for now)
+            String line = reader.readLine();
+
+            // Read the remaining lines
+            while ((line = reader.readLine()) != null) {
+                String[] columns = line.split(",");
+                if (columns.length == 9) { // Assuming 9 columns as per your Matn class
+                    Book book = new Book();
+                    book.bookId = Integer.parseInt(columns[0]);
+                    book.parentId = Integer.parseInt(columns[1]);
+                    book.bookTitle = columns[2];
+                    book.fileName = columns[3];
+                    book.bookDescription = columns[4];
+                    book.setFileUrl(columns[5]);
+                    book.pagesCount = Integer.parseInt(columns[6]);
+                    book.bookImage = columns[7];
+                    book.fileKbSize = Integer.parseInt(columns[8]);
+
+                    Log.e(TAG, "matn : "+book.toString());
+
+                    if (bookId != null) {
+                        if (book.bookId == bookId) {
+                            matnList.add(book);
+                            break;
+                        }
+                    } else {
+                        matnList.add(book);
                     }
                 } else {
                     Log.e(TAG, "Invalid number of columns in CSV file");

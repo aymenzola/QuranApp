@@ -125,7 +125,7 @@
                             android:gravity="center"
                             android:paddingTop="10dp"
                             android:paddingBottom="10dp"
-                            android:text="أدكار محفوظة"
+                            android:text="أذكار محفوظة"
                             android:textColor="@color/tv_gri_color"
                             android:textSize="@dimen/tv_small_size" />
 
@@ -190,7 +190,7 @@
                 android:visibility="gone"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:itemCount="2"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
         </RelativeLayout>
 

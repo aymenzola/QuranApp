@@ -73,17 +73,17 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.AboutActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.BooksParte.ActivityBooksList"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.BooksParte.ActivityBooksList"
             android:screenOrientation="portrait"/>
 
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.chaptreParte.ActivityChapterList"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.chaptreParte.ActivityChapterList"
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.searchParte.SearchActivity"
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran"
             android:screenOrientation="portrait"/>
 
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithDetailsList"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.HadithDetailsParte.ActivityHadithDetailsList"
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.adhan.AdhanConfigActivity"
             android:screenOrientation="portrait"/>
@@ -93,25 +93,35 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.app.dz.quranapp.ui.activities.mahfodat.ActivityMahfodatList"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnViewer"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.ActivityMatnViewer"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.PdfViewer"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.PdfViewer"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnList"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.ActivityMatnList"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.HadithDetailsParte.ActivityHadithSearchDetailsList"
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.HadithDetailsParte.ActivityHadithSearchDetailsList"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.ActivityMatnOnlineViewer" />
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.ActivityMatnOnlineViewer" />
+        <activity android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.moreBooksParte.ActivityBookViewer" />
 
         <service
             android:name=".Services.QuranServices.PAudioServiceSelection"
-            android:exported="false"
+            android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             />
 
         <service
             android:name=".Services.QuranServices.PAudioServiceNoSelection"
-            android:exported="false"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".Services.QuranServices.PAudioServiceNoSelectionMedia3"
+            android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             />
 
@@ -119,14 +129,8 @@
             android:name=".Services.QuranServices.ForegroundDownloadAudioService"
             android:exported="false" />
         <service
-            android:name=".Services.ForegroundDownloadBookService"
+            android:name=".Services.ExtractBooksService"
             android:exported="false" />
-        <service android:name="com.app.dz.quranapp.Services.ForegroundDownloadMushafService"
-            android:exported="false"/>
-        <service android:name="com.app.dz.quranapp.Services.ForegroundExtractMushafService"
-            android:exported="false"/>
-
-
 
         <!-- Declare the JobIntentService -->
 
@@ -154,10 +158,9 @@
         </receiver>
 
         <service android:name=".Services.adhan.AdanAudioPlayerService"
-            android:exported="false"
+            android:exported="true"
             android:enabled="true"
             />
-
 
         <receiver
             android:name="com.app.dz.quranapp.Services.adhan.AlarmAdkrarBroadcastReceiver"
@@ -171,7 +174,22 @@
             android:exported="true">
         </receiver>
 
+        <receiver
+            android:name="com.app.dz.quranapp.Services.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+                <action android:name="from alarm" />
+            </intent-filter>
+        </receiver>
 
+        <receiver android:name="androidx.media.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

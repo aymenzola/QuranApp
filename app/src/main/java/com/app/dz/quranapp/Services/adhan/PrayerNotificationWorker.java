@@ -38,8 +38,16 @@ public class PrayerNotificationWorker extends Worker {
 
         String prayerInfoStrinf = getInputData().getString("prayerInfo");
         PrayerTimesPreference.PrayerInfo prayerInfo = new Gson().fromJson(prayerInfoStrinf, PrayerTimesPreference.PrayerInfo.class);
-        prepareNextPrayerTime(prayerInfo, context);
-        // Indicate that the work was successful
+
+        PrayerTimesPreference.PrayerInfo nextPrayerInfo = PrayerTimesPreference.getInstance(context).getNextScheduleNotification();
+
+        //condition to prevent double notification on the same prayer time
+        if (nextPrayerInfo.prayer_time != prayerInfo.prayer_time) {
+            //this means that the next prayer time has been scheduled and the user have seen the notification of this prayer time
+            return Result.success();
+        }
+
+        prepareNextPrayerTime(prayerInfo,context);
         return Result.success();
     }
 
@@ -63,6 +71,7 @@ public class PrayerNotificationWorker extends Worker {
             }*/
             return;
         }
+
 
         NotificationUtils.showPrayerNotification(context, convertMillisToTime(System.currentTimeMillis()), prayerInfo.prayer_arabic);
 

@@ -10,11 +10,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.data.room.Entities.Chapter;
 import com.app.dz.quranapp.databinding.ItemSavedDikrBinding;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.SavedMatnPage;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.moreBooksParte.SavedBookPage;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.SavedMatnPage;
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -37,6 +37,11 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
     public void addMoton(List<SavedMatnPage> savedMatnPageList) {
         this.dataList.addAll(savedMatnPageList);
+        notifyDataSetChanged();
+    }
+
+    public void addMoreBooks(List<SavedBookPage> savedBookPageList) {
+        this.dataList.addAll(savedBookPageList);
         notifyDataSetChanged();
     }
 
@@ -63,8 +68,47 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
             bindBooks(holder, book, position);
         } else if (data instanceof SavedMatnPage savedMatnPage) {
             bindMatn(holder, savedMatnPage, position);
+        } else if (data instanceof SavedBookPage savedBookPage) {
+            bindMoreBooks(holder, savedBookPage, position);
         }
 
+
+    }
+
+    private void bindMoreBooks(ViewHolder holder, SavedBookPage savedBookPage, int position) {
+        holder.binding.tvDikrCategory.setText(savedBookPage.bookTitle);
+        holder.binding.tvDikrTitle.setText(savedBookPage.pageTitle);
+
+        holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenMoreBookClicked(savedBookPage));
+
+        Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
+
+        holder.binding.imgSave.setOnClickListener(v -> {
+            Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
+            clickListener.onMoreBookSaveClick(savedBookPage, position);
+        });
+
+        holder.binding.imgSave.setOnClickListener(v -> {
+            // Create a new Handler
+            Handler handler = new Handler();
+
+            // Show the Snackbar with the cancel button
+            Snackbar snackbar = Snackbar.make(v, "الحدف من المحوظات بعد 4 ثواني", Snackbar.LENGTH_LONG);
+            snackbar.setAction("Cancel", v1 -> {
+                // If the user presses cancel, remove the callbacks from the handler
+                handler.removeCallbacksAndMessages(null);
+                Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
+            });
+            snackbar.show();
+
+            // Post a delayed Runnable to the handler
+            handler.postDelayed(() -> {
+                // This code will be executed after 4 seconds unless the user presses cancel
+                Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_unsaved_new).into(holder.binding.imgSave);
+                clickListener.onMoreBookSaveClick(savedBookPage, position);
+            }, 4000); // 4 seconds delay
+
+        });
 
     }
 
@@ -234,5 +278,10 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         void onBookSaveClick(BookWithCount bookWithCount, boolean isSaved, int position);
 
         void onMatnSaveClick(SavedMatnPage savedMatnPage, int position);
+
+
+        void onOpenMoreBookClicked(SavedBookPage savedBookPage);
+
+        void onMoreBookSaveClick(SavedBookPage savedBookPage, int position);
     }
 }

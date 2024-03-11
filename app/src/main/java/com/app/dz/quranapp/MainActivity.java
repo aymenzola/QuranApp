@@ -12,14 +12,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
-import com.app.dz.quranapp.quran.listeners.OnQuranFragmentListeners;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.databinding.ActivityMainBinding;
+import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
+import com.app.dz.quranapp.quran.listeners.OnQuranFragmentListeners;
+import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
 import com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran;
-import com.app.dz.quranapp.ui.activities.searchParte.SearchActivity;
 
 public class MainActivity extends AppCompatActivity implements
         ActivitySearchQuran.OnFragmentInteractionListener,
@@ -42,18 +41,21 @@ public class MainActivity extends AppCompatActivity implements
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            getWindow().setStatusBarColor(getColor(R.color.blan));
+            getWindow().setStatusBarColor(getColor(R.color.background_color));
         }
         viewModel = new ViewModelProvider(MainActivity.this).get(MyViewModel.class);
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main3);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        viewModel.getData().observe(this, isFullModeActivee -> isFullModeActive = isFullModeActivee);
+        viewModel.getData().observe(this, isFullModeActivee -> {
+            isFullModeActive = isFullModeActivee;
+            if (isFullModeActive) hideBottomBar();
+        });
 
         // Get the data from the Intent
         AdkarModel adkarModel = (AdkarModel) getIntent().getSerializableExtra("adkarModel");
-        int page = getIntent().getIntExtra("page",-1);
+        int page = getIntent().getIntExtra("page", -1);
 
         if (adkarModel != null) {
             // If the data is not null, navigate to the desired Fragment
@@ -64,10 +66,10 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         if (page != -1) {
-            NavController navController = Navigation.findNavController(this,R.id.nav_host_fragment_activity_main3);
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main3);
             Bundle bundle = new Bundle();
-            bundle.putInt("page",page);
-            navController.navigate(R.id.action_fragment_home_to_quranFragmentDev,bundle);
+            bundle.putInt("page", page);
+            navController.navigate(R.id.action_fragment_home_to_quranFragmentDev, bundle);
         }
 
     }
@@ -123,12 +125,8 @@ public class MainActivity extends AppCompatActivity implements
         } else if (binding.navView.getSelectedItemId() == R.id.quranFragmentDev) {
             if (binding.navView.getVisibility() == View.GONE) {
                 viewModel.setIsOnBackClicked(true);
-                if (isFullModeActive) {
-                    viewModel.setData(false);
-                } else {
-                    showBottomBar();
-                }
-
+                viewModel.setData(false);
+                showBottomBar();
             } else {
                 backCount = 0;
                 navController.navigate(R.id.action_quranFragmentDev_to_fragment_home);

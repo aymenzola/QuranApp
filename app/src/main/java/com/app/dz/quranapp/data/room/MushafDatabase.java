@@ -6,18 +6,16 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import com.app.dz.quranapp.data.room.Daos.MotonDao;
+import com.app.dz.quranapp.data.room.Daos.AdkarDao;
+import com.app.dz.quranapp.data.room.Daos.AyaDao;
+import com.app.dz.quranapp.data.room.Daos.AyaWarshDao;
+import com.app.dz.quranapp.data.room.Daos.JuzDao;
+import com.app.dz.quranapp.data.room.Daos.SuraDao;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.AyaWarsh;
 import com.app.dz.quranapp.data.room.Entities.Juz;
 import com.app.dz.quranapp.data.room.Entities.Sura;
 import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
-import com.app.dz.quranapp.data.room.Daos.AyaDao;
-import com.app.dz.quranapp.data.room.Daos.JuzDao;
-import com.app.dz.quranapp.data.room.Daos.AdkarDao;
-import com.app.dz.quranapp.data.room.Daos.AyaWarshDao;
-import com.app.dz.quranapp.data.room.Daos.SuraDao;
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.SavedMatnPage;
 
 
 @Database(entities = {Sura.class,Aya.class,Juz.class,AdkarModel.class,AyaWarsh.class}, version = 1, exportSchema = false)

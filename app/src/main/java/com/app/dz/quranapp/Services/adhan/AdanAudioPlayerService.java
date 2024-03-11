@@ -9,8 +9,6 @@ import androidx.annotation.Nullable;
 
 import com.app.dz.quranapp.R;
 
-import java.io.IOException;
-
 public class AdanAudioPlayerService extends Service {
     public static final String ACTION_PLAY = "ACTION_PLAY";
     public static final String ACTION_STOP = "ACTION_STOP";

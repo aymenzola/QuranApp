@@ -7,7 +7,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.app.dz.quranapp.ui.activities.CollectionParte.motonParte.SavedMatnPage;
+import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.motonParte.SavedMatnPage;
 
 import java.util.List;
 
