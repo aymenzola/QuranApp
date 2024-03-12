@@ -32,33 +32,53 @@
                 android:src="@drawable/ic_adkar_background"
                 />
 
-            <ImageView
-                android:id="@+id/img_title"
+            <RelativeLayout
+                android:id="@+id/relative_top"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:padding="15dp"
                 android:layout_marginBottom="5dp"
-                android:src="@drawable/ic_adkar_title"
-                />
+                >
 
-            <ImageView
-                android:id="@+id/img_back"
-                android:layout_width="?actionBarSize"
-                android:layout_height="?actionBarSize"
-                android:layout_alignTop="@id/img_title"
-                android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:padding="@dimen/back_icon_padding"
-                android:src="@drawable/baseline_keyboard_arrow_right_24"
-                />
+                <ImageView
+                    android:id="@+id/img_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    android:layout_centerInParent="true"
+                    android:padding="17dp"
+                    android:src="@drawable/ic_adkar_title" />
+
+                <ImageView
+                    android:id="@+id/img_back"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignTop="@id/img_title"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:src="@drawable/baseline_keyboard_arrow_right_24" />
+
+                <ImageView
+                    android:id="@+id/ic_konouz"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignTop="@id/img_title"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center"
+                    android:padding="@dimen/padding_kounoz_image"
+                    android:src="@drawable/ic_konouz" />
+            </RelativeLayout>
 
             <include
                 android:id="@+id/include_activate_adkar_card"
                 layout="@layout/include_activate_adkar"
-                android:layout_below="@+id/img_title"
+                android:layout_below="@+id/relative_top"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

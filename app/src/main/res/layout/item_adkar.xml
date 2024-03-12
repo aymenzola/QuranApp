@@ -54,7 +54,7 @@
             android:text="اللهم إني أسألك علماً نافعاً، ورزقاً طيباً، وعملاً متقبلاً"
             android:fontFamily="@font/ffshamel_book"
             android:textColor="#424242"
-            android:textSize="@dimen/tv_mini_size"
+            android:textSize="@dimen/tv_small_size"
             android:visibility="gone"
             tools:visibility="visible"
             />

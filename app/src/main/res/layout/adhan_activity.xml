@@ -38,9 +38,9 @@
                 android:id="@+id/img_close"
                 android:layout_width="?actionBarSize"
                 android:layout_height="?actionBarSize"
-                android:src="@drawable/ic_baseline_close_24"
+                android:src="@drawable/ic_close"
                 android:layout_alignParentTop="true"
-                android:padding="15dp"
+                android:padding="18dp"
                 android:layout_alignParentEnd="true"
                 app:tint="@color/text_color" />
         </RelativeLayout>

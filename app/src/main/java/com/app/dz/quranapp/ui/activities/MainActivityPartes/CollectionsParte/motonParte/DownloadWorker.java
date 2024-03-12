@@ -43,12 +43,14 @@ public class DownloadWorker extends Worker {
     private String fileTitle = "";
     private Context context;
     private String actionType;
+    private String subFolder;
 
     public DownloadWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.context = context;
         NOTIFICATION_DOWNLOAD_ID = getInputData().getInt("notifyId", 1);
         actionType = getInputData().getString("action");
+        subFolder = getInputData().getString("subFolder");
 
         Log.d(TAG, "DownloadWorker called with id " + NOTIFICATION_DOWNLOAD_ID);
     }
@@ -63,7 +65,7 @@ public class DownloadWorker extends Worker {
 
 
         try {
-        setForegroundAsync(getForegroundInfo());
+            setForegroundAsync(getForegroundInfo());
         } catch (Exception e) {
             Log.e(TAG, "error in setForegroundAsync " + e.getMessage());
         }
@@ -141,17 +143,28 @@ public class DownloadWorker extends Worker {
     public void downloadFile(String url, String fileName, DownloadListeners listener) {
         Log.d(TAG, "the download file name is " + fileName);
 
-        File file = PublicMethods.getInstance().getFile(fileName, context);
+        File file;
+        if (subFolder != null) {
+//            file = PublicMethods.getInstance().getFile(fileName,context);
+                file = PublicMethods.getInstance().getFile(context,subFolder,fileName);
+//            url = "https://www.dropbox.com/scl/fi/susr5ju1ut9r4rl17qu19/FrenchQuran.pdf?rlkey=ssn775mix8jze0czy1wcwjbhj&dl=1";
+        } else {
+            file = PublicMethods.getInstance().getFile(fileName,context);
+        }
+
         if (!file.exists()) {
-            boolean result = false;
+            boolean result;
             try {
                 result = file.createNewFile();
+                Log.d(TAG, "the creation file result is " + result);
             } catch (IOException e) {
+                Log.d(TAG, "error in create file " + e.getMessage());
                 throw new RuntimeException(e);
             }
             Log.d(TAG, "the creation file result is " + result);
 
         }
+        Log.d(TAG, "moving to downloadTask with " +url);
         downloadTask = new DownloadTask(url, file, new DownloadListeners() {
             private int lastProgress = -1;
 
@@ -292,17 +305,17 @@ public class DownloadWorker extends Worker {
         notificationManager.notify(19, builder.build());
     }
 
-    private void notifyActivity(String action,String message) {
+    private void notifyActivity(String action, String message) {
         Intent intent2 = new Intent(actionType);
-        intent2.putExtra("type",action);
+        intent2.putExtra("type", action);
         intent2.putExtra("message", message);
         context.sendBroadcast(intent2);
     }
 
     private void notifyProgressActivity(int downloadProgress) {
         Intent intent2 = new Intent(actionType);
-        intent2.putExtra("type",PROGRESS_ACTION);
-        intent2.putExtra("progress",downloadProgress);
+        intent2.putExtra("type", PROGRESS_ACTION);
+        intent2.putExtra("progress", downloadProgress);
         context.sendBroadcast(intent2);
     }
 

@@ -26,7 +26,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -179,6 +178,12 @@ public class QublaFragment extends Fragment {
         compass = new Compass(requireActivity());
         Compass.CompassListener cl = QublaFragment.this::adjustArrowQiblat;
         compass.setListener(cl);
+
+        if (!compass.areSensorsAvailable()) {
+            binding.tvMoaayara.setText("جهازك لا يدعم البوصلة");
+            binding.btnMoaayara.setVisibility(INVISIBLE);
+            binding.btnUpdateLocation.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -187,8 +192,21 @@ public class QublaFragment extends Fragment {
         if (compass != null) {
             //setFinalView();
             Log.d(TAG, "start compass");
-            compass.start();
+
+            startCompass();
+
         }
+    }
+
+    private void startCompass() {
+        if (compass == null) return;
+        if (!compass.areSensorsAvailable()) {
+            binding.tvMoaayara.setText("جهازك لا يدعم البوصلة");
+            binding.btnMoaayara.setVisibility(INVISIBLE);
+            binding.btnUpdateLocation.setVisibility(View.INVISIBLE);
+            binding.mainImageQibla.setVisibility(View.INVISIBLE);
+        } else
+            compass.start();
     }
 
     @Override
@@ -202,14 +220,12 @@ public class QublaFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         if (workingOffLine) {
             Log.e(TAG, "onResume workingOffLine true so compass start");
-            compass.start();
+            startCompass();
             return;
         }
-
-        if (compass != null) compass.start();
+        startCompass();
 
     }
 
@@ -257,6 +273,7 @@ public class QublaFragment extends Fragment {
 
         if (QiblaDegree > 0) {
             binding.mainImageQibla.setVisibility(VISIBLE);
+            binding.btnMoaayara.setVisibility(View.GONE);
         } else {
             binding.mainImageQibla.setVisibility(INVISIBLE);
             binding.mainImageQibla.setVisibility(View.GONE);
@@ -318,21 +335,17 @@ public class QublaFragment extends Fragment {
                 saveLastQublaLocation(location);
                 if (compass == null) {
                     setupCompass();
-                    compass.start();
-                } else compass.start();
+                    startCompass();
+                } else
+                    startCompass();
             });
 
 
-        if (gps.canGetLocation()) {
-            Log.e(TAG, "fetch_GPS canGetLocation true so gps getLocation");
+        if (gps.canGetLocation())
             gps.getLocation();
-        } else {
-            Log.e(TAG, "fetch_GPS canGetLocation false");
-            //binding.btnMoaayara.setVisibility(View.VISIBLE);
-            //binding.btnMoaayara.setText("البحث على اتجاه القبلة");
-
+        else
             showSettigAlert();
-        }
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -366,14 +379,6 @@ public class QublaFragment extends Fragment {
         binding.mainImageQibla.setVisibility(View.GONE);
         binding.textUp.setText("");
         binding.tvMoaayara.setText(getResources().getString(R.string.gpsplz));
-    }
-
-    public void QiblaTips() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(requireActivity());
-        alertDialog.setTitle(requireActivity().getResources().getString(R.string.consignes));
-        alertDialog.setMessage(requireActivity().getResources().getString(R.string.qiblatips));
-        alertDialog.setPositiveButton(requireActivity().getResources().getString(R.string.ok), (dialog, which) -> dialog.cancel());
-        alertDialog.show();
     }
 
     private void saveLastQublaLocation(Location location) {

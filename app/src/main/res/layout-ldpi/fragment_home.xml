@@ -10,446 +10,201 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color"
-        >
+        android:background="@color/background_color">
 
-        <LinearLayout
-            android:id="@+id/main_content"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/background_color"
-            >
+            android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="5dp"
-                android:src="@drawable/salam" />
-
-            <TextView
-                android:id="@+id/tv_home_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/ic_konouz"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="30dp"
-                android:fontFamily="@font/ffshamel_book"
                 android:gravity="center"
-                android:text="سارع و اعمل حسنات أينما كنت .."
-                android:textColor="@color/black"
-                android:textSize="@dimen/tv_small_size" />
+                android:padding="14dp"
+                android:src="@drawable/ic_konouz" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_time"
+            <ImageView
+                android:id="@+id/img_background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="6dp">
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:adjustViewBounds="true"
+                android:gravity="center"
+                android:src="@drawable/ic_adkar_background" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/card_background">
-
-                    <TextView
-                        android:id="@+id/tv_salat_message"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center|start"
-                        android:paddingEnd="15dp"
-                        android:lines="1"
-                        android:text="بقي على أذان الظهر"
-                        android:textColor="@color/blan"
-                        android:textSize="@dimen/tv_normal_size" />
-
-                    <TextView
-                        android:id="@+id/tv_next_prayer_countdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_salat_message"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        tools:text="1:05:11"
-                        android:lines="1"
-                        android:textColor="@color/blan"
-                        android:textSize="@dimen/tv_time_size" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_location"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_next_prayer_countdown"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:drawableEnd="@drawable/ic_location_icon_blan"
-                        android:drawablePadding="5dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:textColor="@color/blan"
-                        android:textSize="@dimen/tv_small_size"
-                        android:visibility="gone"
-                        android:lines="1"
-                        tools:text="بوعاتي محمود قالمة"
-                        tools:visibility="visible" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_location"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center"
-                        android:lines="1"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:textColor="@color/blan"
-                        android:textSize="11sp"
-                        android:visibility="visible"
-                        tools:text="الأحد 27 شعبان 1444 الموافق لـ 19-03-2023"
-                        />
-
-
-
-                </RelativeLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <include
-                android:id="@+id/include_home_hor_buttons_card"
-                layout="@layout/include_home_hor_buttons" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_quran"
+            <LinearLayout
+                android:id="@+id/main_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="6dp">
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
 
-                <RelativeLayout
+                <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/blan">
+                    android:layout_height="50dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="5dp"
+                    android:src="@drawable/salam" />
 
-                    <TextView
-                        android:id="@+id/tv_last_time"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center|start"
-                        android:paddingEnd="15dp"
-                        android:text="تابع قراءة القرآن"
-                        android:textColor="#424242"
-                        android:textSize="@dimen/tv_normal_size" />
-
-                    <TextView
-                        android:id="@+id/tv_last_aya_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_last_time"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:text="توقفت عند قوله تعالى :"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/tv_small_size" />
-
-                    <TextView
-                        android:id="@+id/tv_last_aya"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_last_aya_title"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/al_qalam_quran"
-                        android:lines="1"
-                        tools:text="﴿ سَيَقُولُ السُّفَهَاءُ مِنَ النَّاسِ مَا وَلَّاهُمْ عَنْ قِبْلَتِهِمُ الَّتِي كَانُوا عَلَيْهَا ﴾"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/tv_quran_size" />
-
-                    <View
-                        android:id="@+id/view_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
-                        android:layout_below="@+id/tv_last_aya"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="40dp"
-                        android:background="#FAFBFD" />
-
-                    <TextView
-                        android:id="@+id/tv_move"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/view_id"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:background="?selectableItemBackground"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="8dp"
-                        android:text="متابعة"
-                        android:textColor="#E6A34C"
-                        android:textSize="16sp" />
-
-
-                </RelativeLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <include
-                android:id="@+id/include_fast_adkar_card"
-                layout="@layout/include_fast_adkar" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_library"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="6dp">
-
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/tv_home_title"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/blan">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="30dp"
+                    android:fontFamily="@font/ffshamel_book"
+                    android:gravity="center"
+                    android:text="سارع و اعمل حسنات أينما كنت .."
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/tv_small_size" />
 
-                    <TextView
-                        android:id="@+id/tv_library"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center|start"
-                        android:paddingEnd="15dp"
-                        android:text="تابع قراءة كتاب :"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size" />
+                <include
+                    android:id="@+id/include_cardview_time"
+                    layout="@layout/include_timing_card" />
 
-                    <TextView
-                        android:id="@+id/tv_destination"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_library"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center"
-                        android:text="صحيح البخاري - كتاب العلم"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size" />
+                <include
+                    android:id="@+id/include_home_hor_buttons_card"
+                    layout="@layout/include_home_hor_buttons" />
 
-                    <TextView
-                        android:id="@+id/tv_chapter"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_destination"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        android:lines="1"
-                        android:text="باب من رفع صوته بالعلم"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size" />
+                <include
+                    android:id="@+id/include_last_saved_quran"
+                    layout="@layout/include_last_saved_quran" />
 
+                <include
+                    android:id="@+id/include_fast_adkar_card"
+                    layout="@layout/include_fast_adkar" />
 
-                    <View
-                        android:id="@+id/view_id2"
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
-                        android:layout_below="@+id/tv_chapter"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="40dp"
-                        android:background="#FAFBFD" />
+                <include
+                    android:id="@+id/include_last_book"
+                    layout="@layout/include_last_book" />
 
-                    <TextView
-                        android:id="@+id/tv_move_library"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/view_id2"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:background="?selectableItemBackground"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="8dp"
-                        android:text="تابع"
-                        android:textColor="#E6A34C"
-                        android:textSize="@dimen/tv_normal_size" />
-
-
-                </RelativeLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_dikr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="6dp">
-
-                <RelativeLayout
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview_dikr"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/blan">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="6dp">
 
-                    <TextView
-                        android:id="@+id/tv_dikr_card"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center|start"
-                        android:paddingEnd="15dp"
-                        android:text="من الأذكار المختارة لك  :"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size" />
+                        android:layout_height="match_parent"
+                        android:background="@color/blan">
 
-                    <TextView
-                        android:id="@+id/tv_category"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_dikr_card"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size"
-                        tools:text="من دعاء التعزية" />
+                        <TextView
+                            android:id="@+id/tv_dikr_card"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerInParent="true"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center|start"
+                            android:paddingEnd="15dp"
+                            android:text="من الأذكار المختارة لك  :"
+                            android:textColor="@color/tv_gri_color"
+                            android:textSize="@dimen/tv_normal_size" />
 
-                    <TextView
-                        android:id="@+id/tv_dikr_body"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_category"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="15dp"
-                        android:fontFamily="@font/ffshamel_book"
-                        android:gravity="center"
-                        android:maxLines="4"
-                        android:textColor="@color/tv_gri_color"
-                        android:textSize="@dimen/tv_normal_size"
-                        tools:text="(إن لله ما أخذ، وله ما أعطى، وكل شيء عنده بأجل مسمى... فلتصبر ولتحتسب) وإن قال: (أعظم الله أجرك، وأحسن عزاءك، وغفر لميتك) فحسن
+                        <TextView
+                            android:id="@+id/tv_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_dikr_card"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="15dp"
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center"
+                            android:textColor="@color/tv_gri_color"
+                            android:textSize="@dimen/tv_normal_size"
+                            tools:text="من دعاء التعزية" />
+
+                        <TextView
+                            android:id="@+id/tv_dikr_body"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_category"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="15dp"
+                            android:fontFamily="@font/ffshamel_book"
+                            android:gravity="center"
+                            android:maxLines="4"
+                            android:textColor="@color/tv_gri_color"
+                            android:textSize="@dimen/tv_normal_size"
+                            tools:text="(إن لله ما أخذ، وله ما أعطى، وكل شيء عنده بأجل مسمى... فلتصبر ولتحتسب) وإن قال: (أعظم الله أجرك، وأحسن عزاءك، وغفر لميتك) فحسن
  البخاري، ٢/ ٨٠، برقم ١٢٨٤، ومسلم، ٢/ ٦٣٦، برقم ٩٢٣.  الأذكار للنووي، ص١٢٦ ." />
 
 
-                    <View
-                        android:id="@+id/view_id3"
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
-                        android:layout_below="@+id/tv_dikr_body"
-                        android:layout_marginStart="40dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="40dp"
-                        android:background="#FAFBFD" />
+                        <View
+                            android:id="@+id/view_id3"
+                            android:layout_width="match_parent"
+                            android:layout_height="3dp"
+                            android:layout_below="@+id/tv_dikr_body"
+                            android:layout_marginStart="40dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="40dp"
+                            android:background="#FAFBFD" />
 
-                    <TextView
-                        android:id="@+id/tv_move_dikr"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/view_id3"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerInParent="true"
-                        android:background="?selectableItemBackground"
-                        android:fontFamily="@font/ffshamel_family_bold"
-                        android:gravity="center"
-                        android:paddingStart="15dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="15dp"
-                        android:paddingBottom="8dp"
-                        android:text="اكتشف اكثر"
-                        android:textColor="#E6A34C"
-                        android:textSize="@dimen/tv_normal_size" />
-
-
-                </RelativeLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/tv_about"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="50dp"
-                android:background="?selectableItemBackground"
-                android:drawablePadding="10dp"
-                android:fontFamily="@font/ffshamel_book"
-                android:gravity="center"
-                android:paddingTop="8dp"
-                android:text="حول تطبيق كنوز"
-                android:textColor="#424242"
-                android:textSize="@dimen/tv_normal_size"
-                app:drawableStartCompat="@drawable/ic_about" />
+                        <TextView
+                            android:id="@+id/tv_move_dikr"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/view_id3"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerInParent="true"
+                            android:background="?selectableItemBackground"
+                            android:fontFamily="@font/ffshamel_family_bold"
+                            android:gravity="center"
+                            android:paddingStart="15dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="15dp"
+                            android:paddingBottom="8dp"
+                            android:text="اكتشف اكثر"
+                            android:textColor="#E6A34C"
+                            android:textSize="@dimen/tv_normal_size" />
 
 
-        </LinearLayout>
+                    </RelativeLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/tv_about"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="50dp"
+                    android:background="?selectableItemBackground"
+                    android:drawablePadding="10dp"
+                    android:fontFamily="@font/ffshamel_book"
+                    android:gravity="center"
+                    android:paddingTop="8dp"
+                    android:text="حول تطبيق كنوز"
+                    android:textColor="#424242"
+                    android:textSize="@dimen/tv_normal_size"
+                    app:drawableStartCompat="@drawable/ic_about" />
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
     </ScrollView>
 

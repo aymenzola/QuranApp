@@ -112,4 +112,18 @@ public class AdkarModel implements Serializable {
         this.dikrTitle = dikrTitle;
     }
 
+
+    @Override
+    public String toString() {
+        return "AdkarModel{" +
+                "id=" + id +
+                ", dikr='" + dikr + '\'' +
+                ", category='" + category + '\'' +
+                ", source='" + source + '\'' +
+                ", categoryId=" + categoryId +
+                ", isSaved=" + isSaved +
+                ", dikrTitle='" + dikrTitle + '\'' +
+                ", isExpanded=" + isExpanded +
+                '}';
+    }
 }

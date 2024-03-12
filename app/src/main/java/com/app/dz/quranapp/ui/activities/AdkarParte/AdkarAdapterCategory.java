@@ -3,9 +3,7 @@ package com.app.dz.quranapp.ui.activities.AdkarParte;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -13,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemAdkrCategoryBinding;
-import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -48,10 +44,10 @@ public class AdkarAdapterCategory extends RecyclerView.Adapter<AdkarAdapterCateg
         switch (position) {
             case 0 -> holder.binding.img.setImageResource(R.drawable.svg1);
             case 1 -> holder.binding.img.setImageResource(R.drawable.svg2);
-            case 2 -> holder.binding.img.setImageResource(R.drawable.ic_adkar_sabah);
-            case 3 -> holder.binding.img.setImageResource(R.drawable.ic_adkar_masa);
-            case 4 -> holder.binding.img.setImageResource(R.drawable.ic_adkar_image_safar);
-            case 5 -> holder.binding.img.setImageResource(R.drawable.ic_adkar_image_tahsin);
+            case 2 -> holder.binding.img.setImageResource(R.drawable.ic_sabah);
+            case 3 -> holder.binding.img.setImageResource(R.drawable.ic_masa);
+            case 4 -> holder.binding.img.setImageResource(R.drawable.ic_safar);
+            case 5 -> holder.binding.img.setImageResource(R.drawable.ic_tahsin);
         }
 
 

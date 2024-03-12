@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardview_quran"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginEnd="15dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="6dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blan">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tv_last_time"
+            android:layout_alignBottom="@+id/tv_last_time"
+            android:layout_toStartOf="@+id/tv_last_time"
+            android:src="@drawable/ic_star2"
+            />
+
+        <TextView
+            android:id="@+id/tv_last_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center|end"
+            android:paddingEnd="10dp"
+            android:text="تابع قراءة القرآن"
+            android:textColor="#424242"
+            android:textSize="@dimen/tv_normal_size" />
+
+        <TextView
+            android:id="@+id/tv_last_aya_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_last_time"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:text="توقفت عند قوله تعالى :"
+            android:textColor="@color/black"
+            android:textSize="@dimen/tv_mini_size" />
+
+        <TextView
+            android:id="@+id/tv_last_aya"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_last_aya_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/al_qalam_quran"
+            android:maxLines="2"
+            android:textColor="@color/black"
+            android:textSize="@dimen/tv_quran_size"
+            tools:text="﴿ سَيَقُولُ السُّفَهَاءُ مِنَ النَّاسِ مَا وَلَّاهُمْ عَنْ قِبْلَتِهِمُ الَّتِي كَانُوا عَلَيْهَا ﴾" />
+
+        <View
+            android:id="@+id/view_id"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_below="@+id/tv_last_aya"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="40dp"
+            android:background="#FAFBFD" />
+
+        <TextView
+            android:id="@+id/tv_move"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_id"
+            android:layout_centerInParent="true"
+            android:background="?selectableItemBackground"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:paddingStart="15dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="8dp"
+            android:text="تابع"
+            android:textColor="#E6A34C"
+            android:textSize="@dimen/tv_normal_size"
+            app:drawableStartCompat="@drawable/ic_double_arrow" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

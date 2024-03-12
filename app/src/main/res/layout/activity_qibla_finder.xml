@@ -43,7 +43,7 @@
             android:layout_alignParentEnd="true"
             android:gravity="center"
             android:padding="@dimen/back_icon_padding"
-            android:src="@drawable/baseline_keyboard_arrow_right_24" />
+            android:src="@drawable/ic_back_arrow" />
 
         <ImageView
             android:layout_width="?actionBarSize"

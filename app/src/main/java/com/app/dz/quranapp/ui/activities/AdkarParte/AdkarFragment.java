@@ -2,10 +2,6 @@ package com.app.dz.quranapp.ui.activities.AdkarParte;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,15 +25,12 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.app.dz.quranapp.Communs.PrayerTimesPreference;
 import com.app.dz.quranapp.R;
-import com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver;
 import com.app.dz.quranapp.databinding.DialogAdkarOnBinding;
 import com.app.dz.quranapp.databinding.FragmentAdkarBinding;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.AdkarViewModel;
 import com.app.dz.quranapp.ui.activities.subha.AdkarSubhaUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.Gson;
 
 import java.util.Calendar;
 import java.util.List;
@@ -103,6 +96,8 @@ public class AdkarFragment extends Fragment {
         //viewModel.setFastDick();
         initializeAdkarState();
         viewModel.setAdkarList();
+
+
     }
 
     private void showAdkarCategories(List<AdkarModel> list) {
@@ -131,7 +126,10 @@ public class AdkarFragment extends Fragment {
         binding.includeFastAdkarCard.tvFastAdkarText.setText(dikr);
 
         binding.includeFastAdkarCard.tvFastAdkarTitle.setSelected(true);
-        binding.imgBack.setOnClickListener(v -> navController.navigateUp());
+        binding.imgBack.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main3);
+            navController.navigate(R.id.action_adkarFragment_to_fragment_home);
+        });
 
         binding.includeFastAdkarCard.btnFastAdkar.setOnClickListener(v -> handleFastDikrClick());
 
@@ -207,18 +205,6 @@ public class AdkarFragment extends Fragment {
     private void handleFastDikrClick() {
         adkarCouner = adkarCouner + 1;
         binding.includeFastAdkarCard.btnFastAdkar.setText(String.valueOf(adkarCouner));
-
-        /*if (adkarCouner == globalAdkarList.size() - 1)
-            adkarCouner = 0;
-        else
-            adkarCouner = adkarCouner + 1;
-
-
-        binding.includeFastAdkarCard.tvFastAdkarText.setText(globalAdkarList.get(adkarCouner).getDikr());
-        int value = adkarCouner + 1;
-        binding.includeFastAdkarCard.btnFastAdkar.setText("" + value);
-    */
-
     }
 
     public void setObservers() {
@@ -249,7 +235,7 @@ public class AdkarFragment extends Fragment {
 
             //using work manager to schedule the next dikr notification
             AdkarHelper.setIsFirstNotification(true);
-            PeriodicWorkRequest adkarNotificationRequest = new PeriodicWorkRequest.Builder(AdkarNotificationWorker.class,AdkarHelper.getAdkarLevel(), TimeUnit.HOURS).build();
+            PeriodicWorkRequest adkarNotificationRequest = new PeriodicWorkRequest.Builder(AdkarNotificationWorker.class, AdkarHelper.getAdkarLevel(), TimeUnit.HOURS).build();
             AdkarHelper.saveAdkarWorkId(adkarNotificationRequest.getId().toString());
             AdkarHelper.saveScheduledNotificationCount((int) AdkarHelper.getNumberOfNotifications());
             WorkManager.getInstance(requireActivity()).enqueue(adkarNotificationRequest);
@@ -337,7 +323,8 @@ public class AdkarFragment extends Fragment {
         dialogBuilder.setView(binding.getRoot());
         AlertDialog dialog = dialogBuilder.create();
 
-        if (dialog.getWindow() != null) dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        if (dialog.getWindow() != null)
+            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         dialog.setCancelable(true);
         dialog.show();
@@ -354,18 +341,6 @@ public class AdkarFragment extends Fragment {
         super.onPause();
         isFirstLaunch = true;
         Log.e("lifecycle", "onPause FragmentPlayLists");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.e("lifecycle", "onResume FragmentPlayLists");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.e("lifecycle", "onDestroyView FragmentPlayLists");
     }
 
 }

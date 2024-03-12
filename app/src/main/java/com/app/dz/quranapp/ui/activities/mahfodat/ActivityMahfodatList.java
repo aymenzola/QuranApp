@@ -193,7 +193,7 @@ public class ActivityMahfodatList extends AppCompatActivity {
 
             @Override
             public void onOpenChapterClicked(Chapter chapter) {
-                ChapterUtils.moveToChapterDetails(ActivityMahfodatList.this, chapter);
+                ChapterUtils.moveToChapterDetails(ActivityMahfodatList.this,chapter);
             }
 
             @Override

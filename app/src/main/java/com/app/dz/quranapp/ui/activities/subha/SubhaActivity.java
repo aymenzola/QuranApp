@@ -1,8 +1,10 @@
 package com.app.dz.quranapp.ui.activities.subha;
 
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ public class SubhaActivity extends AppCompatActivity {
 
     private int count = 0;
     private AdkarListAdapter adapter;
+    private Vibrator vibrator;
 
     public SubhaActivity() {
         // Required empty public constructor
@@ -36,6 +39,8 @@ public class SubhaActivity extends AppCompatActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             getWindow().setStatusBarColor(getColor(R.color.blan));
         }
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         setListeners();
 
@@ -53,6 +58,12 @@ public class SubhaActivity extends AppCompatActivity {
         binding.includeFastAdkarCard.btnSubhaClicked.setOnClickListener(v -> {
             count++;
             binding.includeFastAdkarCard.btnSubhaClicked.setText(String.valueOf(count));
+/*
+            if (vibrator.hasVibrator())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                else
+                    vibrator.vibrate(500);*/
         });
 
         binding.includeFastAdkarCard.btnReset.setOnClickListener(v -> {
@@ -95,7 +106,7 @@ public class SubhaActivity extends AppCompatActivity {
     }
 
     private void showsAdkarStringAdapter(List<AdkarListAdapter.DikrItem> adkarList) {
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
         adapter = new AdkarListAdapter(adkarList,new AdkarListAdapter.OnAdapterClickListener() {
             @Override
             public void onItemClick(AdkarListAdapter.DikrItem dikrItem) {

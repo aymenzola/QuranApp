@@ -21,7 +21,6 @@ import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.FragmentAdkarDetailsBinding;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.AdkarViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -68,7 +67,7 @@ public class AdkarDetailsFragment extends Fragment {
         if (arguments != null) {
             AdkarModel adkarModel = (AdkarModel) arguments.getSerializable("adkarModel");
             if (adkarModel != null) {
-                binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText("أدكار "+adkarModel.getCategory());
+                binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText(adkarModel.getCategory());
                 getAdkarByCategory(adkarModel.getCategoryId());
             }
 

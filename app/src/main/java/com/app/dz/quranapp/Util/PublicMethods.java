@@ -3,19 +3,18 @@ package com.app.dz.quranapp.Util;
 
 import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.app.dz.quranapp.R;
@@ -34,8 +33,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import pub.devrel.easypermissions.EasyPermissions;
 
 public class PublicMethods {
     private static PublicMethods instance;
@@ -159,25 +156,24 @@ public class PublicMethods {
         }
     }
 
-    public File getFile(Context context, String readerTag, int suraIndex) {
+    public File getFile(Context context, String readerTag,int suraIndex) {
         createAppFolderIfNotExist(context);
         String filename = readerTag + "_" + suraIndex + ".mp3";
-        /*if (Build.VERSION_CODES.P >= Build.VERSION.SDK_INT) {
-            return new File(context.getFilesDir(), AppfolderName + File.separator+ readerTag +File.separator+ filename);
-        } else {
-            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + readerTag + "/" + filename);
-        }*/
         return new File(context.getFilesDir(), AppfolderName + File.separator+ readerTag +File.separator+ filename);
+    }
+
+    public File getFile(Context context, String subFolder,String filename) {
+        createAppFolderIfNotExist(context);
+        createSubFolderIfNotExist(context,subFolder);
+        return new File(context.getFilesDir(), AppfolderName + File.separator+ subFolder +File.separator+ filename);
+    }
+
+    public String getSuraFileName(String readerTag,int suraIndex) {
+        return readerTag + "_" + suraIndex + ".mp3";
     }
 
     public File getFile(String filename, Context context) {
         createAppFolderIfNotExist(context);
-     /*   if (Build.VERSION_CODES.P >= Build.VERSION.SDK_INT) {
-            return new File(context.getFilesDir(), AppfolderName + File.separator + filename);
-        } else {
-            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + AppfolderName + "/" + filename);
-        }
-    */
         return new File(context.getFilesDir(), AppfolderName + File.separator + filename);
     }
 
@@ -364,30 +360,6 @@ public class PublicMethods {
     }
 
     public void createAppFolderIfNotExist(Context context) {
-    /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            File folder = new File(context.getFilesDir(), AppfolderName);
-            if (!folder.exists()) {
-                boolean result = folder.mkdirs();
-                Log.e("checkStorageTag", result ? "Folder created" : "Folder not created");
-            } else {
-                Log.e("checkStorageTag", "Folder already exists");
-            }
-
-        } else {
-
-            File folderFile2 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), AppfolderName);
-            if (!folderFile2.exists()) {
-                if (folderFile2.mkdirs()) {
-                    Log.e("checkStorageTag", "Folder created successfully");
-                } else {
-                    Log.e("checkStorageTag", "Failed to create folder");
-                }
-            } else {
-                Log.d("checkStorageTag", "Folder already exists");
-            }
-        }
-    */
         File folder = new File(context.getFilesDir(), AppfolderName);
         if (!folder.exists()) {
             boolean result = folder.mkdirs();
@@ -397,12 +369,33 @@ public class PublicMethods {
         }
     }
 
-    public boolean haveStoragePermissions(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            //we have permission
-            return EasyPermissions.hasPermissions(context,Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+    public void createSubFolderIfNotExist(Context context, String subFolderName) {
+        File folder = new File(context.getFilesDir(), AppfolderName + File.separator + subFolderName);
+        if (!folder.exists()) {
+            boolean result = folder.mkdirs();
+            Log.e("checkStorageTag", result ? "Folder created" : "Folder not created");
+        } else {
+            Log.e("checkStorageTag", "Folder already exists");
         }
-        return true;
+    }
+
+
+    @NonNull
+    public String getImageUrl(int pageNumber,String quran_page_image_url) {
+        String url;
+        if (quran_page_image_url.contains("qurancomplex.gov.sa/issues/hafs")) {
+            int pageNumberCorrectInUrl = pageNumber + 3;
+            url = quran_page_image_url + pageNumberCorrectInUrl + ".jpg";
+        } else if (quran_page_image_url.contains("qurancomplex") || quran_page_image_url.contains("QuranHub") || quran_page_image_url.contains("hafs-tajweed"))
+
+            url = quran_page_image_url + pageNumber + ".jpg";
+
+        else if (quran_page_image_url.contains("GovarJabbar"))
+
+            url = quran_page_image_url + new DecimalFormat("000").format(pageNumber) + ".png";
+        else
+            url = quran_page_image_url + pageNumber + ".png";
+        return url;
     }
 
 }

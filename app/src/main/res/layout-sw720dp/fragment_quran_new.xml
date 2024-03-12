@@ -315,7 +315,7 @@
                     android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:text="النسخة الفرنسية"
+                    android:text="الترجمة الفرنسية"
                     android:textSize="@dimen/tv_small_size_tablet" />
 
                 <View
@@ -332,7 +332,7 @@
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
                     android:textSize="@dimen/tv_small_size_tablet"
-                    android:text="النسخة الانجليزية" />
+                    android:text="الترجمة الانجليزية" />
 
                 <View
                     android:layout_width="match_parent"

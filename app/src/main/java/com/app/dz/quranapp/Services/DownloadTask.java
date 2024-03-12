@@ -11,7 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class DownloadTask extends AsyncTask<String, Integer, Integer> {
     private boolean isPaused = false;
@@ -35,18 +38,20 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
         HttpURLConnection connection = null;
 
         try {
-            //File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),AppfolderName+"/"+fileName);
+            Log.e("Download", "we are here starting download " + url + outputFile.getAbsolutePath());
 
-            Log.e("Download", "we are here starting download "+url);
-            URL url = new URL(this.url);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(this.url).build();
+
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
             // Get the total file size
-            totalSize = connection.getContentLength();
-            Log.e("Download", "we are here starting download totalSize : "+totalSize);
+            totalSize = Integer.parseInt(response.header("Content-Length"));
+            Log.e("Download", "we are here starting download totalSize : " + totalSize);
+
             // Create input and output streams
-            input = new BufferedInputStream(url.openStream());
+            input = new BufferedInputStream(response.body().byteStream());
             output = new FileOutputStream(outputFile);
 
             byte data[] = new byte[1024];
@@ -72,7 +77,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
         } catch (IOException e) {
             if (outputFile.exists()) outputFile.delete();
             listener.onDownloadError(e.getMessage());
-            Log.e("Download", "download exception "+e.getMessage());
+            Log.e("Download", "download exception " + e.getMessage());
             e.printStackTrace();
             return downloadedSize;
         } finally {
@@ -86,14 +91,10 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
             } catch (IOException e) {
                 if (outputFile.exists()) outputFile.delete();
                 listener.onDownloadError(e.getMessage());
-                Log.e("Download", "2 download exception "+e.getMessage());
+                Log.e("Download", "2 download exception " + e.getMessage());
                 e.printStackTrace();
             }
-            if (connection != null) {
-                connection.disconnect();
-            }
         }
-
     }
 
     @Override

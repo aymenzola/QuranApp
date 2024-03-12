@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,7 +123,7 @@ public class FragmentPrayer extends Fragment {
         }
 
         alarmManager = (AlarmManager) requireActivity().getSystemService(ALARM_SERVICE);
-        binding.tvLocationn.setOnClickListener(v -> startActivity(new Intent(requireActivity(), LocationActivity.class)));
+        binding.includeTimingCard.tvLocation.setOnClickListener(v -> startActivity(new Intent(requireActivity(), LocationActivity.class)));
 
         setObservers();
         viewModel.setDayPrayer();
@@ -138,10 +137,10 @@ public class FragmentPrayer extends Fragment {
                 if (adapter == null) return;
                 String date = adapter.getItem(position).getDate();
                 binding.tvDayHijri.setText(getDateArabicName(date));
-                Log.e("testLog","الموافق ل " + date+"  "+getDateArabicName(date));
+                Log.e("testLog", "الموافق ل " + date + "  " + getDateArabicName(date));
                 binding.tvDay.setText("الموافق ل " + date);
 
-                Log.e("testLog","tvDay content "+binding.tvDay.getText().toString());
+                Log.e("testLog", "tvDay content " + binding.tvDay.getText().toString());
 
             }
         };
@@ -153,9 +152,9 @@ public class FragmentPrayer extends Fragment {
     private void checkLocationAviablity() {
         boolean alreadyExist = SharedPreferenceManager.getInstance(requireActivity()).iSLocationAvialable();
         if (alreadyExist) {
-            binding.tvLocationn.setVisibility(View.VISIBLE);
+            binding.includeTimingCard.tvLocation.setVisibility(View.VISIBLE);
             UserLocation prevUserLocation = SharedPreferenceManager.getInstance(requireActivity()).getUserLocation();
-            binding.tvLocationn.setText(prevUserLocation.address);
+            binding.includeTimingCard.tvLocation.setText(prevUserLocation.address);
         } else {
             HandleNoLocation();
         }
@@ -173,6 +172,7 @@ public class FragmentPrayer extends Fragment {
 
 
         binding.includToolbar.imgBack.setVisibility(View.GONE);
+        binding.includeTimingCard.tvDate.setVisibility(View.GONE);
 
         binding.imgBack.setOnClickListener(v -> {
             int currentItem = binding.viewpager.getCurrentItem();
@@ -318,7 +318,7 @@ public class FragmentPrayer extends Fragment {
 
         // display the remaining time in the TextView
         String countdownText = String.format(foramt, hours, minutes, seconds);
-        binding.tvNextPrayerCountdown.setText(countdownText);
+        binding.includeTimingCard.tvNextPrayerCountdown.setText(countdownText);
     }
 
     public void initializeArticlesAdapter(List<DayPrayerTimes> weekTimesList) {
@@ -378,7 +378,7 @@ public class FragmentPrayer extends Fragment {
             date = dateFormat.parse(inputDate);
             hijriDateStr = outputDateFormatDayName.format(date) + " " + getHijriDate(inputDate);
         } catch (Exception e) {
-            Log.e("testLog","error in getDateArabicName "+e.getMessage());
+            Log.e("testLog", "error in getDateArabicName " + e.getMessage());
             Log.e(TAG, "error " + e.getMessage());
         }
         return hijriDateStr;
@@ -553,20 +553,16 @@ public class FragmentPrayer extends Fragment {
             nextSalatName = "العشاء";
         }
 
-        String text = "بقي على أذان  <b>" + nextSalatName + "</b> :";
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            binding.tvSalatMessage.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            binding.tvSalatMessage.setText(Html.fromHtml(text));
-        }
+        binding.includeTimingCard.tvSalatMessage.setText("بقي على أذان");
+        binding.includeTimingCard.tvSalatName.setText(nextSalatName);
 
         countdownDuration = Nextmillseconds - System.currentTimeMillis();
 
-        if (count != null && binding.tvNextPrayerCountdown.getText().length() > 0) {
+        if (count != null && binding.includeTimingCard.tvNextPrayerCountdown.getText().length() > 0) {
             Log.e("checktimeTag", "managePrayerTime count is not null return");
             return;
         } else {
-            Log.e("checktimeTag", "managePrayerTime count is null or length " + binding.tvNextPrayerCountdown.getText().length());
+            Log.e("checktimeTag", "managePrayerTime count is null or length " + binding.includeTimingCard.tvNextPrayerCountdown.getText().length());
             if (count != null) {
                 count.cancel();
                 count = null;
@@ -584,12 +580,8 @@ public class FragmentPrayer extends Fragment {
             @Override
             public void onFinish() {
                 // display a message when the timer finishes
-                String text = "حان الان موعد صلاة  <b>" + nextSalatName + "</b> :";
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    binding.tvSalatMessage.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
-                } else {
-                    binding.tvSalatMessage.setText(Html.fromHtml(text));
-                }
+                binding.includeTimingCard.tvSalatMessage.setText("حان الان موعد صلاة");
+                binding.includeTimingCard.tvSalatName.setText(nextSalatName);
             }
         }.start();
 

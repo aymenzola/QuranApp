@@ -21,7 +21,7 @@ public interface AdkarDao {
 
     @Query("SELECT * FROM adkar where categoryId =:categoryId")
     Observable<List<AdkarModel>> getAdkarByCategoryId(Integer categoryId);
-
+    //smart zone
     @Query("SELECT * FROM adkar where id =:Id")
     Observable<AdkarModel> getdikrWithId(int Id);
 

@@ -11,9 +11,6 @@
         tools:layout="@layout/fragment_home" >
 
         <action
-            android:id="@+id/action_navigation_sura_to_searchQuranFragment"
-            app:destination="@id/searchQuranFragment" />
-        <action
             android:id="@+id/action_fragment_home_to_fragments_collection"
             app:destination="@id/fragments_collection"
             app:popUpTo="@id/fragment_home"
@@ -71,18 +68,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/searchQuranFragment"
-        android:name="com.app.dz.quranapp.ui.activities.QuranSearchParte.ActivitySearchQuran"
-        android:label="SearchQuranFragment"
-        tools:layout="@layout/fragment_quran_search"
-        />
-    <fragment
-        android:id="@+id/quranFragment"
-        android:name="com.app.dz.quranapp.ui.activities.MainActivityPartes.HomeFragment.QuranFragment"
-        android:label="QuranFragment"
-        tools:layout="@layout/fragment_quran_list"
-        />
-    <fragment
         android:id="@+id/adkarFragment"
         android:name="com.app.dz.quranapp.ui.activities.AdkarParte.AdkarFragment"
         android:label="AdkarFragment"
@@ -102,7 +87,7 @@
         android:id="@+id/qublaFragment"
         android:name="com.app.dz.quranapp.ui.activities.qibla_parte.QublaFragment"
         android:label="QublaFragment"
-        tools:layout="@layout/fragment_qubla">
+        tools:layout="@layout/activity_qibla_finder">
         <action
             android:id="@+id/action_qublaFragment_to_fragment_home"
             app:destination="@id/fragment_home" />
@@ -112,12 +97,14 @@
         android:id="@+id/quranFragmentDev"
         android:name="com.app.dz.quranapp.quran.mainQuranFragment.QuranMainFragment"
         android:label="QuranFragmentDev"
-        tools:layout="@layout/quran_activity"
         >
         <action
             android:id="@+id/action_quranFragmentDev_to_fragment_home"
-            app:destination="@id/fragment_home" />
+            app:destination="@id/fragment_home"
+            tools:layout="@layout/fragment_quran_new"
+            />
     </fragment>
+
     <fragment
         android:id="@+id/adkarDetailsFragment"
         android:name="com.app.dz.quranapp.ui.activities.AdkarParte.AdkarDetailsFragment"

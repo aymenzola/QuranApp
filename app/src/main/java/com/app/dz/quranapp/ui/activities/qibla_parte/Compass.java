@@ -89,4 +89,8 @@ public class Compass implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+
+    public boolean areSensorsAvailable() {
+        return gsensor != null && msensor != null;
+    }
 }

@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.data.room.Entities.Book;
 import com.app.dz.quranapp.data.room.Entities.Hadith;
-import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemHadithBinding;
 
 import org.jetbrains.annotations.NotNull;
@@ -53,8 +53,9 @@ public class HadithsAdapter extends RecyclerView.Adapter<HadithsAdapter.ViewHold
 
         Hadith hadith = arrayList.get(position);
         String myData = "<html><body style='text-align:right;'>" + hadith.body + "</body></html>";
-        holder.binding.webView.loadData(myData, "text/html", "UTF-8");
-
+        holder.binding.webView.getSettings().setJavaScriptEnabled(true);
+//        holder.binding.webView.loadData(myData, "text/html", "UTF-8");
+        holder.binding.webView.loadDataWithBaseURL("",myData, "text/html", "UTF-8", null);
         holder.binding.tvDestination.setText(destination);
         holder.binding.tvChapter.setText(hadith.chapterTitle);
         holder.binding.grade.setText("صحة الحديث "+hadith.grade);

@@ -79,6 +79,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         holder.binding.tvDikrCategory.setText(savedBookPage.bookTitle);
         holder.binding.tvDikrTitle.setText(savedBookPage.pageTitle);
 
+        holder.binding.tvOpenRead.setText("تابع القراءة");
         holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenMoreBookClicked(savedBookPage));
 
         Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
@@ -94,7 +95,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
             // Show the Snackbar with the cancel button
             Snackbar snackbar = Snackbar.make(v, "الحدف من المحوظات بعد 4 ثواني", Snackbar.LENGTH_LONG);
-            snackbar.setAction("Cancel", v1 -> {
+            snackbar.setAction("الغاء", v1 -> {
                 // If the user presses cancel, remove the callbacks from the handler
                 handler.removeCallbacksAndMessages(null);
                 Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
@@ -116,6 +117,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         holder.binding.tvDikrCategory.setText(savedMatnPage.bookTitle);
         holder.binding.tvDikrTitle.setText(savedMatnPage.pageTitle);
 
+        holder.binding.tvOpenRead.setText("تابع القراءة");
         holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenMatnClicked(savedMatnPage));
 
         Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
@@ -131,7 +133,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
             // Show the Snackbar with the cancel button
             Snackbar snackbar = Snackbar.make(v, "الحدف من المحوظات بعد 4 ثواني", Snackbar.LENGTH_LONG);
-            snackbar.setAction("Cancel", v1 -> {
+            snackbar.setAction("الغاء", v1 -> {
                 // If the user presses cancel, remove the callbacks from the handler
                 handler.removeCallbacksAndMessages(null);
                 Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
@@ -152,6 +154,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         holder.binding.tvDikrTitle.setText("عدد الابواب " + chapter.bookNumber);
         holder.binding.tvDikrCategory.setText(chapter.chapterTitle);
 
+        holder.binding.tvOpenRead.setText("تابع القراءة");
         holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenChapterClicked(chapter));
 
         if (!chapter.isSaved) {
@@ -179,7 +182,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
                 // Show the Snackbar with the cancel button
                 Snackbar snackbar = Snackbar.make(v, "الحدف من المحوظات بعد 4 ثواني", Snackbar.LENGTH_LONG);
-                snackbar.setAction("Cancel", v1 -> {
+                snackbar.setAction("الغاء", v1 -> {
                     // If the user presses cancel, remove the callbacks from the handler
                     handler.removeCallbacksAndMessages(null);
                     Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);
@@ -202,6 +205,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
         holder.binding.tvDikrCategory.setText(bookWithCount.bookName);
         holder.binding.tvDikrTitle.setText(bookWithCount.firstChapterTitle);
 
+        holder.binding.tvOpenRead.setText("تابع القراءة");
         holder.binding.tvOpenRead.setOnClickListener(v -> clickListener.onOpenBookClicked(bookWithCount));
 
         if (!bookWithCount.isSaved) {
@@ -229,7 +233,7 @@ public class ChaptersSavedAdapter extends RecyclerView.Adapter<ChaptersSavedAdap
 
                 // Show the Snackbar with the cancel button
                 Snackbar snackbar = Snackbar.make(v, "الحدف من المحوظات بعد 4 ثواني", Snackbar.LENGTH_LONG);
-                snackbar.setAction("Cancel", v1 -> {
+                snackbar.setAction("الغاء", v1 -> {
                     // If the user presses cancel, remove the callbacks from the handler
                     handler.removeCallbacksAndMessages(null);
                     Glide.with(holder.binding.imgSave.getContext()).load(R.drawable.ic_saved_new).into(holder.binding.imgSave);

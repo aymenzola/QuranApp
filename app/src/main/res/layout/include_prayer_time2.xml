@@ -38,7 +38,7 @@
             android:gravity="center"
             android:text="الوضع \nالصامت"
             android:textColor="@color/black"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -77,7 +77,7 @@
             android:button="@null"
             android:drawableRight="@drawable/checkbox_selecter"
             android:drawablePadding="5dp"
-            android:text="تشغيل في الوضع الصامت "
+            android:text="تفعيل حتى في الوضع الصامت "
             android:autoSizeTextType="uniform"
             android:maxLines="1"
             android:textColor="#4E261E"

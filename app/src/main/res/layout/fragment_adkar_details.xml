@@ -23,7 +23,6 @@
             android:gravity="center"
             android:src="@drawable/ic_adkar_background" />
 
-
         <RelativeLayout
             android:id="@+id/relative_top"
             android:layout_width="match_parent"
@@ -40,7 +39,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 android:layout_centerInParent="true"
-                android:layout_centerVertical="true"
                 android:padding="17dp"
                 android:src="@drawable/ic_adkar_title" />
 
@@ -64,7 +62,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:gravity="center"
-                android:padding="@dimen/back_icon_padding"
+                android:padding="@dimen/padding_kounoz_image"
                 android:src="@drawable/ic_konouz" />
         </RelativeLayout>
 

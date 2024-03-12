@@ -9,16 +9,17 @@
 
     <TextView
         android:id="@+id/tv_fast_adkar_title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerInParent="true"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
         android:fontFamily="@font/ffshamel_family_bold"
         android:gravity="center|start"
         android:paddingEnd="15dp"
-        android:text="أذكار مختارة :"
+        android:text=" أذكار مختارة :"
         android:textColor="#424242"
         android:textSize="@dimen/tv_small_size" />
 

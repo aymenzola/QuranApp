@@ -21,13 +21,11 @@
  <color name="brown">#B75F08</color>
     <color name="tv_color">#424242</color>
     <color name="button_color">#E6A34C</color>
- <color name="tv_gri_color">#424242</color><![CDATA[
-
-    -->
+ <color name="tv_gri_color">#424242</color>
 
 
- ]]>
-    <color name="background_color">#FAFBFD</color>
+<!--    <color name="background_color">#FAFBFD</color>-->
+    <color name="background_color">#FFFFFF</color>
     <color name="item_count_color">#724A30</color>
 
 

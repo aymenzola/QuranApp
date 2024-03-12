@@ -11,7 +11,7 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color">
+        android:background="@color/white">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -61,8 +61,9 @@
                             android:layout_alignParentStart="true"
                             android:layout_alignParentTop="true"
                             android:layout_gravity="end"
+                            android:layout_marginStart="10dp"
                             android:background="?selectableItemBackground"
-                            android:padding="@dimen/back_icon_padding"
+                            android:padding="@dimen/padding_kounoz_image"
                             android:src="@drawable/ic_konouz" />
 
                         <TextView

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_color">
+
+
+            <ImageView
+                android:id="@+id/img_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:adjustViewBounds="true"
+                android:gravity="center"
+                android:src="@drawable/ic_adkar_background" />
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/button_linear"
+                android:layout_below="@+id/relative_tool_bar"
+                android:layout_centerInParent="true" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/button_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@color/background_color"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_back"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="?selectableItemBackground"
+                    android:rotation="180"
+                    app:cardCornerRadius="7dp"
+                    app:cardElevation="10dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/ripple_effect_card"
+                        android:padding="17dp"
+                        android:src="@drawable/ic_next_icon"
+                        app:tint="#4C241D" />
+
+                </androidx.cardview.widget.CardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_save_hadith"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="?selectableItemBackground"
+                    android:src="@drawable/ic_baseline_navigate_next_24"
+                    app:cardCornerRadius="7dp"
+                    app:cardElevation="10dp"
+
+                    >
+
+                    <ImageView
+                        android:id="@+id/img_save"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/ripple_effect_card"
+                        android:padding="17dp"
+                        android:src="@drawable/ic_unsaved_new" />
+
+                </androidx.cardview.widget.CardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_next"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="?selectableItemBackground"
+                    android:src="@drawable/ic_baseline_navigate_next_24"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="10dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/ripple_effect_card"
+                        android:padding="17dp"
+                        android:src="@drawable/ic_next_icon"
+                        app:tint="#4C241D" />
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <RelativeLayout
+                android:id="@+id/relative_tool_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true">
+
+                <ImageView
+                    android:id="@+id/img_menu"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="center"
+                    android:padding="17dp"
+                    android:src="@drawable/ic_menu"
+                  />
+
+                <ImageView
+                    android:id="@+id/img_search"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:src="@drawable/ic_search_24px"
+                    app:tint="@color/text_color" />
+
+                <TextView
+                    android:id="@+id/tv_change_riwaya"
+                    android:layout_width="wrap_content"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/ffshamel_family_bold"
+                    android:gravity="center"
+                    android:textSize="@dimen/tv_normal_size"
+                    android:text="المكتبة" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:drawerLayoutCornerSize="0dp"
+            app:headerLayout="@layout/drawer_header">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/white"
+                >
+                <include
+                    android:id="@+id/include_drawer"
+                    layout="@layout/drawer_header" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/nested_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </com.google.android.material.navigation.NavigationView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>

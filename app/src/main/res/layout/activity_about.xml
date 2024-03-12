@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color">
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/img_background"
@@ -96,7 +96,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:src="@drawable/ic_konouz"
-            android:padding="12dp"
+            android:padding="@dimen/padding_kounoz_image"
             android:layout_gravity="end"
             />
 

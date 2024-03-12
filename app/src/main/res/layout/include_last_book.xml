@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardview_library"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="15dp"
+    android:layout_marginTop="15dp"
+    android:layout_marginEnd="15dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="6dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blan">
+
+        <TextView
+            android:id="@+id/tv_library"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center|start"
+            android:paddingEnd="15dp"
+            android:text="تابع قراءة كتاب :"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_normal_size" />
+
+        <TextView
+            android:id="@+id/tv_destination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_library"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center"
+            android:text="صحيح البخاري - كتاب العلم"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_small_size" />
+
+        <TextView
+            android:id="@+id/tv_chapter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_destination"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:lines="1"
+            android:text="باب من رفع صوته بالعلم"
+            android:textColor="@color/tv_gri_color"
+            android:textSize="@dimen/tv_normal_size" />
+
+
+        <View
+            android:id="@+id/view_id2"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_below="@+id/tv_chapter"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="40dp"
+            android:background="#FAFBFD" />
+
+        <TextView
+            android:id="@+id/tv_move_library"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view_id2"
+            android:layout_centerInParent="true"
+            android:background="?selectableItemBackground"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:gravity="center"
+            android:paddingStart="15dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="15dp"
+            android:paddingBottom="8dp"
+            android:text="تابع"
+            android:textColor="#E6A34C"
+            android:textSize="@dimen/tv_normal_size"
+            app:drawableStartCompat="@drawable/ic_double_arrow" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

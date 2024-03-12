@@ -12,9 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -164,11 +161,11 @@ public class HomeFragment extends Fragment {
 
 
         //books card clickes
-        binding.tvMoveLibrary.setOnClickListener(v -> cardLibraryClciked());
-        binding.tvDestination.setOnClickListener(v -> cardLibraryClciked());
-        binding.tvChapter.setOnClickListener(v -> cardLibraryClciked());
+        binding.includeLastBook.tvMoveLibrary.setOnClickListener(v -> cardLibraryClciked());
+        binding.includeLastBook.tvDestination.setOnClickListener(v -> cardLibraryClciked());
+        binding.includeLastBook.tvChapter.setOnClickListener(v -> cardLibraryClciked());
 
-        binding.tvMove.setOnClickListener(view1 -> OpenMushaf(lastPage));
+        binding.includeLastSavedQuran.tvMove.setOnClickListener(view1 -> OpenMushaf(lastPage));
         binding.tvAbout.setOnClickListener(view1 -> startActivity(new Intent(getActivity(), AboutActivity.class)));
 
         //adkar clickes
@@ -177,10 +174,10 @@ public class HomeFragment extends Fragment {
         binding.tvCategory.setOnClickListener(v -> moveToAdkarFragment());
 
         //time card Clickes
-        binding.cardviewTime.setOnClickListener(v -> moveToAdhanFragment());
-        binding.tvNextPrayerCountdown.setOnClickListener(v -> moveToAdhanFragment());
-        binding.tvLocation.setOnClickListener(v -> moveToAdhanFragment());
-        binding.tvDate.setOnClickListener(v -> moveToAdhanFragment());
+        binding.includeCardviewTime.cardviewTime.setOnClickListener(v -> moveToAdhanFragment());
+        binding.includeCardviewTime.tvNextPrayerCountdown.setOnClickListener(v -> moveToAdhanFragment());
+        binding.includeCardviewTime.tvLocation.setOnClickListener(v -> moveToAdhanFragment());
+        binding.includeCardviewTime.tvDate.setOnClickListener(v -> moveToAdhanFragment());
     }
 
     private void moveToMahfodatActivity() {
@@ -239,7 +236,7 @@ public class HomeFragment extends Fragment {
         SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(getActivity());
         if (sharedPreferenceManager.iSThereAyaSaved()) {
             //we saved aya
-            binding.tvLastAyaTitle.setVisibility(View.VISIBLE);
+            binding.includeLastSavedQuran.tvLastAyaTitle.setVisibility(View.VISIBLE);
             ReadingPosition readingPosition = sharedPreferenceManager.getReadinPosition();
             Log.e("checkSaveTag", "quran onResume 1 readingPosition " + readingPosition.toString());
             if (readingPosition.page==null) return;
@@ -249,26 +246,26 @@ public class HomeFragment extends Fragment {
             savedRiwaya = readingPosition.riwaya;
 
             if (readingPosition.riwaya.equals(RiwayaType.ENGLISH_QURAN.name())) {
-                binding.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
-                binding.tvLastAya.setText("الترجمة الانجليزية للقرآن الكريم الصفحة رقم " + readingPosition.page);
+                binding.includeLastSavedQuran.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
+                binding.includeLastSavedQuran.tvLastAya.setText("الترجمة الانجليزية للقرآن الكريم الصفحة رقم " + readingPosition.page);
                 Typeface typeface = ResourcesCompat.getFont(requireActivity(),R.font.ffshamel_book);
-                binding.tvLastAya.setTypeface(typeface);
+                binding.includeLastSavedQuran.tvLastAya.setTypeface(typeface);
                 float textSize = getResources().getDimension(R.dimen.tv_small_size);
-                binding.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+                binding.includeLastSavedQuran.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
 
             } else if (readingPosition.riwaya.equals(RiwayaType.FRENCH_QURAN.name())) {
-                binding.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
-                binding.tvLastAya.setText("الترجمة الفرنسية للقرآن الكريم الصفحة رقم " + readingPosition.page);
+                binding.includeLastSavedQuran.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
+                binding.includeLastSavedQuran.tvLastAya.setText("الترجمة الفرنسية للقرآن الكريم الصفحة رقم " + readingPosition.page);
                 Typeface typeface = ResourcesCompat.getFont(requireActivity(),R.font.ffshamel_book);
-                binding.tvLastAya.setTypeface(typeface);
+                binding.includeLastSavedQuran.tvLastAya.setTypeface(typeface);
                 float textSize = getResources().getDimension(R.dimen.tv_small_size);
-                binding.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+                binding.includeLastSavedQuran.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
 
 
             } else {
 
                 if (!readingPosition.ayaText.equals("no")) {
-                    binding.tvLastAya.setText(readingPosition.ayaText);
+                    binding.includeLastSavedQuran.tvLastAya.setText(readingPosition.ayaText);
                 } else {
                     //should get first aya in the page and display it
                     getFirstAyaInPagePage(lastPage);
@@ -277,8 +274,8 @@ public class HomeFragment extends Fragment {
 
         } else {
             //default case
-            binding.tvLastAyaTitle.setVisibility(View.GONE);
-            binding.tvLastAya.setText("ستظهر هنا اخر اية قمت بحفظها");
+            binding.includeLastSavedQuran.tvLastAyaTitle.setVisibility(View.GONE);
+            binding.includeLastSavedQuran.tvLastAya.setText("ستظهر هنا اخر اية قمت بحفظها");
         }
 
 
@@ -287,9 +284,9 @@ public class HomeFragment extends Fragment {
     private void checkLocationViability() {
         boolean alreadyExist = SharedPreferenceManager.getInstance(getActivity()).iSLocationAvialable();
         if (alreadyExist) {
-            binding.tvLocation.setVisibility(View.VISIBLE);
+            binding.includeCardviewTime.tvLocation.setVisibility(View.VISIBLE);
             UserLocation prevUserLocation = SharedPreferenceManager.getInstance(getActivity()).getUserLocation();
-            binding.tvLocation.setText(prevUserLocation.address);
+            binding.includeCardviewTime.tvLocation.setText(prevUserLocation.address);
 
             try {
                 DisplayDateinInTimeCard();
@@ -299,7 +296,7 @@ public class HomeFragment extends Fragment {
 
         } else {
             //no location case
-            binding.cardviewTime.setVisibility(View.GONE);
+            binding.includeCardviewTime.getRoot().setVisibility(View.GONE);
         }
     }
 
@@ -339,14 +336,14 @@ public class HomeFragment extends Fragment {
         if (lastChapter != null && lastChapter.collectionName != null) {
             Log.e("quran_tag", "last chapter " + lastChapter.chapterTitle_no_tachkil);
             isThereSavedBook = true;
-            String destination = PublicMethods.getInstance().getCollectionArabicName(lastChapter.collectionName) + " > " + lastChapter.bookName + " > ";
-            binding.tvDestination.setText(destination);
-            binding.tvChapter.setText(lastChapter.chapterTitle_no_tachkil);
+            String destination = PublicMethods.getInstance().getCollectionArabicName(lastChapter.collectionName) + " - " + lastChapter.bookName;
+            binding.includeLastBook.tvDestination.setText(destination);
+            binding.includeLastBook.tvChapter.setText(lastChapter.chapterTitle_no_tachkil);
         } else {
             Log.e("quran_tag", "last chapter is null");
             isThereSavedBook = false;
-            binding.tvChapter.setVisibility(View.GONE);
-            binding.tvDestination.setText("سيظهر هنا اخر كتاب قمت بحفظه");
+            binding.includeLastBook.tvChapter.setVisibility(View.GONE);
+            binding.includeLastBook.tvDestination.setText("سيظهر هنا اخر كتاب قمت بحفظه");
         }
     }
 
@@ -356,13 +353,13 @@ public class HomeFragment extends Fragment {
         String dateString = dateFormat.format(calendar.getTime());
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            binding.tvDate.setText(getDateArabicName(dateString));
+            binding.includeCardviewTime.tvDate.setText(getDateArabicName(dateString));
         } else {
             try {
                 //there no hijri date
                 DateFormatSymbols arabicSymbols = new DateFormatSymbols(new Locale("ar"));
                 SimpleDateFormat outputDateFormat = new SimpleDateFormat("EEE d MMMM yyyy", arabicSymbols);
-                binding.tvDate.setText(outputDateFormat.format(dateString));
+                binding.includeCardviewTime.tvDate.setText(outputDateFormat.format(dateString));
             } catch (Exception e) {
                 Log.e(TAG, "error in hijri date " + e.getMessage());
             }
@@ -372,8 +369,11 @@ public class HomeFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void setObservers() {
 
-        viewModel.getRandomDikr().observe(getViewLifecycleOwner(), adkarModel -> {
+        viewModel.getRandomDikr().observe(getViewLifecycleOwner(),adkarModel -> {
             if (adkarModel != null) {
+                Log.e(TAG,"random adkarModel "+adkarModel.toString());
+
+                //AdkarCountsHelper.getInstance(requireActivity()).getDikrDependOnCurrentTime();
                 binding.tvCategory.setText(adkarModel.getCategory());
                 binding.tvDikrBody.setText(adkarModel.getDikr());
             } else {
@@ -389,7 +389,7 @@ public class HomeFragment extends Fragment {
 
         // display the remaining time in the TextView
         String countdownText = String.format(foramt, hours, minutes, seconds);
-        binding.tvNextPrayerCountdown.setText(countdownText);
+        binding.includeCardviewTime.tvNextPrayerCountdown.setText(countdownText);
     }
 
     public String getHijriDate(String dateString) {
@@ -419,7 +419,7 @@ public class HomeFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aya -> {
                     Log.e("logtag", "1 data coming  " + aya.getPureText());
-                    binding.tvLastAya.setText(aya.getText());
+                    binding.includeLastSavedQuran.tvLastAya.setText(aya.getText());
                 }, e -> {
                     Log.e("logtag", "1 data error   " + e.getMessage());
                 }));
@@ -429,11 +429,11 @@ public class HomeFragment extends Fragment {
 
     private void managePrayerTime() {
         Log.e("checktimeTag", "managePrayerTime called");
-        if (count != null && binding.tvNextPrayerCountdown.getText().length() > 0) {
+        if (count != null && binding.includeCardviewTime.tvNextPrayerCountdown.getText().length() > 0) {
             Log.e("checktimeTag", "managePrayerTime count is not null return");
             return;
         } else {
-            Log.e("checktimeTag", "managePrayerTime count is null or length " + binding.tvNextPrayerCountdown.getText().length());
+            Log.e("checktimeTag", "managePrayerTime count is null or length " + binding.includeCardviewTime.tvNextPrayerCountdown.getText().length());
             if (count != null) {
                 count.cancel();
                 count = null;
@@ -464,14 +464,11 @@ public class HomeFragment extends Fragment {
     private void displayPrayerTime(PrayerTimesPreference.PrayerInfo prayerInfo) {
         nextSalatName = prayerInfo.prayer_arabic;
         NextPrayerMillis = prayerInfo.prayer_time;
-        String text = "بقي على أذان " + nextSalatName + " : ";
 
 
-        SpannableString spannableString = new SpannableString(text);
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), text.indexOf(nextSalatName),
-                text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        binding.tvSalatMessage.setText(spannableString);
-
+        String text = "بقي على أذان ";
+        binding.includeCardviewTime.tvSalatMessage.setText(text);
+        binding.includeCardviewTime.tvSalatName.setText(nextSalatName);
 
         countdownDuration = NextPrayerMillis - System.currentTimeMillis();
         if (count != null) count = null;
@@ -488,13 +485,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFinish() {
                 // display a message when the timer finishes
-                String text = "حان الان موعد صلاة " + nextSalatName + " : ";
-
-                Typeface typeface = ResourcesCompat.getFont(requireActivity(), R.font.ffshamel_family_bold);
-                SpannableString spannableString = new SpannableString(text);
-                spannableString.setSpan(new CustomTypefaceSpan("", typeface), text.indexOf(nextSalatName),
-                        text.indexOf(nextSalatName) + nextSalatName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                binding.tvSalatMessage.setText(spannableString);
+                String text = "حان الان موعد صلاة ";
+                binding.includeCardviewTime.tvSalatMessage.setText(text);
+                binding.includeCardviewTime.tvSalatName.setText(nextSalatName);
             }
         }.start();
     }

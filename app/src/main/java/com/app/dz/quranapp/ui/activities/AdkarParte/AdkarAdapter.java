@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.databinding.ItemAdkarBinding;
-import com.app.dz.quranapp.databinding.ItemAdkrCategoryBinding;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
@@ -37,7 +36,12 @@ public class AdkarAdapter extends RecyclerView.Adapter<AdkarAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         AdkarModel adkarModel = adkarList.get(position);
 
-        holder.binding.tvTitle.setText(adkarModel.getDikrTitle());
+        if (adkarModel.getDikrTitle()==null || adkarModel.getDikrTitle().isEmpty()) {
+            holder.binding.tvTitle.setText("الذكر " + (position + 1));
+        } else {
+            holder.binding.tvTitle.setText(adkarModel.getDikrTitle());
+        }
+
         holder.binding.tvDikrText.setText(adkarModel.getDikr());
 
 

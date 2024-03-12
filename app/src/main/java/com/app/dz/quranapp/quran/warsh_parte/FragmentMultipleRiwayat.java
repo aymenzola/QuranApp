@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
@@ -31,7 +32,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class FragmentMultipleRiwayat extends Fragment {
@@ -164,22 +164,8 @@ public class FragmentMultipleRiwayat extends Fragment {
     @SuppressLint("CheckResult")
     private void displayMushafImage(int pageNumber) {
         listener.onPageChanged(pageNumber);
-        DecimalFormat format = new DecimalFormat("000");
-        String url;
 
-
-        if (riwaya.quran_page_image_url.contains("qurancomplex.gov.sa/issues/hafs")) {
-            int pageNumberCorrectInUrl = pageNumber + 3;
-            url = riwaya.quran_page_image_url + pageNumberCorrectInUrl + ".jpg";
-        } else if (riwaya.quran_page_image_url.contains("qurancomplex") || riwaya.quran_page_image_url.contains("QuranHub") || riwaya.quran_page_image_url.contains("hafs-tajweed"))
-
-            url = riwaya.quran_page_image_url + pageNumber + ".jpg";
-
-        else if (riwaya.quran_page_image_url.contains("GovarJabbar"))
-
-            url = riwaya.quran_page_image_url + format.format(pageNumber) + ".png";
-        else
-            url = riwaya.quran_page_image_url + pageNumber + ".png";
+        String url = PublicMethods.getInstance().getImageUrl(pageNumber,riwaya.quran_page_image_url);
 
         Log.e("checkdata", "url " + url);
         // For additional configurations, you can use RequestOptions
@@ -191,7 +177,7 @@ public class FragmentMultipleRiwayat extends Fragment {
         Glide.with(this)
                 .load(url)
                 .apply(options)
-                .listener(new RequestListener<Drawable>() {
+                .listener(new RequestListener<>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         // This will be called when the load fails

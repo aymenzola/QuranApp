@@ -12,34 +12,21 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.dz.quranapp.R;
+import com.app.dz.quranapp.Util.PublicMethods;
+import com.app.dz.quranapp.data.room.Entities.BookWithCount;
 import com.app.dz.quranapp.databinding.FragmentChaptersListBinding;
 import com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte.chaptreParte.ActivityChapterList;
-import com.app.dz.quranapp.data.room.Entities.Book;
-import com.app.dz.quranapp.data.room.Entities.BookWithCount;
-import com.app.dz.quranapp.data.room.Entities.Hadith;
-import com.app.dz.quranapp.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class ActivityBooksList extends AppCompatActivity {
 
-
     private BooksAdapter adapter;
     private BooksViewModel viewModel;
-    private OnListenerInterface listener;
     private FragmentChaptersListBinding binding;
-    private Integer lastid = null;
     private String collectionName = "";
-    private List<Hadith> HadithsGloablList = new ArrayList<>();
-    private List<Book> bookList = new ArrayList<>();
-
-
-    //CSV
-    private int Count = 0;
-    private String CurrantFileName = "muslim";
-    private int max = 2;
 
 
     @Override
@@ -64,7 +51,7 @@ public class ActivityBooksList extends AppCompatActivity {
         getBooks(collectionName);
         setObservers();
 
-        binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText(getCollectionArabicName(collectionName));
+        binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText(PublicMethods.getInstance().getCollectionArabicName(collectionName));
         binding.imgBack.setOnClickListener(v -> {
             onBackPressed();
         });
@@ -122,28 +109,6 @@ public class ActivityBooksList extends AppCompatActivity {
             }
         }
         adapter.setItems(items);
-    }
-
-
-    public String getCollectionArabicName(String collectionName) {
-        switch (collectionName) {
-            case "bukhari":
-                return "صحيح البخاري";
-            case "muslim":
-                return "صحيح مسلم";
-            case "nasai":
-                return "سنن النسائي";
-            case "ibnmajah":
-                return "سنن ابن ماجة";
-            case "hisn":
-                return "حصن المسلم";
-            default:
-                return "سنن أبي داود";
-        }
-    }
-
-    public interface OnListenerInterface {
-        void onitemclick(int position);
     }
 
 }

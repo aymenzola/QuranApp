@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardview_time"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="6dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="10dp"
+        android:background="@drawable/card_background">
+
+        <TextView
+            android:id="@+id/tv_salat_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center|start"
+            android:lines="1"
+            android:paddingEnd="15dp"
+            android:text="بقي على آذان"
+            android:textColor="@color/blan"
+            android:textSize="@dimen/tv_normal_size" />
+
+        <TextView
+            android:id="@+id/tv_salat_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:textAlignment="textStart"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:lines="1"
+            tools:text="الظهر"
+            android:textColor="@color/blan"
+            android:textSize="@dimen/tv_normal_size"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/tv_salat_message"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_next_prayer_countdown"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_salat_message"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/samim"
+            android:gravity="center"
+            android:lines="1"
+            android:textColor="@color/blan"
+            android:textSize="@dimen/tv_time_size"
+            tools:text="1:05:11" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_next_prayer_countdown"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:drawableEnd="@drawable/ic_location_icon_blan"
+            android:drawablePadding="5dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center"
+            android:lines="1"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/blan"
+            android:textSize="@dimen/tv_small_size"
+            android:visibility="gone"
+            tools:text="بوعاتي محمود قالمة"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/tv_location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/ffshamel_book"
+            android:gravity="center"
+            android:lines="1"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/blan"
+            android:textSize="11sp"
+            android:visibility="visible"
+            tools:visibility="gone"
+            tools:text="الأحد 27 شعبان 1444 الموافق لـ 19-03-2023" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

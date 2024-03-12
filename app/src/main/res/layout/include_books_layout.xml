@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_recyclerview"
+    >
+
+    <TextView
+        android:id="@+id/tv_fast_adkar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/ffshamel_family_bold"
+        android:gravity="center|start"
+        android:paddingEnd="15dp"
+        android:text="عنوان الكتاب"
+        android:textColor="#424242"
+        android:textSize="@dimen/tv_small_size" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tv_fast_adkar_title"
+        android:layout_alignBottom="@+id/tv_fast_adkar_title"
+        android:layout_toStartOf="@+id/tv_fast_adkar_title"
+        android:src="@drawable/ic_star2"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_fast_adkar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_fast_adkar_title"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:ellipsize="marquee"
+        android:fontFamily="@font/ffshamel_book"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="100dp"
+        android:clipToPadding="false"
+        android:singleLine="true"
+        android:text="سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر، ولا حولَ ولا قوةَ إلا بالله العلي العظيم"
+        android:textColor="#4C4C4C"
+        android:textSize="@dimen/tv_small_size"
+        tools:itemCount="15"
+        tools:listitem="@layout/item_adkar"
+        android:layout_marginEnd="2dp"
+        android:layout_marginStart="2dp"
+        />
+
+</RelativeLayout>
+

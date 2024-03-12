@@ -130,8 +130,7 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
 
         // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
         PlaybackStateCompat state = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PLAY |
-                        PlaybackStateCompat.ACTION_PAUSE |
+                .setActions(PlaybackStateCompat.ACTION_PAUSE |
                         PlaybackStateCompat.ACTION_STOP |
                         PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
                         PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
@@ -201,7 +200,9 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         MediaButtonReceiver.handleIntent(mediaSession, intent);
+        Log.e(TAG, "onStartCommand ");
         if (intent == null) {
+            Log.e(TAG, "Received null Intent stopSelf();");
             stopForeground(true);
             stopSelf();
             return START_NOT_STICKY;
@@ -209,9 +210,12 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
 
         String action = intent.getAction();
         if (action == null) {
+            Log.e(TAG, "Received null action stopSelf();");
             stopForeground(true);
             stopSelf();
             return START_NOT_STICKY;
+        } else {
+            Log.e(TAG, "Received action " + action);
         }
         switch (action) {
             case Statics.ACTION.START_ACTION -> {
@@ -223,12 +227,7 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
 
                 if (!PublicMethods.getInstance().isAvailableFile(suraAudio.SuraNumber, selectedReader.getReaderTag())) {
                     //send to fragment that the sura is not available
-                    if (this.suraAudio != null)
-                        sendPreparingStateToFragment(getBaseContext(), AUDIO_NOT_AVAILABLE_ACTION);
-                    destroyPlayer();
-                    stopForeground(true);
-                    stopSelf();
-
+                    handleFileNotAvialable();
                 } else {
 
                     //getting sura arabic name and reader image
@@ -261,20 +260,31 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
                 destroyPlayer();
                 stopForeground(true);
                 stopSelf();
-                sendPreparingStateToFragment(getBaseContext(), CHANGE_READER_ACTION);
+                sendPreparingStateToFragment(getBaseContext(),CHANGE_READER_ACTION);
             }
             default -> {
-                stopForeground(true);
-                stopSelf();
+                //stopForeground(true);
+                Log.e(TAG, " default called");
+
+                //stopSelf();
             }
         }
         return START_NOT_STICKY;
+    }
+
+    private void handleFileNotAvialable() {
+        if (this.suraAudio != null)
+            sendPreparingStateToFragment(getBaseContext(),AUDIO_NOT_AVAILABLE_ACTION);
+        destroyPlayer();
+        stopForeground(true);
+        stopSelf();
     }
 
     private void onPlayCalled(Intent intent) {
         sendPreparingStateToFragment(getBaseContext(), AUDIO_RESUME_ACTION);
         mStateService = Statics.STATE_SERVICE.PREPARE;
         this.audioReadingSpeed = intent.getFloatExtra("speed", 1f);
+        updateToState(Statics.STATE_SERVICE.PREPARE, PlaybackStateCompat.ACTION_PLAY, PlaybackStateCompat.STATE_BUFFERING);
         mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
 
         destroyPlayer();
@@ -282,7 +292,7 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
         play();
     }
 
-    private void onPlayCalled() {
+/*private void onPlayCalled() {
         sendPreparingStateToFragment(getBaseContext(), AUDIO_RESUME_ACTION);
         mStateService = Statics.STATE_SERVICE.PREPARE;
         mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
@@ -293,6 +303,30 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
         } else if (!mPlayer.isPlaying()) {
             mPlayer.start();
         }
+    }*/
+
+
+    private void onPlayCalled() {
+        if (mPlayer != null) {
+            if (mPlayer.isPlaying()) {
+                mPlayer.pause();
+                updateToState(Statics.STATE_SERVICE.PAUSE, PlaybackStateCompat.ACTION_PLAY, PlaybackStateCompat.STATE_PAUSED);
+                mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
+            } else {
+                mPlayer.start();
+                updateToState(Statics.STATE_SERVICE.PLAY, PlaybackStateCompat.ACTION_PAUSE, PlaybackStateCompat.STATE_PLAYING);
+                mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
+            }
+        }
+    }
+
+    private void updateToState(int play, long nextAction, int currentState) {
+        mStateService = play;
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(nextAction | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP)
+                .setState(currentState, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0)
+                .build();
+        mediaSession.setPlaybackState(state);
     }
 
     private void onStopCalled() {
@@ -302,13 +336,12 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
 
         destroyPlayer();
         stopForeground(true);
+        Log.e(TAG, " on stop called stopSelf();");
         stopSelf();
     }
 
     private void onPauseCalled() {
-        sendPreparingStateToFragment(getBaseContext(), AUDIO_PAUSE_ACTION);
-        mStateService = Statics.STATE_SERVICE.PAUSE;
-        mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
+
         PausePlayer();
     }
 
@@ -334,11 +367,16 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
     }
 
     private void PausePlayer() {
+        sendPreparingStateToFragment(getBaseContext(), AUDIO_PAUSE_ACTION);
+        mStateService = Statics.STATE_SERVICE.PAUSE;
+        mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
+
         if (mPlayer != null) {
             try {
                 handlerAudioProgress.removeCallbacks(runnableAudioProgress);
                 currentAudioPosition = mPlayer.getCurrentPosition();
                 mPlayer.pause();
+                updateToState(Statics.STATE_SERVICE.PAUSE, PlaybackStateCompat.ACTION_PLAY, PlaybackStateCompat.STATE_PAUSED);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -349,6 +387,13 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
 
 
     private void NextOrBacKSuraPlayer(int plus) {
+        int nextSura = suraAudio.SuraNumber + plus;
+        if (!PublicMethods.getInstance().isAvailableFile(nextSura, selectedReader.getReaderTag())) {
+            handleFileNotAvialable();
+            return;
+        }
+
+
         if (mStateService == Statics.STATE_SERVICE.PREPARE) {
             Log.e(TAG, "wait Nosele preaparing the next sura ");
             return;
@@ -395,9 +440,12 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
         String message = PublicMethods.getInstance().getErrorMessage(what);
         Log.e(TAG, "Player onError() what:" + message);
         destroyPlayer();
+        updateToState(Statics.STATE_SERVICE.NOT_INIT, PlaybackStateCompat.ACTION_STOP, PlaybackStateCompat.STATE_STOPPED);
         mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
         mStateService = Statics.STATE_SERVICE.NOT_INIT;
         stopForeground(true);
+        Log.e(TAG, " onError stopSelf();");
+
         stopSelf();
         sendErrorMessage(getBaseContext(), message);
         return false;
@@ -455,7 +503,7 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.d(TAG, "Player onPrepared()");
-        mStateService = Statics.STATE_SERVICE.PLAY;
+        updateToState(Statics.STATE_SERVICE.PLAY, PlaybackStateCompat.ACTION_PAUSE, PlaybackStateCompat.STATE_PLAYING);
         mNotificationManager.notify(Statics.NOTIFICATION_ID_FOREGROUND_SERVICE, prepareNotification());
         try {
             mPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
@@ -494,6 +542,9 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
         Log.e(TAG, "we have to stop service");
         destroyPlayer();
         stopForeground(true);
+
+        Log.e(TAG, " ononCompletion stopSelf();");
+
         stopSelf();
     }
 
@@ -570,88 +621,12 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
             notificationIntent.putExtra("page", suraAudio.SuraPage);
 
         PendingIntent pendingIntent;
-        Intent lPauseIntent;
-        PendingIntent lPendingPauseIntent;
-        Intent playIntent;
-        PendingIntent lPendingPlayIntent;
-        Intent lStopIntent;
-        PendingIntent lPendingStopIntent;
-        Intent lNextSuraIntent;
-        PendingIntent lPendingNextIntent;
-        Intent lBackIntent;
-        PendingIntent lPendingBackIntent;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            lPauseIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lPauseIntent.setAction(Statics.ACTION.PAUSE_ACTION);
-            lPendingPauseIntent = PendingIntent.getService(this, 1, lPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            playIntent = new Intent(this, PAudioServiceNoSelection.class);
-            playIntent.setAction(Statics.ACTION.PLAY_ACTION);
-            lPendingPlayIntent = PendingIntent.getService(this, 2, playIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            lStopIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lStopIntent.setAction(Statics.ACTION.STOP_ACTION);
-            lPendingStopIntent = PendingIntent.getService(this, 3, lStopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            lNextSuraIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lNextSuraIntent.setAction(Statics.ACTION.NEXT_SURA_ACTION);
-            lPendingNextIntent = PendingIntent.getService(this, 4, lNextSuraIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            lBackIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lBackIntent.setAction(Statics.ACTION.BACK_SURA_ACTION);
-            lPendingBackIntent = PendingIntent.getService(this, 5, lBackIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } else {
             pendingIntent = PendingIntent.getActivity(this, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            lPauseIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lPauseIntent.setAction(Statics.ACTION.PAUSE_ACTION);
-            lPendingPauseIntent = PendingIntent.getService(this, 2, lPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            playIntent = new Intent(this, PAudioServiceNoSelection.class);
-            playIntent.setAction(Statics.ACTION.PLAY_ACTION);
-            lPendingPlayIntent = PendingIntent.getService(this, 3, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            lStopIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lStopIntent.setAction(Statics.ACTION.STOP_ACTION);
-            lPendingStopIntent = PendingIntent.getService(this, 4, lStopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            lNextSuraIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lNextSuraIntent.setAction(Statics.ACTION.NEXT_SURA_ACTION);
-            lPendingNextIntent = PendingIntent.getService(this, 5, lNextSuraIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            lBackIntent = new Intent(this, PAudioServiceNoSelection.class);
-            lBackIntent.setAction(Statics.ACTION.BACK_SURA_ACTION);
-            lPendingBackIntent = PendingIntent.getService(this, 6, lBackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
-
-
-        /*
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-
-        Intent lPauseIntent = new Intent(this, PAudioServiceNoSelection.class);
-        lPauseIntent.setAction(Statics.ACTION.PAUSE_ACTION);
-        PendingIntent lPendingPauseIntent = PendingIntent.getService(this, 0, lPauseIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-
-        Intent playIntent = new Intent(this, PAudioServiceNoSelection.class);
-        playIntent.setAction(Statics.ACTION.PLAY_ACTION);
-        PendingIntent lPendingPlayIntent = PendingIntent.getService(this, 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-
-        Intent lStopIntent = new Intent(this, PAudioServiceNoSelection.class);
-        lStopIntent.setAction(Statics.ACTION.STOP_ACTION);
-        PendingIntent lPendingStopIntent = PendingIntent.getService(this, 0, lStopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-
-        Intent lNextSuraIntent = new Intent(this, PAudioServiceNoSelection.class);
-        lNextSuraIntent.setAction(Statics.ACTION.NEXT_SURA_ACTION);
-        PendingIntent lPendingNextIntent = PendingIntent.getService(this, 0, lNextSuraIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-
-        Intent lBackIntent = new Intent(this, PAudioServiceNoSelection.class);
-        lBackIntent.setAction(Statics.ACTION.BACK_SURA_ACTION);
-        PendingIntent lPendingBackIntent = PendingIntent.getService(this, 0, lBackIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
-
-        */
 
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -674,14 +649,9 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
                         .setMediaSession(mediaSession.getSessionToken()));
 
 
-//        builder.addAction(R.drawable.ic_baseline_skip_previous_24, "Previous", lPendingBackIntent);
-
         // Add next button
-        builder.addAction(new NotificationCompat.Action(R.drawable.ic_baseline_skip_previous_24, "Next",
+        builder.addAction(new NotificationCompat.Action(R.drawable.ic_baseline_skip_previous_24, "Back",
                 MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
-
-        builder.addAction(new NotificationCompat.Action(R.drawable.ic_baseline_skip_next_24, "Next",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
 
         if (mStateService == Statics.STATE_SERVICE.PLAY) {
             builder.addAction(new NotificationCompat.Action(R.drawable.ic_pause, "Pause",
@@ -692,18 +662,10 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
                     MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY)));
         }
 
-                /*
-        if (mStateService == Statics.STATE_SERVICE.PLAY) {
-            builder.addAction(R.drawable.ic_baseline_pause_24, "pause", lPendingPauseIntent);
-        } else {
-            builder.addAction(R.drawable.ic_baseline_play_arrow_24, "Play", lPendingPlayIntent);
-        }
+        builder.addAction(new NotificationCompat.Action(R.drawable.ic_baseline_skip_next_24, "Next",
+                MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
 
 
-        builder.addAction(R.drawable.ic_baseline_skip_next_24, "Next", lPendingNextIntent)
-                .addAction(R.drawable.ic_baseline_close_24, "close", lPendingStopIntent);
-        builder.setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC);
-*/
         return builder.build();
 
     }

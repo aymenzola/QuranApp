@@ -28,6 +28,7 @@
             android:layout_height="@dimen/icon_size"
             android:layout_gravity="start"
             android:padding="5dp"
+            android:layout_marginStart="5dp"
             android:src="@drawable/ic_adhan_silent"
             app:tint="@color/tv_gri_color" />
 

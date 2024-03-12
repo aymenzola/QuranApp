@@ -11,15 +11,16 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_color"
+        android:background="@color/white"
         android:orientation="vertical">
 
 
         <ImageView
             android:id="@+id/img_background"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="350dp"
             android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
             android:gravity="center"

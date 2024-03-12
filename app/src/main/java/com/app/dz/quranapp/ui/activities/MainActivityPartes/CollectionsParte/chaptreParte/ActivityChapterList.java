@@ -83,7 +83,7 @@ public class ActivityChapterList extends AppCompatActivity {
                 model.bookName = bookName;
                 model.collectionName = collectionName;
                 model.positionInChaptersList = position;
-                moveToAyatFragment(model, position);
+                moveToAyatFragment(model,position);
             }
 
             @Override
@@ -105,7 +105,7 @@ public class ActivityChapterList extends AppCompatActivity {
         chapter.positionInChaptersList = position;
         chapter.collectionName = collectionName;
         chapter.bookName = bookName;
-        ChapterUtils.moveToChapterDetails(ActivityChapterList.this, chapter);
+        ChapterUtils.moveToChapterDetails(ActivityChapterList.this,chapter);
     }
 
     public void getChapters(String collectionName, String bookNumber) {

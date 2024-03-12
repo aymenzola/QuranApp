@@ -48,6 +48,7 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
     private DrawerBookAdapter adapterDrawer;
     private List<Chapter> chaptersList = new ArrayList<>();
     private ArrayList<BookWithCount> originalBooksList;
+    private String chapterId;
 
 
     @Override
@@ -71,6 +72,7 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
             String chapterString = intent.getStringExtra("chapter");
             Chapter chapter = new Gson().fromJson(chapterString, Chapter.class);
 
+            chapterId = chapter.chapterId;
             bookName = chapter.bookName;
             collectionName = chapter.collectionName;
             bookNumber = chapter.bookNumber;
@@ -94,18 +96,7 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.length() >= 3) {
-                    filter(s.toString());
-                    binding.includeDrawer.imgClose.setVisibility(View.VISIBLE);
-                    adapterDrawer.setSearchMode(true);
-                } else if (s.length() == 0){
-                    adapterDrawer.setSearchMode(false);
-                    binding.includeDrawer.imgClose.setVisibility(View.GONE);
-                    resetList();
-                } else {
-                    adapterDrawer.setSearchMode(false);
-                    binding.includeDrawer.imgClose.setVisibility(View.GONE);
-                }
+                afterTextChangedHandler(s);
             }
         });
 
@@ -117,25 +108,46 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
     }
 
 
+    private void afterTextChangedHandler(Editable s) {
+        if (s.length() >= 3) {
+            filter(s.toString());
+            binding.includeDrawer.imgClose.setVisibility(View.VISIBLE);
+            adapterDrawer.setSearchMode(true);
+        } else if (s.length() == 0) {
+            adapterDrawer.setSearchMode(false);
+            binding.includeDrawer.imgClose.setVisibility(View.GONE);
+            resetList();
+        } else {
+            adapterDrawer.setSearchMode(false);
+            binding.includeDrawer.imgClose.setVisibility(View.GONE);
+        }
+    }
+
+
     private void setListeners() {
 
-        binding.imgSearch.setOnClickListener(v->{
-            startActivity(new Intent(ActivityHadithDetailsList.this,SearchActivity.class));
-        });
+        binding.imgSearch.setOnClickListener(v -> startActivity(new Intent(ActivityHadithDetailsList.this, SearchActivity.class)));
 
-        binding.includeDrawer.imgClose.setOnClickListener(v->{
+        binding.includeDrawer.imgClose.setOnClickListener(v -> {
             binding.includeDrawer.searchEditText.setText("");
             resetList();
         });
 
 
-        binding.imgMenu.setOnClickListener(v -> {
-            binding.drawerLayout.openDrawer(GravityCompat.END); // Use GravityCompat.START for left-to-right locales
-        });
+        binding.imgMenu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.END));
 
         binding.cardSaveHadith.setOnClickListener(v -> {
 
-            Chapter chapter = chaptersList.get(binding.viewpager.getCurrentItem());
+            Hadith currentHadith = adapter.getItem(binding.viewpager.getCurrentItem());
+            //should loop chaptersList and get the chapter that has the same chapterId as the currentHadith
+            Chapter chapter = null;
+            for (Chapter chapte : chaptersList) {
+                if (chapte.chapterId.equals(currentHadith.chapterId)) {
+                    chapter = chapte;
+                    break;
+                }
+            }
+            if (chapter==null) return;
 
             Log.e("quran_position_tag", "saving " + chapter.chapterId + " " + binding.viewpager.getCurrentItem() + " booknumber " + chapter.bookNumber);
 
@@ -158,8 +170,6 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
                 ChapterUtils.saveLastChapter(ActivityHadithDetailsList.this, chapter);
                 Toast.makeText(ActivityHadithDetailsList.this, "تم حفظ الحديث", Toast.LENGTH_SHORT).show();
             }
-
-
 
 
         });
@@ -219,11 +229,12 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
                 bookWithCountList = bookList;
                 this.originalBooksList = new ArrayList<>(bookList);
 
-                adapterDrawer = new DrawerBookAdapter(bookList,(chapter,position,chapterListCurrent) -> {
+                adapterDrawer = new DrawerBookAdapter(bookList, (chapter, position, chapterListCurrent) -> {
 
                     //hide drawer
                     binding.drawerLayout.closeDrawer(GravityCompat.END);
 
+                    chapterId = chapter.chapterId;
                     bookName = chapter.bookName;
                     collectionName = chapter.collectionName;
                     bookNumber = chapter.bookNumber;
@@ -233,7 +244,7 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
 
                     initializeAdapter();
                     Log.e("quran_tag", "asking for hadith for bookName : " + bookName);
-                    getHadiths(collectionName, bookNumber);
+                    getHadiths(collectionName,bookNumber);
 
 
                 });
@@ -258,6 +269,7 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
     public void displayData(List<Hadith> hadithList) {
         Map<String, Hadith> groupedHadiths = new HashMap<>();
 
+        //this will group hadiths by chapterId in one Hadith
         for (Hadith hadith : hadithList) {
             if (groupedHadiths.containsKey(hadith.chapterId)) {
                 Hadith existingHadith = groupedHadiths.get(hadith.chapterId);
@@ -269,25 +281,25 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
             }
         }
 
-        for (Hadith hadith : groupedHadiths.values()) {
-            Log.e("quran_position_tag", "hadiths before rank " + hadith.chapterId);
+        List<Hadith> newRankedList = rankHadiths(chaptersList,new ArrayList<>(groupedHadiths.values()));
+
+        //List<Hadith> notRankedList = new ArrayList<>(groupedHadiths.values());
+
+        int p =0;
+        // loop and get the target chapterId position
+        for (int i = 0; i < newRankedList.size(); i++) {
+            if (newRankedList.get(i).chapterId.equals(chapterId)) {
+                p = i;
+                break;
+            }
         }
 
-        List<Hadith> newRankedList = rankHadiths(chaptersList, new ArrayList<>(groupedHadiths.values()));
-
-        for (Hadith hadith : newRankedList) {
-            Log.e("quran_position_tag", "hadiths after rank " + hadith.chapterId);
-        }
-
+        Log.e("quran_tag", "CurrantPosition " + p);
         adapter.setItems(newRankedList);
 
-        Log.e("quran_position_tag", "hadiths set current item  " + CurrantPosition + " " + adapter.getHadithAtPosition(CurrantPosition).chapterId
-                + " " + adapter.getHadithAtPosition(CurrantPosition).chapterTitle_no_tachkil + " book name ");
 
+        binding.viewpager.setCurrentItem(p, false);
 
-        binding.viewpager.setCurrentItem(CurrantPosition);
-
-        Log.e("lifecycle", "we recieve hadiths  size " + hadithList.size());
     }
 
 
@@ -323,8 +335,6 @@ public class ActivityHadithDetailsList extends AppCompatActivity {
         binding.viewpager.setOrientation(ORIENTATION_HORIZONTAL);
         binding.viewpager.setAdapter(adapter);
     }
-
-
 
 
     /**
