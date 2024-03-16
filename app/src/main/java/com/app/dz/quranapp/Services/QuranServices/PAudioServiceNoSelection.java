@@ -129,8 +129,7 @@ public class PAudioServiceNoSelection extends MediaBrowserServiceCompat
         mediaSession.setActive(true);
 
         // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PAUSE |
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PAUSE |
                         PlaybackStateCompat.ACTION_STOP |
                         PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
                         PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)

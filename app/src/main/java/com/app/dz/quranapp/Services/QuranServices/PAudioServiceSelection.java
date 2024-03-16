@@ -12,7 +12,6 @@ import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_R
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_SELECT_AYA_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_START_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_AUDIO_ACTION.AUDIO_STOP_ACTION;
-import static com.app.dz.quranapp.Services.QuranServices.NotifyBroadcastHelper.sendPreparingStateToFragment;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -20,9 +19,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -41,21 +38,14 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.RemoteViews;
 
 import androidx.annotation.RequiresApi;
 
-import com.app.dz.quranapp.MainActivity;
-import com.app.dz.quranapp.data.room.Entities.Aya;
-import com.app.dz.quranapp.data.room.Entities.AyaAudioLimits;
-import com.app.dz.quranapp.data.room.Entities.AyaAudioLimitsFirebase;
-import com.app.dz.quranapp.data.room.Entities.Sura;
-import com.app.dz.quranapp.data.room.Entities.SuraAudio;
-import com.app.dz.quranapp.data.room.Entities.SuraAudioFirebase;
-import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.Communs.Statics;
+import com.app.dz.quranapp.MainActivity;
 import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.QuranInfoManager;
@@ -63,7 +53,14 @@ import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.AyaAudioLimitDao;
 import com.app.dz.quranapp.data.room.Daos.AyaDao;
 import com.app.dz.quranapp.data.room.DatabaseClient;
+import com.app.dz.quranapp.data.room.Entities.Aya;
+import com.app.dz.quranapp.data.room.Entities.AyaAudioLimits;
+import com.app.dz.quranapp.data.room.Entities.AyaAudioLimitsFirebase;
+import com.app.dz.quranapp.data.room.Entities.Sura;
+import com.app.dz.quranapp.data.room.Entities.SuraAudio;
+import com.app.dz.quranapp.data.room.Entities.SuraAudioFirebase;
 import com.app.dz.quranapp.data.room.MushafDatabase;
+import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -111,12 +108,6 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
     };
 
 
-    private Runnable mDelayedShutdown = () -> {
-        unlockWiFi();
-        unlockCPU();
-        stopForeground(true);
-        stopSelf();
-    };
     private int currentAudioPosition = 0;
     private MediaSessionCompat mediaSession;
     private AyaDao dao;
@@ -143,7 +134,24 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
     public void onCreate() {
         super.onCreate();
         Log.d(PAudioServiceSelection.class.getSimpleName(), "onCreate()");
-        mediaSession = new MediaSessionCompat(PAudioServiceSelection.this, "tag");
+
+        mediaSession = new MediaSessionCompat(this, "MyMediaSession");
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+      //  mediaSession.setCallback(new PAudioServiceSelection.MySessionCallback());
+        mediaSession.setActive(true);
+
+        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PAUSE |
+                        PlaybackStateCompat.ACTION_STOP |
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                .build();
+        mediaSession.setPlaybackState(state);
+
+
+
         mStateService = Statics.STATE_SERVICE.NOT_INIT;
         publicMethods = PublicMethods.getInstance();
         quranInfoManager = QuranInfoManager.getInstance();
@@ -157,6 +165,47 @@ public class PAudioServiceSelection extends Service implements MediaPlayer.OnErr
 
 
     }
+
+
+    /*private class MySessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onStop() {
+            super.onStop();
+            Log.e(TAG, "onStop");
+            onStopCalled();
+        }
+
+        @Override
+        public void onPlay() {
+            // Implement your play functionality here
+            Log.e(TAG, "onPlay");
+            onPlayCalled();
+        }
+
+        @Override
+        public void onPause() {
+            Log.e(TAG, "onPause");
+            onPauseCalled();
+            // Implement your pause functionality here
+        }
+
+        @Override
+        public void onSkipToNext() {
+            super.onSkipToNext();
+            Log.e(TAG, "onSkipToNext");
+            NextOrBacKSuraPlayer(1);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            super.onSkipToPrevious();
+            Log.e(TAG, "onSkipToPrevious");
+            NextOrBacKSuraPlayer(-1);
+        }
+
+        // Implement other media controls methods like onSkipToNext, onSkipToPrevious etc.
+    }
+    */
 
     Runnable runnableAudioProgress = new Runnable() {
         @Override

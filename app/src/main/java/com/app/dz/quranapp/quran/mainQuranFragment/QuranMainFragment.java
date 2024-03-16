@@ -83,6 +83,7 @@ import com.app.dz.quranapp.quran.adapters.AdapterStartFragments;
 import com.app.dz.quranapp.quran.adapters.ReadersAdapter;
 import com.app.dz.quranapp.quran.adapters.SuraAdapterNew;
 import com.app.dz.quranapp.quran.foreignRiwayat.FragmentForeignRiwayat;
+import com.app.dz.quranapp.quran.hafs_parte.FilterButtomSheetclass;
 import com.app.dz.quranapp.quran.hafs_parte.QuranPageFragment;
 import com.app.dz.quranapp.quran.models.ModuleFragments;
 import com.app.dz.quranapp.quran.models.ReaderAudio;
@@ -103,7 +104,6 @@ import com.shockwave.pdfium.PdfDocument;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -184,90 +184,16 @@ public class QuranMainFragment extends Fragment {
     }
 
     private void displayTime(int maxMillis, int progressMillis) {
-        String maxTime = convertMillisToTime(maxMillis);
-        String currentTime = convertMillisToTime(progressMillis);
+        String maxTime = PublicMethods.getInstance().convertMillisToTime(maxMillis);
+        String currentTime = PublicMethods.getInstance().convertMillisToTime(progressMillis);
         binding.includeAudioPlaying.itemCurrentTime.setText(currentTime);
         binding.includeAudioPlaying.itemAudioTime.setText(maxTime);
-    }
-
-    public String convertMillisToTime(int millis) {
-        int hours = (millis / (1000 * 60 * 60));
-        int minutes = ((millis / (1000 * 60)) % 60);
-        int seconds = (millis / 1000) % 60;
-
-        if (hours > 0) {
-            return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
-        }
     }
 
     private void handleSavedPageView() {
         readingPosition = SharedPreferenceManager.getInstance(requireActivity()).getReadinPosition();
     }
 
-    private void setObservers() {
-
-
-        viewModel.getBookMarks().observe(getViewLifecycleOwner(), bookmarks -> {
-            if (adapterPagerForSign != null)
-                if (bookmarks != null && adapterPagerForSign.getCount() > 0) {
-                    loadComplete(bookmarks);
-                }
-        });
-
-
-        viewModel.getIsOnBackClicked().observe(getViewLifecycleOwner(), isOnBackClicked -> {
-            if (isOnBackClicked) {
-                if (binding.linearRiwayaList.getVisibility() == View.VISIBLE) {
-                    binding.linearRiwayaList.setVisibility(View.GONE);
-                }
-
-                if (binding.relativeReaderList.getVisibility() == View.VISIBLE) {
-                    binding.relativeReaderList.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        viewModel.getIsForeignPageSaved().observe(getViewLifecycleOwner(), isForeignPageSaved -> {
-            if (isForeignPageSaved) {
-                isSavedPage = true;
-                Glide.with(requireActivity()).load(R.drawable.ic_save).into(binding.imgSave);
-            } else {
-                isSavedPage = false;
-                Glide.with(requireActivity()).load(R.drawable.ic_save_new).into(binding.imgSave);
-            }
-        });
-
-        viewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
-            if (!isfullModeActive) {
-                exitFullMode();
-            }
-        });
-
-        viewModel.getIsFragmentClicked().observe(getViewLifecycleOwner(), isFragmentClicked -> {
-            if (isFragmentClicked) {
-                if (binding.linearRiwayaList.isShown())
-                    binding.linearRiwayaList.setVisibility(View.GONE);
-                if (binding.linearReaders.getVisibility() == View.VISIBLE) hideAudioControlLinear();
-
-            }
-        });
-
-        viewModel.getReader().observe(requireActivity(), readerAudio -> {
-            Log.e("trak_page", "we recieve the reader " + readerAudio.toString());
-            selectedReader = readerAudio;
-            manageReaderImage(selectedReader.getReaderImage());
-            binding.includeAudioPlaying.tvReaderName.setText(selectedReader.getName());
-        });
-
-        viewModel.getAllSura().observe(getViewLifecycleOwner(), suraList -> {
-            if (suraList != null && suraList.size() > 0) {
-                globalSuraList = suraList;
-                showSuraList(suraList);
-            }
-        });
-    }
 
     private void startIcons() {
         binding.includeAudioPlaying.imgPlay.setImageResource(R.drawable.ic_baseline_pause_24);
@@ -303,7 +229,7 @@ public class QuranMainFragment extends Fragment {
             return;
         }
 
-        //binding.viewPager.setVisibility(View.GONE);
+        binding.viewPager.setVisibility(View.GONE);
 
         adapterPagerForSign = null;
         if (list.size() > 0) list.clear();
@@ -376,10 +302,7 @@ public class QuranMainFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void setListenrs() {
 
-        binding.imgSearch.setOnLongClickListener(v->{
-            //downloadNearImage(getCurrentPageNumber(),selectedRiwaya.quran_page_image_url);
-            return true;
-        });
+        binding.imgSetting.setOnClickListener(v -> showButtomSheet());
 
         binding.imgSearch.setOnClickListener(v -> {
                     if (!isForeignRiwaya()) {
@@ -587,6 +510,9 @@ public class QuranMainFragment extends Fragment {
         }
 
         ChangePlayingAudioSpeed();
+
+
+
     }
 
     private void saveAyaOrPage() {
@@ -867,7 +793,7 @@ public class QuranMainFragment extends Fragment {
 
             Fragment f = getCurrentFragment();
             QuranPageFragment quranPageFragment = (QuranPageFragment) f;
-            currantAya = quranPageFragment.getCurrantSura();
+            currantAya = quranPageFragment.getCurrantAya();
             selectedAyaCountInSura = currantAya.getSuraAya();
 
             if (currantSura != null) {
@@ -940,11 +866,14 @@ public class QuranMainFragment extends Fragment {
 
     private void riwayaChanged(Riwaya riwaya) {
         selectedRiwaya = riwaya;
+        handleSettingButtonVisibility();
         updateRiwaya(false);
     }
 
     private void updateRiwaya(boolean isTafsir) {
         binding.tvChangeRiwaya.setText(selectedRiwaya.name);
+        binding.tvChangeRiwaya.setSelected(true);
+
         adapter_Readers.setNewList(getReaderAudioList1(requireActivity()));
         createNewFragments();
         if (!isTafsir)
@@ -1352,6 +1281,7 @@ public class QuranMainFragment extends Fragment {
     private void changeToForeignRiwaya(Riwaya riwaya, int startPageLocaly) {
         selectedRiwaya = riwaya;
 
+        handleSettingButtonVisibility();
 
         adapterPagerForSign = null;
         if (list.size() > 0) list.clear();
@@ -1368,7 +1298,14 @@ public class QuranMainFragment extends Fragment {
         binding.linearReaders.setVisibility(View.GONE);
 
         binding.tvChangeRiwaya.setText(selectedRiwaya.name);
+        binding.tvChangeRiwaya.setSelected(true);
 
+
+    }
+
+    private void handleSettingButtonVisibility() {
+        if (selectedRiwaya.tag.equals(RiwayaType.HAFS_SMART.name())) binding.imgSetting.setVisibility(View.VISIBLE);
+        else binding.imgSetting.setVisibility(View.GONE);
     }
 
 
@@ -1381,7 +1318,7 @@ public class QuranMainFragment extends Fragment {
 
         IntentFilter filter1 = new IntentFilter("AUDIO_FINISHED");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            requireActivity().registerReceiver(AudioReceiver, filter1,RECEIVER_NOT_EXPORTED);
+            requireActivity().registerReceiver(AudioReceiver, filter1, RECEIVER_NOT_EXPORTED);
         } else
             requireActivity().registerReceiver(AudioReceiver, filter1);
 
@@ -1389,7 +1326,7 @@ public class QuranMainFragment extends Fragment {
         filter.addAction(QURAN_DOWNLOAD);
         filter.addAction(AUDIO_DOWNLOAD);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            requireActivity().registerReceiver(downloadForeignReceiver, filter,RECEIVER_NOT_EXPORTED);
+            requireActivity().registerReceiver(downloadForeignReceiver, filter, RECEIVER_NOT_EXPORTED);
         } else
             requireActivity().registerReceiver(downloadForeignReceiver, filter);
 
@@ -1417,6 +1354,7 @@ public class QuranMainFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
         publicMethods = PublicMethods.getInstance();
         selectedRiwaya = SharedPreferenceManager.getInstance(requireActivity()).getLastRiwaya();
+
         if (getArguments() != null) startPage = getArguments().getInt("page", 1);
         else startPage = 1;
         compositeDisposable = new CompositeDisposable();
@@ -1433,7 +1371,10 @@ public class QuranMainFragment extends Fragment {
 
         viewModel.setReaderWithId(SharedPreferenceManager.getInstance(requireActivity()).getSelectedReaderId());
         viewModel.setReadersList();
+
         binding.tvChangeRiwaya.setText(selectedRiwaya.name);
+        binding.tvChangeRiwaya.setSelected(true);
+        handleSettingButtonVisibility();
 
         setListenrs();
         setRiwayaListListeners();
@@ -1712,28 +1653,28 @@ public class QuranMainFragment extends Fragment {
         WorkManager.getInstance(requireActivity()).enqueue(downloadRequest);
     }
 
-    private void downloadNearImage(int page,String quran_page_image_url){
+    private void downloadNearImage(int page, String quran_page_image_url) {
         List<String> imageUrls = new ArrayList<>();
 
         if (page < 596) {
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+1,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+2,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+3,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+4,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+5,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+6,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+7,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(page+8,quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 1, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 2, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 3, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 4, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 5, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 6, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 7, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(page + 8, quran_page_image_url));
         } else {
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(596,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(597,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(598,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(599,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(600,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(601,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(602,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(603,quran_page_image_url));
-            imageUrls.add(PublicMethods.getInstance().getImageUrl(604,quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(596, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(597, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(598, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(599, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(600, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(601, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(602, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(603, quran_page_image_url));
+            imageUrls.add(PublicMethods.getInstance().getImageUrl(604, quran_page_image_url));
 
         }
 
@@ -1745,6 +1686,125 @@ public class QuranMainFragment extends Fragment {
                     .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.DATA))
                     .submit();
         }
+    }
+
+
+    private void setObservers() {
+
+
+        viewModel.getBookMarks().observe(getViewLifecycleOwner(), bookmarks -> {
+            if (adapterPagerForSign != null)
+                if (bookmarks != null && adapterPagerForSign.getCount() > 0) {
+                    loadComplete(bookmarks);
+                }
+        });
+
+
+        viewModel.getIsOnBackClicked().observe(getViewLifecycleOwner(), isOnBackClicked -> {
+            if (isOnBackClicked) {
+                if (binding.linearRiwayaList.getVisibility() == View.VISIBLE) {
+                    binding.linearRiwayaList.setVisibility(View.GONE);
+                }
+
+                if (binding.relativeReaderList.getVisibility() == View.VISIBLE) {
+                    binding.relativeReaderList.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        viewModel.getIsForeignPageSaved().observe(getViewLifecycleOwner(), isForeignPageSaved -> {
+            if (isForeignPageSaved) {
+                isSavedPage = true;
+                Glide.with(requireActivity()).load(R.drawable.ic_save).into(binding.imgSave);
+            } else {
+                isSavedPage = false;
+                Glide.with(requireActivity()).load(R.drawable.ic_save_new).into(binding.imgSave);
+            }
+        });
+
+        viewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
+            if (!isfullModeActive) {
+                exitFullMode();
+            }
+        });
+
+        viewModel.getIsFragmentClicked().observe(getViewLifecycleOwner(), isFragmentClicked -> {
+            if (isFragmentClicked) {
+                if (binding.linearRiwayaList.isShown())
+                    binding.linearRiwayaList.setVisibility(View.GONE);
+                if (binding.linearReaders.getVisibility() == View.VISIBLE) hideAudioControlLinear();
+
+            }
+        });
+
+        viewModel.getReader().observe(requireActivity(), readerAudio -> {
+            Log.e("trak_page", "we recieve the reader " + readerAudio.toString());
+            selectedReader = readerAudio;
+            manageReaderImage(selectedReader.getReaderImage());
+            binding.includeAudioPlaying.tvReaderName.setText(selectedReader.getName());
+        });
+
+        viewModel.getAllSura().observe(getViewLifecycleOwner(), suraList -> {
+            if (suraList != null && suraList.size() > 0) {
+                globalSuraList = suraList;
+                showSuraList(suraList);
+            }
+        });
+
+        //hafs smart observer events
+
+        viewModel.getAyaClickLiveData().observe(getViewLifecycleOwner(), this::onAyaClick);
+        viewModel.getHideAyaInfoLiveData().observe(getViewLifecycleOwner(), aVoid -> onHideAyaInfo());
+        viewModel.getSaveAndShareLiveData().observe(getViewLifecycleOwner(), this::onSaveAndShare);
+        viewModel.getAyaTouchLiveData().observe(getViewLifecycleOwner(), aVoid -> onAyaTouch());
+        viewModel.getScreenClickLiveData().observe(getViewLifecycleOwner(), aVoid -> onScreenClick());
+        viewModel.getPageChangedLiveData().observe(getViewLifecycleOwner(), this::onPageChanged);
+
+
+    }
+
+
+    private void onAyaClick(Aya aya) {
+        // show aya info layout
+        selectedAya = aya;
+        //binding.tvTafsir.setVisibility(View.VISIBLE);
+        //binding.linearAyaInfo.setVisibility(View.VISIBLE);
+    }
+
+    private void onHideAyaInfo() {
+        // Handle onHideAyaInfo event
+        //binding.linearAyaInfo.setVisibility(View.GONE);
+    }
+
+    private void onSaveAndShare(Aya aya) {
+        // Handle onSaveAndShare event
+        selectedAya = aya;
+        //binding.tvTafsir.setVisibility(View.GONE);
+        //binding.linearAyaInfo.setVisibility(View.VISIBLE);
+    }
+
+    private void onAyaTouch() {
+        // Handle onAyaTouch event
+    }
+
+    private void onScreenClick() {
+        // Handle onScreenClick event
+    }
+
+    private void onPageChanged(int page) {
+        // Handle onPageChanged event
+    }
+
+
+
+
+
+    public void showButtomSheet() {
+        FilterButtomSheetclass bottomSheet = new FilterButtomSheetclass(textsize -> {
+            createNewFragments();
+        },requireActivity());
+
+        bottomSheet.show(getChildFragmentManager(),"tag");
     }
 
 }

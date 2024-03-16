@@ -3,7 +3,6 @@ package com.app.dz.quranapp.quran.hafs_parte;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -24,20 +23,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.AyaString;
+import com.app.dz.quranapp.databinding.QuranPageFragmentBinding;
 import com.app.dz.quranapp.quran.adapters.MushafPageAdapter;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
+import com.app.dz.quranapp.quran.models.AyaPosition;
 import com.app.dz.quranapp.quran.models.AyaTextLimits;
 import com.app.dz.quranapp.quran.viewmodels.AyatPageViewModel;
 import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
-import com.app.dz.quranapp.quran.models.AyaPosition;
-import com.app.dz.quranapp.Util.QuranInfoManager;
-import com.app.dz.quranapp.databinding.QuranPageFragmentBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +49,6 @@ public class QuranPageFragment extends Fragment {
 
     private final Map<Integer, AyaPosition> stringAyaPostionHashMap = new HashMap<>();
     private final static String TAG = QuranPageFragment.class.getSimpleName();
-    private OnFragmentListeners listener;
     private int pageNumber = 1;
     private QuranPageFragmentBinding binding;
     private AyatPageViewModel viewModel;
@@ -65,7 +61,7 @@ public class QuranPageFragment extends Fragment {
 
     private Aya CurrantAya; //default the first aya in sura
     private Aya DefaulAya; //default the first aya in sura
-    private MyViewModel StateViewModel;
+    private MyViewModel stateViewModel;
     private Boolean isfullModeActiveGlobal = false;
     private List<Aya> globalItems;
 
@@ -81,23 +77,6 @@ public class QuranPageFragment extends Fragment {
         args.putInt(ARG_PAGE_NUMBER, pageNumber);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentListeners) {
-            listener = (OnFragmentListeners) context;
-        } else {
-            Log.e("log", "activity dont implimaents Onclicklistnersenttoactivity");
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
     }
 
     @Override
@@ -121,21 +100,21 @@ public class QuranPageFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        stateViewModel = new ViewModelProvider(requireActivity()).get(MyViewModel.class);
         viewModel = new ViewModelProvider(this).get(AyatPageViewModel.class);
-        StateViewModel = ViewModelProviders.of(getActivity()).get(MyViewModel.class);
 
+        binding.tvPageNumber.setText("" + pageNumber);
         initializeArticlesAdapter();
         setObservers();
         if (pageNumber == 1) viewModel.setAyatList(pageNumber);
         else getPageAyat(pageNumber);
 
 
-
     }
 
 
     private void setObservers() {
-        StateViewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
+        stateViewModel.getData().observe(getViewLifecycleOwner(), isfullModeActive -> {
             isfullModeActiveGlobal = isfullModeActive;
         });
         viewModel.getPevAya().observe(getViewLifecycleOwner(), prevAya -> {
@@ -159,8 +138,9 @@ public class QuranPageFragment extends Fragment {
             @Override
             public void onItemClick(AyaString ayaString, int position) {
                 if (isfullModeActiveGlobal) {
-                    Log.e("logtag","onItemClick");
-                    listener.onScreenClick();
+                    Log.e("logtag", "onItemClick");
+                    stateViewModel.triggerScreenClick();
+                    stateViewModel.setData(false);
                     return;
                 }
                 handleClick();
@@ -169,7 +149,7 @@ public class QuranPageFragment extends Fragment {
             @Override
             public void onItemTouch(AyaString ayaString, int position, View view, MotionEvent event) {
                 if (isfullModeActiveGlobal) {
-                    Log.e("logtag","onItemTouch");
+                    Log.e("logtag", "onItemTouch");
                     return;
                 }
                 handleTouch(ayaString, position, view, event);
@@ -185,7 +165,7 @@ public class QuranPageFragment extends Fragment {
         viewModel.setlastAya(id);
     }
 
-    public Aya getCurrantSura() {
+    public Aya getCurrantAya() {
         return CurrantAya;
     }
 
@@ -217,8 +197,8 @@ public class QuranPageFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void displayData(List<Aya> items) {
         globalItems = items;
-        //binding.tvSura.setText("سورة ");
-        //binding.tvJuza.setText("" + QuranInfoManager.getInstance().getJuzaName(items.get(0).getJuz()));
+        binding.tvSuraName.setText("سورة ");
+        binding.tvJuzNumber.setText("" + QuranInfoManager.getInstance().getJuzaName(items.get(0).getJuz()));
 
         List<AyaTextLimits> ayaLimitsCurrantItems = new ArrayList<>();
         List<AyaPosition> ayaPostionsList = new ArrayList<>();
@@ -364,10 +344,10 @@ public class QuranPageFragment extends Fragment {
 
         }
         Log.e(TAG, "stringAyaPostionHashMap size : " + stringAyaPostionHashMap.size());
-        /*if (!isTitlereated)
-            binding.tvSura.setText("سورة " + QuranInfoManager.getInstance().getSuraName(items.get(0).getSura() - 1));
+        if (!isTitlereated)
+            binding.tvSuraName.setText("سورة " + QuranInfoManager.getInstance().getSuraName(items.get(0).getSura() - 1));
 
-        */
+
         adapter.additems(ayaStringList);
     }
 
@@ -383,7 +363,7 @@ public class QuranPageFragment extends Fragment {
             if (isTvClicked) {
                 TextView tv = (TextView) view;
                 if (isThereSelectedAya) {
-                    listener.onHideAyaInfo();
+                    stateViewModel.triggerHideAyaInfo();
                     isThereSelectedAya = false;
                     tv.setText(colorNumbersInText(new SpannableStringBuilder(model.getStringBuilder().toString())));
                     CurrantAya = DefaulAya;
@@ -421,7 +401,7 @@ public class QuranPageFragment extends Fragment {
 
                 adapter.selectView(position, ssb);
                 lastSelectedItem = position;
-                listener.onAyaClick(ayaLimits.aya);
+                stateViewModel.triggerAyaClick(ayaLimits.aya);
                 CurrantAya = ayaLimits.aya;
                 break;
             }
@@ -457,8 +437,8 @@ public class QuranPageFragment extends Fragment {
         QuranInfoManager quranSuraNames = QuranInfoManager.getInstance();
         String suraName = "سورة " + quranSuraNames.getSuraName(sura - 1);
 
-        /*
-        String value = binding.tvSura.getText().toString();
+
+        String value = binding.tvSuraName.getText().toString();
         String suraName2 = "" + quranSuraNames.getSuraName(sura - 1);
         String newValue;
         if (value.equals("سورة ")) {
@@ -466,20 +446,20 @@ public class QuranPageFragment extends Fragment {
         } else {
             newValue = value + " و " + suraName2;
         }
-        binding.tvSura.setText(newValue);
-        */
+        binding.tvSuraName.setText(newValue);
+
 
         return suraName;
     }
 
     public String getJuzaName() {
-        if (globalItems==null) return "";
+        if (globalItems == null) return "";
         return QuranInfoManager.getInstance().getJuzaNameNumber(globalItems.get(0).getJuz());
     }
 
     public String getSuraName() {
-        if (globalItems==null) return "";
-        return  QuranInfoManager.getInstance().getSuraName(globalItems.get(0).getSura() - 1);
+        if (globalItems == null) return "";
+        return QuranInfoManager.getInstance().getSuraName(globalItems.get(0).getSura() - 1);
     }
 
 

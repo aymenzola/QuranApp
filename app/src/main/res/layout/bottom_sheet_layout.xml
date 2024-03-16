@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="15dp"
+        android:paddingEnd="15dp"
+        android:paddingLeft="15dp"
+        android:paddingBottom="50dp">
+
+        <TextView
+            android:id="@+id/tv_size_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:fontFamily="@font/ffshamel_family_bold"
+            android:textSize="@dimen/tv_normal_size"
+            android:text="حجم الخط" />
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="20"
+            android:progressTint="@color/purple_700"
+            android:thumbTint="@color/purple_700"
+            android:layout_margin="20dp"
+            android:progress="5" />
+
+        <TextView
+            android:id="@+id/tv_size_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/tv_normal_size"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/ffshamel_book"
+            android:text="20" />
+
+        <TextView
+            android:id="@+id/tv_size_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/al_qalam_quran"
+            android:text="بسم الله الرحمان الرحيم" />
+
+        <TextView
+            android:id="@+id/tv_save"
+            style="@style/MyTvStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:text="حفظ" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

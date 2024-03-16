@@ -84,17 +84,17 @@ public class SharedPreferenceManager {
     }
 
     public void saveReadingPosition(ReadingPosition readingPosition) {
-        Log.e("checkSaveTag","saving "+readingPosition.toString());
-        editor.putString("readingPosition", new Gson().toJson(readingPosition,ReadingPosition.class));
+        Log.e("checkSaveTag", "saving " + readingPosition.toString());
+        editor.putString("readingPosition", new Gson().toJson(readingPosition, ReadingPosition.class));
         editor.putBoolean("isAyaSaved", true);
         editor.apply();
     }
 
 
     public ReadingPosition getReadinPosition() {
-        String reiwayaString = sharedPreferences.getString("readingPosition","no");
+        String reiwayaString = sharedPreferences.getString("readingPosition", "no");
         if (!reiwayaString.equals("no")) {
-            return new Gson().fromJson(reiwayaString,ReadingPosition.class);
+            return new Gson().fromJson(reiwayaString, ReadingPosition.class);
         } else
             return new ReadingPosition(-1, -1, -1, "", RiwayaType.HAFS.name());
     }
@@ -102,7 +102,7 @@ public class SharedPreferenceManager {
     //clrear reading position values
     public void clearReadingPosition() {
         saveReadingPosition(new ReadingPosition(-1, -1, -1, "", ""));
-        editor.putBoolean("isAyaSaved",false);
+        editor.putBoolean("isAyaSaved", false);
         editor.apply();
     }
 
@@ -129,11 +129,20 @@ public class SharedPreferenceManager {
 
     public Riwaya getLastRiwaya() {
         String reiwayaString = sharedPreferences.getString("riwaya", "no");
-        if (reiwayaString.equals("no")) {
+
+        Log.e("checkQuranTag", "getLastRiwaya reiwayaString " + reiwayaString);
+
+        Riwaya riwaya;
+
+        if (reiwayaString == null || reiwayaString.equals("no")) {
             //default riwaya
-            return getAllRiwayaList().get(0);
+            riwaya = getAllRiwayaList().get(3);
         } else
-            return new Gson().fromJson(reiwayaString, Riwaya.class);
+            riwaya = new Gson().fromJson(reiwayaString, Riwaya.class);
+
+        if (riwaya == null) riwaya = getAllRiwayaList().get(3);
+
+        return riwaya;
     }
 
     public void saveLastRiwaya(Riwaya riwaya) {

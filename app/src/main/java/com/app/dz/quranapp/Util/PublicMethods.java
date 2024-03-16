@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class PublicMethods {
@@ -397,6 +398,18 @@ public class PublicMethods {
         else
             url = quran_page_image_url + pageNumber + ".png";
         return url;
+    }
+
+    public String convertMillisToTime(int millis) {
+        int hours = (millis / (1000 * 60 * 60));
+        int minutes = ((millis / (1000 * 60)) % 60);
+        int seconds = (millis / 1000) % 60;
+
+        if (hours > 0) {
+            return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        }
     }
 
 }

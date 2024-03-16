@@ -30,6 +30,16 @@ public class MyViewModel extends AndroidViewModel {
     private MutableLiveData<String> value = new MutableLiveData<>();
 
 
+    //for smart hafs parte
+    private final MutableLiveData<Aya> ayaClickLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Void> hideAyaInfoLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Aya> saveAndShareLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Void> ayaTouchLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Void> screenClickLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> pageChangedLiveData = new MutableLiveData<>();
+
+
+
     public MyViewModel(@NonNull Application application) {
         super(application);
         readersRepository = new ReadersRepository(application);
@@ -117,4 +127,55 @@ public class MyViewModel extends AndroidViewModel {
         return bookMarks;
     }
 
+
+
+    //hafs smart parte
+
+    public MutableLiveData<Aya> getAyaClickLiveData() {
+        return ayaClickLiveData;
+    }
+
+    public MutableLiveData<Void> getHideAyaInfoLiveData() {
+        return hideAyaInfoLiveData;
+    }
+
+    public MutableLiveData<Aya> getSaveAndShareLiveData() {
+        return saveAndShareLiveData;
+    }
+
+    public MutableLiveData<Void> getAyaTouchLiveData() {
+        return ayaTouchLiveData;
+    }
+
+    public MutableLiveData<Void> getScreenClickLiveData() {
+        return screenClickLiveData;
+    }
+
+    public MutableLiveData<Integer> getPageChangedLiveData() {
+        return pageChangedLiveData;
+    }
+
+    public void triggerAyaClick(Aya aya) {
+        ayaClickLiveData.setValue(aya);
+    }
+
+    public void triggerHideAyaInfo() {
+        hideAyaInfoLiveData.setValue(null);
+    }
+
+    public void triggerSaveAndShare(Aya aya) {
+        saveAndShareLiveData.setValue(aya);
+    }
+
+    public void triggerAyaTouch() {
+        ayaTouchLiveData.setValue(null);
+    }
+
+    public void triggerScreenClick() {
+        screenClickLiveData.setValue(null);
+    }
+
+    public void triggerPageChanged(int page) {
+        pageChangedLiveData.setValue(page);
+    }
 }

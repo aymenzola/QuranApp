@@ -57,6 +57,16 @@
                     android:padding="15dp"
                     android:src="@drawable/ic_search" />
 
+                <ImageView
+                    android:id="@+id/img_setting"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_toEndOf="@+id/img_search"
+                    android:layout_alignParentTop="true"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:visibility="gone"
+                    android:src="@drawable/baseline_format_size_24" />
                 <TextView
                     android:id="@+id/tv_change_riwaya"
                     android:layout_width="wrap_content"
@@ -295,14 +305,14 @@
 
                 <TextView
                     android:id="@+id/tv_riwaya4"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:paddingTop="7dp"
                     android:paddingBottom="7dp"
-                    android:text="مصحف التفاعلي"
+                    android:text="المصحف التفاعلي"
                     android:textSize="@dimen/tv_small_size_tablet"
-                    android:visibility="gone" />
+                    />
 
                 <View
                     android:layout_width="match_parent"
