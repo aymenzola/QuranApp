@@ -1,7 +1,8 @@
 package com.app.dz.quranapp.Util;
 
 
-import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
+
+import static com.app.dz.quranapp.Communs.Constants.AppfolderName;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

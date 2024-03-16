@@ -101,7 +101,6 @@
             android:textColor="@color/blan"
             android:textSize="11sp"
             android:visibility="visible"
-            tools:visibility="gone"
             tools:text="الأحد 27 شعبان 1444 الموافق لـ 19-03-2023" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

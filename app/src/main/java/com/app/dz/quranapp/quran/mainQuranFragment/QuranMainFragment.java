@@ -1,5 +1,6 @@
 package com.app.dz.quranapp.quran.mainQuranFragment;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
 import static com.app.dz.quranapp.Communs.Statics.ACTION.BACK_SURA_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.ACTION.CHANGE_READER_ACTION;
 import static com.app.dz.quranapp.Communs.Statics.ACTION.NEXT_SURA_ACTION;
@@ -83,8 +84,6 @@ import com.app.dz.quranapp.quran.adapters.ReadersAdapter;
 import com.app.dz.quranapp.quran.adapters.SuraAdapterNew;
 import com.app.dz.quranapp.quran.foreignRiwayat.FragmentForeignRiwayat;
 import com.app.dz.quranapp.quran.hafs_parte.QuranPageFragment;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
-import com.app.dz.quranapp.quran.listeners.OnQuranFragmentListeners;
 import com.app.dz.quranapp.quran.models.ModuleFragments;
 import com.app.dz.quranapp.quran.models.ReaderAudio;
 import com.app.dz.quranapp.quran.models.ReadingPosition;
@@ -112,15 +111,13 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class QuranMainFragment extends Fragment implements OnFragmentListeners {
+public class QuranMainFragment extends Fragment {
 
 
     int retryCount = 0;
     final int maxRetries = 2; // Maximum number of retries
 
-    public static final int DOWNLOAD_TYPE_AUDIO = 1;
     private final static String TAG = QuranMainFragment.class.getSimpleName();
-    private static final int FOREIGN_BOOK_WRITE_REQUEST_CODE = 102;
     private static final String QURAN_DOWNLOAD = "quran_download";
     private static final String AUDIO_DOWNLOAD = "audio_download";
     private final ArrayList<ModuleFragments> list = new ArrayList<>();
@@ -139,11 +136,9 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
     private Aya selectedAya;
     private MyViewModel viewModel;
     private PublicMethods publicMethods;
-    private final int WRITE_REQUEST_CODE_DOWNLOAD = 1;
     private Riwaya selectedRiwaya;
     private static ReaderAudio selectedReader;
     private float audioPlayingSpeed = 1f;
-    private OnQuranFragmentListeners listener;
     private final float[] speedValues = {1f, 1.5f, 2f, 2.5f};
     private ReadingPosition readingPosition;
     private Riwaya previousRiwaya;
@@ -154,10 +149,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
     private CompositeDisposable compositeDisposable;
     private OneTimeWorkRequest downloadRequest;
     private AlertDialog dialog_download_foreign;
-    private Riwaya globalRequestedRiwaya;
     private DialogDownloadProgressBinding binding_download_foreign_version;
-
-    private boolean shouldMoveToPage = false;
     private boolean isSavedPage = false;
     private List<Sura> globalSuraList = new ArrayList<>();
     private DrawerMatnParentAdapter adapterDrawerForeignRiwaya;
@@ -523,7 +515,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
                 Glide.with(requireActivity()).load(R.drawable.round_keyboard_arrow_down_24).into(binding.imgExpand);
                 binding.imgExpand.setVisibility(View.GONE);
                 binding.linearMore.setVisibility(View.VISIBLE);
-                listener.onHideBottomBar();
             }
         });
 
@@ -798,34 +789,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
         }
     }
 
-    @Override
-    public void onAyaClick(Aya aya) {
-        selectedAya = aya;
-    }
-
-    @Override
-    public void onHideAyaInfo() {
-    }
-
-    @Override
-    public void onSaveAndShare(Aya aya) {
-        selectedAya = aya;
-    }
-
-    @Override
-    public void onAyaTouch() {
-
-    }
-
-    @Override
-    public void onScreenClick() {
-        exitFullMode();
-    }
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onPageChanged(int page) {
-    }
 
     private void manageReaderImage(String readerImage) {
         if (isAdded())
@@ -856,23 +819,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnQuranFragmentListeners) {
-            listener = (OnQuranFragmentListeners) context;
-        } else {
-            Log.e("log", "activity dont implimaents Onclicklistnersenttoactivity");
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
     }
 
 
@@ -1012,14 +958,8 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
         binding.tvRiwaya2.setOnClickListener(v -> riwayaChanged(listRiwaya.get(1)));
         binding.tvRiwaya3.setOnClickListener(v -> riwayaChanged(listRiwaya.get(2)));
         binding.tvRiwaya4.setOnClickListener(v -> riwayaChanged(listRiwaya.get(3)));
-
-        binding.tvRiwaya5.setOnClickListener(v -> {
-            foreignRiwayaClicked(listRiwaya.get(4));
-        });
-
-        binding.tvRiwaya6.setOnClickListener(v -> {
-            foreignRiwayaClicked(listRiwaya.get(5));
-        });
+        binding.tvRiwaya5.setOnClickListener(v -> foreignRiwayaClicked(listRiwaya.get(4)));
+        binding.tvRiwaya6.setOnClickListener(v -> foreignRiwayaClicked(listRiwaya.get(5)));
     }
 
     private void foreignRiwayaClicked(Riwaya riwaya) {
@@ -1264,6 +1204,15 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
             return;
         }
         if (isPlayFromLoc) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (!askNotificationPermission()) {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                    Toast.makeText(requireActivity(), "يجب السماح بظهور الاشعارات", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
             startDownload();
             this.isPlayFromLocal = false;
             lunchAudio();
@@ -1414,7 +1363,6 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
         adapterPagerForSign.addlist(list);
         Log.e(TAG, "we are setting to adapter in changeToForeignRiwaya");
         binding.viewPager.setAdapter(adapterPagerForSign);
-        shouldMoveToPage = startPageLocaly != 1;
 
         binding.linearRiwayaList.setVisibility(View.GONE);
         binding.linearReaders.setVisibility(View.GONE);
@@ -1424,6 +1372,7 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     public void onResume() {
         super.onResume();
@@ -1431,13 +1380,18 @@ public class QuranMainFragment extends Fragment implements OnFragmentListeners {
 
 
         IntentFilter filter1 = new IntentFilter("AUDIO_FINISHED");
-        requireActivity().registerReceiver(AudioReceiver, filter1);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().registerReceiver(AudioReceiver, filter1,RECEIVER_NOT_EXPORTED);
+        } else
+            requireActivity().registerReceiver(AudioReceiver, filter1);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(QURAN_DOWNLOAD);
         filter.addAction(AUDIO_DOWNLOAD);
-        requireActivity().registerReceiver(downloadForeignReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().registerReceiver(downloadForeignReceiver, filter,RECEIVER_NOT_EXPORTED);
+        } else
+            requireActivity().registerReceiver(downloadForeignReceiver, filter);
 
 
         final int serviceState = getStateActiveService();

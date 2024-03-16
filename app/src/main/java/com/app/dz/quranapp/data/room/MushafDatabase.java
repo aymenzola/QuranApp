@@ -21,7 +21,7 @@ import com.app.dz.quranapp.ui.activities.AdkarParte.AdkarModel;
 @Database(entities = {Sura.class,Aya.class,Juz.class,AdkarModel.class,AyaWarsh.class}, version = 1, exportSchema = false)
 public abstract class MushafDatabase extends RoomDatabase {
 
-    public static final String DATABASE_NAME = "mushaf_metadata.db";
+    public static final String DATABASE_NAME = "mushaf_metadata1.db";
     public static final int ASSET_DB_VERSION = 1;
 
     private static volatile MushafDatabase instance;

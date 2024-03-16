@@ -20,6 +20,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
             android:layout_alignTop="@+id/tv_last_time"
             android:layout_alignBottom="@+id/tv_last_time"
             android:layout_toStartOf="@+id/tv_last_time"

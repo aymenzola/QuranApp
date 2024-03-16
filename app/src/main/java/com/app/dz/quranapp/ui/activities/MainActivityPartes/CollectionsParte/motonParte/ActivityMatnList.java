@@ -72,7 +72,7 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
         parentMatn = (Matn) getIntent().getSerializableExtra("matn");
         //should use matn id to get the list of matn childrens
 
-        binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText(parentMatn.matnTitle);
+        binding.includeBooksLayout.tvFastAdkarTitle.setText(parentMatn.matnTitle);
 
         initializeMotonAdapter();
 
@@ -128,9 +128,9 @@ public class ActivityMatnList extends AppCompatActivity implements LifecycleOwne
         });
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(ActivityMatnList.this, 2, LinearLayoutManager.VERTICAL, false);
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setHasFixedSize(true);
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setLayoutManager(gridLayoutManager);
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setAdapter(motonAdapter);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setHasFixedSize(true);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setLayoutManager(gridLayoutManager);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setAdapter(motonAdapter);
 
     }
 

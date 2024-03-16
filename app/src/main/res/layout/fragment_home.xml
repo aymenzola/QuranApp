@@ -50,7 +50,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
-                    android:layout_marginBottom="5dp"
                     android:src="@drawable/salam" />
 
                 <TextView
@@ -59,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="10dp"
                     android:fontFamily="@font/ffshamel_book"
                     android:gravity="center"
                     android:text="سارع و اعمل حسنات أينما كنت .."
@@ -67,6 +66,11 @@
                     android:textSize="@dimen/tv_small_size" />
 
                 <include
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="20dp"
                     android:id="@+id/include_cardview_time"
                     layout="@layout/include_timing_card" />
 

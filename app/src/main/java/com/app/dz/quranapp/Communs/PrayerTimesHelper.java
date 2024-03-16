@@ -6,6 +6,8 @@ import static com.app.dz.quranapp.ui.activities.adhan.BootReceiver.TAG_BROAD_CAS
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +15,14 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.Services.adhan.AlarmBroadcastReceiver;
-import com.app.dz.quranapp.Services.adhan.PrayerForegroundService;
 import com.app.dz.quranapp.Services.adhan.PrayerNotificationWorker;
 import com.app.dz.quranapp.data.room.AppDatabase;
 import com.app.dz.quranapp.data.room.Daos.DayPrayerTimesDao;
@@ -48,12 +51,13 @@ import io.reactivex.schedulers.Schedulers;
 public class PrayerTimesHelper {
 
 
+    private static final String channel_fixed_notification = "Fixed_Prayer_Channel";
     private TimesListener listener;
     private final DayPrayerTimesDao dao;
     private final Map<String, DayPrayerTimes> resultsMap = new HashMap<>();
     private final CompositeDisposable compositeDisposable;
     private static PrayerTimesHelper mInstance;
-
+    private Context context;
 
     public static synchronized PrayerTimesHelper getInstance(Context context) {
         if (mInstance == null) {
@@ -63,6 +67,7 @@ public class PrayerTimesHelper {
     }
 
     public PrayerTimesHelper(Context context) {
+        this.context = context;
         AppDatabase db = DatabaseClient.getInstance(context).getAppDatabase();
         dao = db.getDayPrayerTimesDao();
         compositeDisposable = new CompositeDisposable();
@@ -299,7 +304,7 @@ public class PrayerTimesHelper {
         PrayerTimesHelper prayerTimesHelper = new PrayerTimesHelper(context);
         prayerTimesHelper.setListener(new PrayerTimesHelper.TimesListener() {
             @Override
-            public void onPrayerTimesResult(Map<String,DayPrayerTimes> TimesMap) {
+            public void onPrayerTimesResult(Map<String, DayPrayerTimes> TimesMap) {
 
             }
 
@@ -307,8 +312,8 @@ public class PrayerTimesHelper {
             public void onNextPrayerNameAndTimeResult(PrayerTimesPreference.PrayerInfo prayerInfo) {
                 //should check if equal the next prayer time the save one
                 PrayerTimesPreference.PrayerInfo p = PrayerTimesPreference.getInstance(context).getNextScheduleNotification();
-                if (p!=null && p.prayer_time == prayerInfo.prayer_time) {
-                    Log.e("testLog", "---->this is the second call  for the same prayer time "+prayerInfo.prayer_arabic);
+                if (p != null && p.prayer_time == prayerInfo.prayer_time) {
+                    Log.e("testLog", "---->this is the second call  for the same prayer time " + prayerInfo.prayer_arabic);
                     return;
                 }
 
@@ -321,7 +326,7 @@ public class PrayerTimesHelper {
 
                 OneTimeWorkRequest nextPrayerWork = new OneTimeWorkRequest.Builder(PrayerNotificationWorker.class)
                         .setInputData(inputData)
-                        .setInitialDelay(nextPrayerDelay,TimeUnit.MILLISECONDS).build();
+                        .setInitialDelay(nextPrayerDelay, TimeUnit.MILLISECONDS).build();
 
 
                 Log.e("testLog", "---->reschedule next one on " + convertMillisToTime(System.currentTimeMillis() + nextPrayerDelay));
@@ -339,8 +344,13 @@ public class PrayerTimesHelper {
 
 
                 //update the fixed notification title and time for next prayer
-                String fixedTitle = prayerInfo.prayer_arabic + " " + convertMillisToTime(prayerInfo.prayer_time);
-                startForegroundService(context, fixedTitle);
+                String fixedTitle;
+                if (prayerInfo.prayer_english_name.equals(PrayerTimesPreference.PrayerNames.SHOUROK.name())) {
+                    fixedTitle = prayerInfo.prayer_arabic + " " + convertMillisToTime(prayerInfo.prayer_time);
+                } else
+                    fixedTitle = "الصلاة التالية "+prayerInfo.prayer_arabic + " " + convertMillisToTime(prayerInfo.prayer_time);
+
+                createNotification(fixedTitle, context);
             }
 
             @Override
@@ -352,25 +362,36 @@ public class PrayerTimesHelper {
 
     }
 
-    private static void startForegroundService(Context context, String title) {
-        Intent serviceIntent = new Intent(context, PrayerForegroundService.class);
-        serviceIntent.putExtra("title", title);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.e("testLog", "----> start foreground service " + Build.VERSION.SDK_INT);
-            context.startForegroundService(serviceIntent);
-        } else {
-            Log.e("testLog", "----> start foreground service" + Build.VERSION.SDK_INT);
-            context.startService(serviceIntent);
-        }
 
+    private static void createNotification(String contentText, Context context) {
+        createNotificationChannel(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channel_fixed_notification)
+                .setSmallIcon(R.drawable.app_icon)
+                .setContentTitle("مواقيت الصلاة")
+                .setContentText(contentText)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setOngoing(true);
+
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.notify(13, builder.build());
+        }
     }
 
+    private static void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "",
+                    "Prayer Channel",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
 
-
-
-
-
-
+            NotificationManager manager = context.getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+        }
+    }
 
 
     public void checkIfTheWorkIsScheduler(Context context) {
@@ -415,13 +436,13 @@ public class PrayerTimesHelper {
     }
 
 
-    public static void scheduleNextAlarm(Context context,long nextPrayerDelay, PrayerTimesPreference.PrayerInfo prayerInfo) {
+    public static void scheduleNextAlarm(Context context, long nextPrayerDelay, PrayerTimesPreference.PrayerInfo prayerInfo) {
 
         // Create an intent that points to the BroadcastReceiver that you want to trigger
-        Intent intent = new Intent(context,AlarmBroadcastReceiver.class);
-        intent.putExtra("prayerInfo", new Gson().toJson(prayerInfo,PrayerTimesPreference.PrayerInfo.class));
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        intent.putExtra("prayerInfo", new Gson().toJson(prayerInfo, PrayerTimesPreference.PrayerInfo.class));
         // Create a PendingIntent with that intent
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 

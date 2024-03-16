@@ -1,6 +1,7 @@
 package com.app.dz.quranapp.quran.mainQuranFragment;
 
-import static com.app.dz.quranapp.Services.QuranServices.ForegroundDownloadAudioService.AppfolderName;
+
+import static com.app.dz.quranapp.Communs.Constants.AppfolderName;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

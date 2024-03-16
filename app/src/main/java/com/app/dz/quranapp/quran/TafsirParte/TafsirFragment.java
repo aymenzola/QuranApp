@@ -1,11 +1,9 @@
 package com.app.dz.quranapp.quran.TafsirParte;
 
 import static android.content.Context.MODE_PRIVATE;
-
 import static com.app.dz.quranapp.Util.QuranInfoManager.getPageSurasNames;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -24,15 +22,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.AyaTafsir;
-import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
+import com.app.dz.quranapp.databinding.QuranPageFragmentBinding;
 import com.app.dz.quranapp.quran.adapters.TafsirAdapter;
 import com.app.dz.quranapp.quran.models.AyaPosition;
 import com.app.dz.quranapp.quran.viewmodels.AyatPageViewModel;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
-import com.app.dz.quranapp.Util.QuranInfoManager;
-import com.app.dz.quranapp.databinding.QuranPageFragmentBinding;
+import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +44,6 @@ public class TafsirFragment extends Fragment {
 
     private Map<Integer, AyaPosition> stringAyaPostionHashMap = new HashMap<>();
     private final static String TAG = TafsirFragment.class.getSimpleName();
-    private OnFragmentListeners listeners;
     private int pageNumber = 1;
     private QuranPageFragmentBinding binding;
     private AyatPageViewModel viewModel;
@@ -78,22 +74,7 @@ public class TafsirFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentListeners) {
-            listeners = (OnFragmentListeners) context;
-        } else {
-            Log.e("log", "activity dont implimaents Onclicklistnersenttoactivity");
-        }
 
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listeners = null;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,18 +138,15 @@ public class TafsirFragment extends Fragment {
             if (isfullModeActiveGlobal) {
                 StateViewModel.setData(false);
                 Log.e("logtag","onItemClick");
-                listeners.onScreenClick();
                 return;
             }
             //aya Clicked
             if (isThereSelectedAya) {
                 //hide and unselect
                 isThereSelectedAya = false;
-                listeners.onHideAyaInfo();
-            } else {
+                 } else {
                 //select and show layout info
                 isThereSelectedAya = true;
-                listeners.onSaveAndShare(aya);
             }
 
         });

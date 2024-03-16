@@ -239,27 +239,27 @@ public class HomeFragment extends Fragment {
             binding.includeLastSavedQuran.tvLastAyaTitle.setVisibility(View.VISIBLE);
             ReadingPosition readingPosition = sharedPreferenceManager.getReadinPosition();
             Log.e("checkSaveTag", "quran onResume 1 readingPosition " + readingPosition.toString());
-            if (readingPosition.page==null) return;
+            if (readingPosition.page == null) return;
             lastPage = readingPosition.page;
             Log.e("checkSaveTag", "quran onResume " + readingPosition.toString());
-            if (readingPosition.riwaya==null) return;
+            if (readingPosition.riwaya == null) return;
             savedRiwaya = readingPosition.riwaya;
 
             if (readingPosition.riwaya.equals(RiwayaType.ENGLISH_QURAN.name())) {
                 binding.includeLastSavedQuran.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
                 binding.includeLastSavedQuran.tvLastAya.setText("الترجمة الانجليزية للقرآن الكريم الصفحة رقم " + readingPosition.page);
-                Typeface typeface = ResourcesCompat.getFont(requireActivity(),R.font.ffshamel_book);
+                Typeface typeface = ResourcesCompat.getFont(requireActivity(), R.font.ffshamel_book);
                 binding.includeLastSavedQuran.tvLastAya.setTypeface(typeface);
                 float textSize = getResources().getDimension(R.dimen.tv_small_size);
-                binding.includeLastSavedQuran.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+                binding.includeLastSavedQuran.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 
             } else if (readingPosition.riwaya.equals(RiwayaType.FRENCH_QURAN.name())) {
                 binding.includeLastSavedQuran.tvLastAyaTitle.setText("اخر صفحة قمت بحفظها");
                 binding.includeLastSavedQuran.tvLastAya.setText("الترجمة الفرنسية للقرآن الكريم الصفحة رقم " + readingPosition.page);
-                Typeface typeface = ResourcesCompat.getFont(requireActivity(),R.font.ffshamel_book);
+                Typeface typeface = ResourcesCompat.getFont(requireActivity(), R.font.ffshamel_book);
                 binding.includeLastSavedQuran.tvLastAya.setTypeface(typeface);
                 float textSize = getResources().getDimension(R.dimen.tv_small_size);
-                binding.includeLastSavedQuran.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize);
+                binding.includeLastSavedQuran.tvLastAya.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
 
 
             } else {
@@ -307,7 +307,7 @@ public class HomeFragment extends Fragment {
             bundle.putInt("page", startPage);
         }
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main3);
-        navController.navigate(R.id.action_fragment_home_to_quranFragmentDev,bundle);
+        navController.navigate(R.id.action_fragment_home_to_quranFragmentDev, bundle);
     }
 
     private void MoveToHadithDetails() {
@@ -369,9 +369,9 @@ public class HomeFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     private void setObservers() {
 
-        viewModel.getRandomDikr().observe(getViewLifecycleOwner(),adkarModel -> {
+        viewModel.getRandomDikr().observe(getViewLifecycleOwner(), adkarModel -> {
             if (adkarModel != null) {
-                Log.e(TAG,"random adkarModel "+adkarModel.toString());
+                Log.e(TAG, "random adkarModel " + adkarModel.toString());
 
                 //AdkarCountsHelper.getInstance(requireActivity()).getDikrDependOnCurrentTime();
                 binding.tvCategory.setText(adkarModel.getCategory());
@@ -465,8 +465,12 @@ public class HomeFragment extends Fragment {
         nextSalatName = prayerInfo.prayer_arabic;
         NextPrayerMillis = prayerInfo.prayer_time;
 
+        String text;
+        if (prayerInfo.prayer_english_name.equals(PrayerTimesPreference.PrayerNames.SHOUROK.name())) {
+            text = "بقي على ";
+        } else
+            text = "بقي على أذان ";
 
-        String text = "بقي على أذان ";
         binding.includeCardviewTime.tvSalatMessage.setText(text);
         binding.includeCardviewTime.tvSalatName.setText(nextSalatName);
 
@@ -485,7 +489,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFinish() {
                 // display a message when the timer finishes
-                String text = "حان الان موعد صلاة ";
+
+                String text;
+                if (prayerInfo.prayer_english_name.equals(PrayerTimesPreference.PrayerNames.SHOUROK.name())) {
+                    text = "الان وقت الشروق";
+                } else
+                    text = "حان الان موعد صلاة";
+
+
                 binding.includeCardviewTime.tvSalatMessage.setText(text);
                 binding.includeCardviewTime.tvSalatName.setText(nextSalatName);
             }
@@ -498,9 +509,9 @@ public class HomeFragment extends Fragment {
         long nextPrayerDelay = 6 * 60 * 1000;
 
         // Create an intent that points to the BroadcastReceiver that you want to trigger
-        Intent intent = new Intent(context,AlarmBroadcastReceiver.class);
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
         // Create a PendingIntent with that intent
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -525,10 +536,10 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void askAlarmPermission(){
+    private void askAlarmPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-            intent.setData(Uri.fromParts("package",requireActivity().getPackageName(), null));
+            intent.setData(Uri.fromParts("package", requireActivity().getPackageName(), null));
             mStartForResult.launch(intent);
 
         }

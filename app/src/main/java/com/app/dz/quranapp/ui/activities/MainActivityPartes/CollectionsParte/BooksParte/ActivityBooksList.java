@@ -51,10 +51,8 @@ public class ActivityBooksList extends AppCompatActivity {
         getBooks(collectionName);
         setObservers();
 
-        binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText(PublicMethods.getInstance().getCollectionArabicName(collectionName));
-        binding.imgBack.setOnClickListener(v -> {
-            onBackPressed();
-        });
+        binding.includeBooksLayout.tvFastAdkarTitle.setText(PublicMethods.getInstance().getCollectionArabicName(collectionName));
+        binding.imgBack.setOnClickListener(v -> onBackPressed());
 
     }
 
@@ -81,9 +79,9 @@ public class ActivityBooksList extends AppCompatActivity {
             }
         });
 
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setLayoutManager(new LinearLayoutManager(ActivityBooksList.this, RecyclerView.VERTICAL, false));
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setHasFixedSize(true);
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setAdapter(adapter);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setLayoutManager(new LinearLayoutManager(ActivityBooksList.this, RecyclerView.VERTICAL, false));
+        binding.includeBooksLayout.recyclerViewFastAdkar.setHasFixedSize(true);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setAdapter(adapter);
     }
 
     private void moveToChapters(BookWithCount book) {

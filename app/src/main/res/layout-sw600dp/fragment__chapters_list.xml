@@ -66,12 +66,13 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:gravity="center"
+                android:padding="@dimen/padding_kounoz_image"
                 android:src="@drawable/ic_konouz" />
         </RelativeLayout>
 
         <include
-            android:id="@+id/include_category_adkar_card"
-            layout="@layout/include_adkar_category2"
+            android:id="@+id/include_books_layout"
+            layout="@layout/include_books_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/relative_top"

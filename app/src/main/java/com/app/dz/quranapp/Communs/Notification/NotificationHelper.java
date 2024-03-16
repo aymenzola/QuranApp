@@ -12,8 +12,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.app.dz.quranapp.R;
 import com.app.dz.quranapp.MainActivity;
+import com.app.dz.quranapp.R;
 
 
 public class NotificationHelper extends ContextWrapper {

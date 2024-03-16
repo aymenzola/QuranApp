@@ -273,19 +273,13 @@ public class QublaFragment extends Fragment {
 
         if (QiblaDegree > 0) {
             binding.mainImageQibla.setVisibility(VISIBLE);
-            binding.btnMoaayara.setVisibility(View.GONE);
+            binding.btnMoaayara.setVisibility(INVISIBLE);
         } else {
             binding.mainImageQibla.setVisibility(INVISIBLE);
-            binding.mainImageQibla.setVisibility(View.GONE);
         }
     }
 
 
-    public void SaveBoolean(String key, Boolean bb) {
-        SharedPreferences.Editor edit = prefs.edit();
-        edit.putBoolean(key, bb);
-        edit.apply();
-    }
 
     public boolean hasPermissions(String[] permissions) {
 

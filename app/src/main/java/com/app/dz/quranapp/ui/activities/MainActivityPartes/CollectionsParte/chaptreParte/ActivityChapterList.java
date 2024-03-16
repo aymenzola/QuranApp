@@ -60,7 +60,7 @@ public class ActivityChapterList extends AppCompatActivity {
 
         Log.e("quran_tag","collection_name "+collectionName+" booknumber "+bookNumber+" bookname "+bookName);
 
-        binding.includeCategoryAdkarCard.tvFastAdkarTitle.setText("" + bookName);
+        binding.includeBooksLayout.tvFastAdkarTitle.setText("" + bookName);
         binding.imgBack.setOnClickListener(v -> onBackPressed());
         initializeArticlesAdapter();
         Log.e("lifecycle", "B onViewCreated");
@@ -96,9 +96,9 @@ public class ActivityChapterList extends AppCompatActivity {
             }
         });
 
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setLayoutManager(new LinearLayoutManager(ActivityChapterList.this, RecyclerView.VERTICAL, false));
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setHasFixedSize(true);
-        binding.includeCategoryAdkarCard.recyclerViewFastAdkar.setAdapter(adapter);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setLayoutManager(new LinearLayoutManager(ActivityChapterList.this, RecyclerView.VERTICAL, false));
+        binding.includeBooksLayout.recyclerViewFastAdkar.setHasFixedSize(true);
+        binding.includeBooksLayout.recyclerViewFastAdkar.setAdapter(adapter);
     }
 
     private void moveToAyatFragment(Chapter chapter, int position) {

@@ -3,7 +3,6 @@ package com.app.dz.quranapp.quran.warsh_parte;
 import static com.app.dz.quranapp.Util.QuranInfoManager.getPageSurasNames;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +21,6 @@ import com.app.dz.quranapp.Util.QuranInfoManager;
 import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.databinding.QuranPageFragmentWarshBinding;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
 import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -39,7 +37,6 @@ public class FragmentMultipleRiwayat extends Fragment {
 
     private static final String ARG_PAGE_NUMBER = "page_number";
     private static final String ARG_RIWAYA = "riwaya";
-    private OnFragmentListeners listener;
     private int pageNumber = 1;
     private Riwaya riwaya;
     private QuranPageFragmentWarshBinding binding;
@@ -71,22 +68,7 @@ public class FragmentMultipleRiwayat extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentListeners) {
-            listener = (OnFragmentListeners) context;
-        } else {
-            Log.e("log", "activity dont implimaents Onclicklistnersenttoactivity");
-        }
 
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -141,15 +123,12 @@ public class FragmentMultipleRiwayat extends Fragment {
             StateViewModel.setIsFragmentClicked(true);
             if (isfullModeActiveGlobal) {
                 StateViewModel.setData(false);
-
-                listener.onScreenClick();
                 return;
             }
             //aya Clicked
             if (isThereSelectedAya) {
                 //hide and unselect
                 isThereSelectedAya = false;
-                listener.onHideAyaInfo();
             } else {
                 //select and show layout info
                 isThereSelectedAya = true;
@@ -163,7 +142,6 @@ public class FragmentMultipleRiwayat extends Fragment {
 
     @SuppressLint("CheckResult")
     private void displayMushafImage(int pageNumber) {
-        listener.onPageChanged(pageNumber);
 
         String url = PublicMethods.getInstance().getImageUrl(pageNumber,riwaya.quran_page_image_url);
 

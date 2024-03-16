@@ -77,7 +77,6 @@ public class AdkarSubhaUtils {
         adkarList.add(new AdkarListAdapter.DikrItem("استغفر الله", 1));
         adkarList.add(new AdkarListAdapter.DikrItem("اللهم صلي على محمد", 1));
         adkarList.add(new AdkarListAdapter.DikrItem("اللهم اني اسالك الجنه", 1));
-        adkarList.add(new AdkarListAdapter.DikrItem("اللهم اني اعوذ بك من النار", 1));
         adkarList.add(new AdkarListAdapter.DikrItem("اللهم اني اعوذ بك من الفقر", 1));
         adkarList.add(new AdkarListAdapter.DikrItem("اللهم اني اعوذ بك من الكفر", 1));
         adkarList.add(new AdkarListAdapter.DikrItem("اللهم اني اعوذ بك من الشرك", 1));

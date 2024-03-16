@@ -70,7 +70,7 @@
         </RelativeLayout>
 
         <include
-            android:id="@+id/include_category_adkar_card"
+            android:id="@+id/include_books_layout"
             layout="@layout/include_books_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

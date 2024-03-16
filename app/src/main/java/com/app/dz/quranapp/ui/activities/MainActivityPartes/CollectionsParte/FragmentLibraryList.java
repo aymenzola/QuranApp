@@ -1,5 +1,6 @@
 package com.app.dz.quranapp.ui.activities.MainActivityPartes.CollectionsParte;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
 import static com.app.dz.quranapp.Communs.Constants.books_file_name;
 import static com.app.dz.quranapp.Communs.Constants.moton_file_name;
 import static com.app.dz.quranapp.Communs.Statics.BROADCAST_DOWNLOAD_ACTION.DOWNLOAD_CANCEL_ACTION;
@@ -74,7 +75,6 @@ import java.util.List;
 
 
 public class FragmentLibraryList extends Fragment {
-
 
     public static final String MOTON_DOWNLOAD = "moton_download";
     public static final String BOOK_DOWNLOAD = "book_download";
@@ -360,7 +360,8 @@ public class FragmentLibraryList extends Fragment {
         Intent startIntent = new Intent(requireActivity(), ExtractBooksService.class);
         startIntent.setAction(Statics.ACTION.START_ACTION);
         startIntent.putExtra("BookCollection", bookCollection);
-        ContextCompat.startForegroundService(requireActivity(), startIntent);
+        ContextCompat.startForegroundService(requireActivity(),startIntent);
+
 
     }
 
@@ -387,13 +388,24 @@ public class FragmentLibraryList extends Fragment {
         super.onResume();
         manageSavedBook();
         IntentFilter filter_download = new IntentFilter(COLLECTION_DOWNLOAD);
-        requireActivity().registerReceiver(downloadCollectionReceiver, filter_download);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().registerReceiver(downloadCollectionReceiver, filter_download,RECEIVER_NOT_EXPORTED);
+        }else
+            requireActivity().registerReceiver(downloadCollectionReceiver, filter_download);
 
         IntentFilter filter_book_download = new IntentFilter(BOOK_DOWNLOAD);
-        requireActivity().registerReceiver(downloadBookReceiver, filter_book_download);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().registerReceiver(downloadBookReceiver, filter_book_download,RECEIVER_NOT_EXPORTED);
+        } else
+            requireActivity().registerReceiver(downloadBookReceiver, filter_book_download);
+
 
         IntentFilter filter_matn_download = new IntentFilter(MOTON_DOWNLOAD);
-        requireActivity().registerReceiver(downloadMatnReceiver,filter_matn_download);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireActivity().registerReceiver(downloadMatnReceiver,filter_matn_download,RECEIVER_NOT_EXPORTED);
+        } else
+            requireActivity().registerReceiver(downloadMatnReceiver,filter_matn_download);
+
     }
 
     @Override

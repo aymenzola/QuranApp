@@ -1,7 +1,6 @@
 package com.app.dz.quranapp.quran.foreignRiwayat;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,10 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.app.dz.quranapp.Util.PublicMethods;
 import com.app.dz.quranapp.Util.SharedPreferenceManager;
-import com.app.dz.quranapp.data.room.Entities.Aya;
 import com.app.dz.quranapp.data.room.Entities.Riwaya;
 import com.app.dz.quranapp.databinding.FragmentForeignRiwayaBinding;
-import com.app.dz.quranapp.quran.listeners.OnFragmentListeners;
 import com.app.dz.quranapp.quran.models.ReadingPosition;
 import com.app.dz.quranapp.quran.models.RiwayaType;
 import com.app.dz.quranapp.quran.viewmodels.MyViewModel;
@@ -29,17 +26,13 @@ import java.util.List;
 
 public class FragmentForeignRiwayat extends Fragment {
 
-
     private static final String ARG_SURA_NUMBER = "sura_number";
     private static final String ARG_RIWAYA = "riwaya";
     private final static String TAG = FragmentForeignRiwayat.class.getSimpleName();
-    private OnFragmentListeners listener;
-    private int suraNumber = 1;
     private Riwaya riwaya;
     private FragmentForeignRiwayaBinding binding;
     private MyViewModel StateViewModel;
     private Boolean isfullModeActiveGlobal = false;
-    private List<Aya> globalAyatList;
     private ReadingPosition readingPosition;
 
     public FragmentForeignRiwayat() {
@@ -57,28 +50,11 @@ public class FragmentForeignRiwayat extends Fragment {
     }
 
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentListeners) {
-            listener = (OnFragmentListeners) context;
-        } else {
-            Log.e("log", "activity dont implimaents Onclicklistnersenttoactivity");
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            suraNumber = getArguments().getInt(ARG_SURA_NUMBER);
             riwaya = (Riwaya) getArguments().getSerializable(ARG_RIWAYA);
         }
     }
@@ -141,7 +117,6 @@ public class FragmentForeignRiwayat extends Fragment {
             StateViewModel.setIsFragmentClicked(true);
             if (isfullModeActiveGlobal) {
                 StateViewModel.setData(false);
-                listener.onScreenClick();
             }
         });
     }

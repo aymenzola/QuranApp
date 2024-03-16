@@ -553,7 +553,13 @@ public class FragmentPrayer extends Fragment {
             nextSalatName = "العشاء";
         }
 
-        binding.includeTimingCard.tvSalatMessage.setText("بقي على أذان");
+        String text;
+        if (nextSalatName.equals("الشروق")) {
+            text = "بقي على ";
+        } else
+            text = "بقي على أذان ";
+
+        binding.includeTimingCard.tvSalatMessage.setText(text);
         binding.includeTimingCard.tvSalatName.setText(nextSalatName);
 
         countdownDuration = Nextmillseconds - System.currentTimeMillis();
@@ -580,7 +586,15 @@ public class FragmentPrayer extends Fragment {
             @Override
             public void onFinish() {
                 // display a message when the timer finishes
-                binding.includeTimingCard.tvSalatMessage.setText("حان الان موعد صلاة");
+
+                String text;
+                if (nextSalatName.equals("الشروق")) {
+                    text = "الان وقت الشروق";
+                } else
+                    text = "حان الان موعد صلاة ";
+
+
+                binding.includeTimingCard.tvSalatMessage.setText(text);
                 binding.includeTimingCard.tvSalatName.setText(nextSalatName);
             }
         }.start();
